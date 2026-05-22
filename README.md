@@ -1,6 +1,6 @@
 # attune — Python SDK for Attune Actions & Sensors
 
-A lightweight Python package providing boilerplate for writing [Attune](https://github.com/AndroxxTraxxon/attune) actions and sensors.
+A lightweight Python package providing boilerplate for writing [Attune](https://github.com/attune-system/attune) actions and sensors.
 
 ## Installation
 
