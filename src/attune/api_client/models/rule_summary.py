@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -127,7 +126,7 @@ class RuleSummary:
 
         action_ref = d.pop("action_ref")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
 
@@ -143,7 +142,7 @@ class RuleSummary:
 
         trigger_ref = d.pop("trigger_ref")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:

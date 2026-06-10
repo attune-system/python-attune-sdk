@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -162,7 +161,7 @@ class IntegrationTokenResponse:
         d = dict(src_dict)
         active = d.pop("active")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         id = d.pop("id")
 
@@ -174,7 +173,7 @@ class IntegrationTokenResponse:
 
         token_suffix = d.pop("token_suffix")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_created_by(data: object) -> int | None | Unset:
             if data is None:
@@ -202,7 +201,7 @@ class IntegrationTokenResponse:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                expires_at_type_0 = isoparse(data)
+                expires_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return expires_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -219,7 +218,7 @@ class IntegrationTokenResponse:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                last_used_at_type_0 = isoparse(data)
+                last_used_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return last_used_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -254,7 +253,7 @@ class IntegrationTokenResponse:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                revoked_at_type_0 = isoparse(data)
+                revoked_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return revoked_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):

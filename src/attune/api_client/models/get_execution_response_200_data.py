@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.execution_status import ExecutionStatus
 from ..models.retention_policy_type import RetentionPolicyType
@@ -61,6 +60,8 @@ class GetExecutionResponse200Data:
         started_at (datetime.datetime | None | Unset): When the execution actually started running (worker picked it
             up).
             Null if the execution hasn't started running yet. Example: 2024-01-13T10:31:00Z.
+        timeout_seconds (int | None | Unset): Resolved execution timeout in seconds, snapshotted at creation time.
+            Example: 600.
         worker (int | None | Unset): Worker ID currently assigned to this execution Example: 1.
         worker_affinity (GetExecutionResponse200DataWorkerAffinityType0 | None | Unset): Worker affinity override stored
             on the execution, if any.
@@ -88,6 +89,7 @@ class GetExecutionResponse200Data:
     parent: int | None | Unset = UNSET
     permission_set_refs: list[str] | Unset = UNSET
     started_at: datetime.datetime | None | Unset = UNSET
+    timeout_seconds: int | None | Unset = UNSET
     worker: int | None | Unset = UNSET
     worker_affinity: GetExecutionResponse200DataWorkerAffinityType0 | None | Unset = (
         UNSET
@@ -182,6 +184,12 @@ class GetExecutionResponse200Data:
         else:
             started_at = self.started_at
 
+        timeout_seconds: int | None | Unset
+        if isinstance(self.timeout_seconds, Unset):
+            timeout_seconds = UNSET
+        else:
+            timeout_seconds = self.timeout_seconds
+
         worker: int | None | Unset
         if isinstance(self.worker, Unset):
             worker = UNSET
@@ -263,6 +271,8 @@ class GetExecutionResponse200Data:
             field_dict["permission_set_refs"] = permission_set_refs
         if started_at is not UNSET:
             field_dict["started_at"] = started_at
+        if timeout_seconds is not UNSET:
+            field_dict["timeout_seconds"] = timeout_seconds
         if worker is not UNSET:
             field_dict["worker"] = worker
         if worker_affinity is not UNSET:
@@ -302,7 +312,7 @@ class GetExecutionResponse200Data:
 
         config = GetExecutionResponse200DataConfig.from_dict(d.pop("config"))
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         id = d.pop("id")
 
@@ -310,7 +320,7 @@ class GetExecutionResponse200Data:
 
         status = ExecutionStatus(d.pop("status"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_action(data: object) -> int | None | Unset:
             if data is None:
@@ -401,7 +411,7 @@ class GetExecutionResponse200Data:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                started_at_type_0 = isoparse(data)
+                started_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return started_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -409,6 +419,15 @@ class GetExecutionResponse200Data:
             return cast(datetime.datetime | None | Unset, data)
 
         started_at = _parse_started_at(d.pop("started_at", UNSET))
+
+        def _parse_timeout_seconds(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
 
         def _parse_worker(data: object) -> int | None | Unset:
             if data is None:
@@ -540,6 +559,7 @@ class GetExecutionResponse200Data:
             parent=parent,
             permission_set_refs=permission_set_refs,
             started_at=started_at,
+            timeout_seconds=timeout_seconds,
             worker=worker,
             worker_affinity=worker_affinity,
             worker_selector=worker_selector,

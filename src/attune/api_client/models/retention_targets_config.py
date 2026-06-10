@@ -21,22 +21,73 @@ class RetentionTargetsConfig:
 
     Attributes:
         audit_events (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         continuous_aggregates (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         enforcements (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         events (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         execution_admission (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         execution_history (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         executions (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         inquiries (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         notifications (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         pack_test_executions (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         sensor_process_history (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         sensor_processes (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         webhook_event_logs (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         work_queue_dispatches (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         work_queue_items (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         worker_history (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
         workers (RetentionTargetConfig | Unset): Runtime database row retention settings.
+
+            A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+            A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
     """
 
     audit_events: RetentionTargetConfig | Unset = UNSET

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 if TYPE_CHECKING:
     from ..models.test_suite_result import TestSuiteResult
@@ -99,7 +98,7 @@ class TestPackResponse200Data:
         d = dict(src_dict)
         duration_ms = d.pop("durationMs")
 
-        execution_time = isoparse(d.pop("executionTime"))
+        execution_time = datetime.datetime.fromisoformat(d.pop("executionTime"))
 
         failed = d.pop("failed")
 

@@ -6,7 +6,6 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 T = TypeVar("T", bound="CreateIdentityRoleAssignmentResponse201Data")
 
@@ -67,7 +66,7 @@ class CreateIdentityRoleAssignmentResponse201Data:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         id = d.pop("id")
 
@@ -79,7 +78,7 @@ class CreateIdentityRoleAssignmentResponse201Data:
 
         source = d.pop("source")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         create_identity_role_assignment_response_201_data = cls(
             created=created,

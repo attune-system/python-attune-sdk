@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.work_queue_batch_mode import WorkQueueBatchMode
 from ..models.work_queue_update_strategy import WorkQueueUpdateStrategy
 from ..types import UNSET, Unset
@@ -42,6 +42,8 @@ class WorkQueueResponse:
         item_schema (WorkQueueResponseItemSchema):
         label (str):  Example: Core Inbox.
         ref (str):  Example: core.inbox.
+        reference_allowed_pack_refs (list[str]):  Example: ['incident_response', 'deployments'].
+        reference_visibility (ActionReferenceVisibility):
         update_strategy (WorkQueueUpdateStrategy):
         updated (datetime.datetime):  Example: 2024-01-13T10:30:00Z.
         description (None | str | Unset):  Example: Dispatches inbound work items to the core processor.
@@ -66,6 +68,8 @@ class WorkQueueResponse:
     item_schema: WorkQueueResponseItemSchema
     label: str
     ref: str
+    reference_allowed_pack_refs: list[str]
+    reference_visibility: ActionReferenceVisibility
     update_strategy: WorkQueueUpdateStrategy
     updated: datetime.datetime
     description: None | str | Unset = UNSET
@@ -110,6 +114,10 @@ class WorkQueueResponse:
         label = self.label
 
         ref = self.ref
+
+        reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        reference_visibility = self.reference_visibility.value
 
         update_strategy = self.update_strategy.value
 
@@ -176,6 +184,8 @@ class WorkQueueResponse:
                 "item_schema": item_schema,
                 "label": label,
                 "ref": ref,
+                "reference_allowed_pack_refs": reference_allowed_pack_refs,
+                "reference_visibility": reference_visibility,
                 "update_strategy": update_strategy,
                 "updated": updated,
             }
@@ -217,7 +227,7 @@ class WorkQueueResponse:
 
         config = WorkQueueResponseConfig.from_dict(d.pop("config"))
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         default_priority = d.pop("default_priority")
 
@@ -235,9 +245,15 @@ class WorkQueueResponse:
 
         ref = d.pop("ref")
 
+        reference_allowed_pack_refs = cast(
+            list[str], d.pop("reference_allowed_pack_refs")
+        )
+
+        reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
+
         update_strategy = WorkQueueUpdateStrategy(d.pop("update_strategy"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -332,6 +348,8 @@ class WorkQueueResponse:
             item_schema=item_schema,
             label=label,
             ref=ref,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
+            reference_visibility=reference_visibility,
             update_strategy=update_strategy,
             updated=updated,
             description=description,

@@ -31,9 +31,6 @@ class UpdateSensorRequest:
     """Request DTO for updating a sensor
 
     Attributes:
-        param_schema (None | UpdateSensorRequestParamSchemaType0): Parameter schema (StackStorm-style with inline
-            required/secret)
-        worker_selector (None | UpdateSensorRequestWorkerSelectorType0): Worker labels required for this sensor process.
         artifact_retention_limit (LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset):
         artifact_retention_policy (LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset):
         description (None | str | Unset): Sensor description Example: Enhanced CPU monitoring with alerts.
@@ -43,12 +40,14 @@ class UpdateSensorRequest:
         label (None | str | Unset): Human-readable label Example: CPU Monitoring Sensor (Updated).
         log_retention_limit (LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset):
         log_retention_policy (LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset):
+        param_schema (None | Unset | UpdateSensorRequestParamSchemaType0): Parameter schema (StackStorm-style with
+            inline required/secret)
         worker_affinity (None | Unset | WorkerAffinity):
+        worker_selector (None | Unset | UpdateSensorRequestWorkerSelectorType0): Worker labels required for this sensor
+            process.
         worker_tolerations (list[WorkerToleration] | None | Unset): Worker taints tolerated by this sensor process.
     """
 
-    param_schema: None | UpdateSensorRequestParamSchemaType0
-    worker_selector: None | UpdateSensorRequestWorkerSelectorType0
     artifact_retention_limit: (
         LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset
     ) = UNSET
@@ -65,7 +64,9 @@ class UpdateSensorRequest:
     log_retention_policy: (
         LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset
     ) = UNSET
+    param_schema: None | Unset | UpdateSensorRequestParamSchemaType0 = UNSET
     worker_affinity: None | Unset | WorkerAffinity = UNSET
+    worker_selector: None | Unset | UpdateSensorRequestWorkerSelectorType0 = UNSET
     worker_tolerations: list[WorkerToleration] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -89,18 +90,6 @@ class UpdateSensorRequest:
             UpdateSensorRequestWorkerSelectorType0,
         )
         from ..models.worker_affinity import WorkerAffinity
-
-        param_schema: dict[str, Any] | None
-        if isinstance(self.param_schema, UpdateSensorRequestParamSchemaType0):
-            param_schema = self.param_schema.to_dict()
-        else:
-            param_schema = self.param_schema
-
-        worker_selector: dict[str, Any] | None
-        if isinstance(self.worker_selector, UpdateSensorRequestWorkerSelectorType0):
-            worker_selector = self.worker_selector.to_dict()
-        else:
-            worker_selector = self.worker_selector
 
         artifact_retention_limit: dict[str, Any] | None | Unset
         if isinstance(self.artifact_retention_limit, Unset):
@@ -166,6 +155,14 @@ class UpdateSensorRequest:
         else:
             log_retention_policy = self.log_retention_policy
 
+        param_schema: dict[str, Any] | None | Unset
+        if isinstance(self.param_schema, Unset):
+            param_schema = UNSET
+        elif isinstance(self.param_schema, UpdateSensorRequestParamSchemaType0):
+            param_schema = self.param_schema.to_dict()
+        else:
+            param_schema = self.param_schema
+
         worker_affinity: dict[str, Any] | None | Unset
         if isinstance(self.worker_affinity, Unset):
             worker_affinity = UNSET
@@ -173,6 +170,14 @@ class UpdateSensorRequest:
             worker_affinity = self.worker_affinity.to_dict()
         else:
             worker_affinity = self.worker_affinity
+
+        worker_selector: dict[str, Any] | None | Unset
+        if isinstance(self.worker_selector, Unset):
+            worker_selector = UNSET
+        elif isinstance(self.worker_selector, UpdateSensorRequestWorkerSelectorType0):
+            worker_selector = self.worker_selector.to_dict()
+        else:
+            worker_selector = self.worker_selector
 
         worker_tolerations: list[dict[str, Any]] | None | Unset
         if isinstance(self.worker_tolerations, Unset):
@@ -190,12 +195,7 @@ class UpdateSensorRequest:
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "param_schema": param_schema,
-                "worker_selector": worker_selector,
-            }
-        )
+        field_dict.update({})
         if artifact_retention_limit is not UNSET:
             field_dict["artifact_retention_limit"] = artifact_retention_limit
         if artifact_retention_policy is not UNSET:
@@ -212,8 +212,12 @@ class UpdateSensorRequest:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
             field_dict["log_retention_policy"] = log_retention_policy
+        if param_schema is not UNSET:
+            field_dict["param_schema"] = param_schema
         if worker_affinity is not UNSET:
             field_dict["worker_affinity"] = worker_affinity
+        if worker_selector is not UNSET:
+            field_dict["worker_selector"] = worker_selector
         if worker_tolerations is not UNSET:
             field_dict["worker_tolerations"] = worker_tolerations
 
@@ -243,44 +247,6 @@ class UpdateSensorRequest:
         from ..models.worker_toleration import WorkerToleration
 
         d = dict(src_dict)
-
-        def _parse_param_schema(
-            data: object,
-        ) -> None | UpdateSensorRequestParamSchemaType0:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                param_schema_type_0 = UpdateSensorRequestParamSchemaType0.from_dict(
-                    data
-                )
-
-                return param_schema_type_0
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(None | UpdateSensorRequestParamSchemaType0, data)
-
-        param_schema = _parse_param_schema(d.pop("param_schema"))
-
-        def _parse_worker_selector(
-            data: object,
-        ) -> None | UpdateSensorRequestWorkerSelectorType0:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                worker_selector_type_0 = (
-                    UpdateSensorRequestWorkerSelectorType0.from_dict(data)
-                )
-
-                return worker_selector_type_0
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(None | UpdateSensorRequestWorkerSelectorType0, data)
-
-        worker_selector = _parse_worker_selector(d.pop("worker_selector"))
 
         def _parse_artifact_retention_limit(
             data: object,
@@ -474,6 +440,27 @@ class UpdateSensorRequest:
             d.pop("log_retention_policy", UNSET)
         )
 
+        def _parse_param_schema(
+            data: object,
+        ) -> None | Unset | UpdateSensorRequestParamSchemaType0:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                param_schema_type_0 = UpdateSensorRequestParamSchemaType0.from_dict(
+                    data
+                )
+
+                return param_schema_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | Unset | UpdateSensorRequestParamSchemaType0, data)
+
+        param_schema = _parse_param_schema(d.pop("param_schema", UNSET))
+
         def _parse_worker_affinity(data: object) -> None | Unset | WorkerAffinity:
             if data is None:
                 return data
@@ -490,6 +477,27 @@ class UpdateSensorRequest:
             return cast(None | Unset | WorkerAffinity, data)
 
         worker_affinity = _parse_worker_affinity(d.pop("worker_affinity", UNSET))
+
+        def _parse_worker_selector(
+            data: object,
+        ) -> None | Unset | UpdateSensorRequestWorkerSelectorType0:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                worker_selector_type_0 = (
+                    UpdateSensorRequestWorkerSelectorType0.from_dict(data)
+                )
+
+                return worker_selector_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | Unset | UpdateSensorRequestWorkerSelectorType0, data)
+
+        worker_selector = _parse_worker_selector(d.pop("worker_selector", UNSET))
 
         def _parse_worker_tolerations(
             data: object,
@@ -520,8 +528,6 @@ class UpdateSensorRequest:
         )
 
         update_sensor_request = cls(
-            param_schema=param_schema,
-            worker_selector=worker_selector,
             artifact_retention_limit=artifact_retention_limit,
             artifact_retention_policy=artifact_retention_policy,
             description=description,
@@ -530,7 +536,9 @@ class UpdateSensorRequest:
             label=label,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
+            param_schema=param_schema,
             worker_affinity=worker_affinity,
+            worker_selector=worker_selector,
             worker_tolerations=worker_tolerations,
         )
 

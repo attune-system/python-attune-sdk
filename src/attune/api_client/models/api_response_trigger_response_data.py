@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -36,11 +36,14 @@ class ApiResponseTriggerResponseData:
         param_schema (ApiResponseTriggerResponseDataParamSchemaType0 | None): Parameter schema (StackStorm-style with
             inline required/secret)
         ref (str): Unique reference identifier Example: core.webhook.
+        reference_visibility (ActionReferenceVisibility):
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
         webhook_enabled (bool): Whether webhooks are enabled for this trigger
         description (None | str | Unset): Trigger description Example: Triggers when a webhook is received.
         pack (int | None | Unset): Pack ID (optional) Example: 1.
         pack_ref (None | str | Unset): Pack reference (optional) Example: core.
+        reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to subscribe to this trigger when visibility
+            is restricted. Example: ['incident_response', 'deployments'].
         sensor (int | None | Unset): Sensor ID (optional — webhook triggers have no sensor) Example: 1.
         sensor_ref (None | str | Unset): Sensor reference (optional) Example: core.timer_sensor.
         webhook_key (None | str | Unset): Webhook key (only present if webhooks are enabled) Example:
@@ -55,11 +58,13 @@ class ApiResponseTriggerResponseData:
     out_schema: ApiResponseTriggerResponseDataOutSchemaType0 | None
     param_schema: ApiResponseTriggerResponseDataParamSchemaType0 | None
     ref: str
+    reference_visibility: ActionReferenceVisibility
     updated: datetime.datetime
     webhook_enabled: bool
     description: None | str | Unset = UNSET
     pack: int | None | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | Unset = UNSET
     sensor: int | None | Unset = UNSET
     sensor_ref: None | str | Unset = UNSET
     webhook_key: None | str | Unset = UNSET
@@ -99,6 +104,8 @@ class ApiResponseTriggerResponseData:
 
         ref = self.ref
 
+        reference_visibility = self.reference_visibility.value
+
         updated = self.updated.isoformat()
 
         webhook_enabled = self.webhook_enabled
@@ -120,6 +127,10 @@ class ApiResponseTriggerResponseData:
             pack_ref = UNSET
         else:
             pack_ref = self.pack_ref
+
+        reference_allowed_pack_refs: list[str] | Unset = UNSET
+        if not isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
 
         sensor: int | None | Unset
         if isinstance(self.sensor, Unset):
@@ -151,6 +162,7 @@ class ApiResponseTriggerResponseData:
                 "out_schema": out_schema,
                 "param_schema": param_schema,
                 "ref": ref,
+                "reference_visibility": reference_visibility,
                 "updated": updated,
                 "webhook_enabled": webhook_enabled,
             }
@@ -161,6 +173,8 @@ class ApiResponseTriggerResponseData:
             field_dict["pack"] = pack
         if pack_ref is not UNSET:
             field_dict["pack_ref"] = pack_ref
+        if reference_allowed_pack_refs is not UNSET:
+            field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
         if sensor is not UNSET:
             field_dict["sensor"] = sensor
         if sensor_ref is not UNSET:
@@ -180,7 +194,7 @@ class ApiResponseTriggerResponseData:
         )
 
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
 
@@ -230,7 +244,9 @@ class ApiResponseTriggerResponseData:
 
         ref = d.pop("ref")
 
-        updated = isoparse(d.pop("updated"))
+        reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
+
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         webhook_enabled = d.pop("webhook_enabled")
 
@@ -260,6 +276,10 @@ class ApiResponseTriggerResponseData:
             return cast(None | str | Unset, data)
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
+
+        reference_allowed_pack_refs = cast(
+            list[str], d.pop("reference_allowed_pack_refs", UNSET)
+        )
 
         def _parse_sensor(data: object) -> int | None | Unset:
             if data is None:
@@ -297,11 +317,13 @@ class ApiResponseTriggerResponseData:
             out_schema=out_schema,
             param_schema=param_schema,
             ref=ref,
+            reference_visibility=reference_visibility,
             updated=updated,
             webhook_enabled=webhook_enabled,
             description=description,
             pack=pack,
             pack_ref=pack_ref,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
             sensor=sensor,
             sensor_ref=sensor_ref,
             webhook_key=webhook_key,

@@ -6,7 +6,6 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 T = TypeVar("T", bound="WebhookReceiverResponse")
 
@@ -57,7 +56,7 @@ class WebhookReceiverResponse:
 
         message = d.pop("message")
 
-        received_at = isoparse(d.pop("received_at"))
+        received_at = datetime.datetime.fromisoformat(d.pop("received_at"))
 
         trigger_ref = d.pop("trigger_ref")
 

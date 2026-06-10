@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -144,7 +143,7 @@ class GetWorkflowResponse200Data:
         )
 
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         definition = GetWorkflowResponse200DataDefinition.from_dict(d.pop("definition"))
 
@@ -198,7 +197,7 @@ class GetWorkflowResponse200Data:
 
         tags = cast(list[str], d.pop("tags"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         version = d.pop("version")
 

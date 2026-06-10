@@ -6,8 +6,8 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="PaginatedResponseWorkQueueSummaryItemsItem")
@@ -25,6 +25,8 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
         is_adhoc (bool):
         label (str):  Example: Core Inbox.
         ref (str):  Example: core.inbox.
+        reference_allowed_pack_refs (list[str]):  Example: ['incident_response', 'deployments'].
+        reference_visibility (ActionReferenceVisibility):
         updated (datetime.datetime):  Example: 2024-01-13T10:30:00Z.
         description (None | str | Unset):  Example: Dispatches inbound work items to the core processor.
         pack_ref (None | str | Unset):  Example: core.
@@ -38,6 +40,8 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
     is_adhoc: bool
     label: str
     ref: str
+    reference_allowed_pack_refs: list[str]
+    reference_visibility: ActionReferenceVisibility
     updated: datetime.datetime
     description: None | str | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
@@ -59,6 +63,10 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
         label = self.label
 
         ref = self.ref
+
+        reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        reference_visibility = self.reference_visibility.value
 
         updated = self.updated.isoformat()
 
@@ -86,6 +94,8 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
                 "is_adhoc": is_adhoc,
                 "label": label,
                 "ref": ref,
+                "reference_allowed_pack_refs": reference_allowed_pack_refs,
+                "reference_visibility": reference_visibility,
                 "updated": updated,
             }
         )
@@ -101,7 +111,7 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
         d = dict(src_dict)
         accepting_new_items = d.pop("accepting_new_items")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         dispatch_action_ref = d.pop("dispatch_action_ref")
 
@@ -115,7 +125,13 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
 
         ref = d.pop("ref")
 
-        updated = isoparse(d.pop("updated"))
+        reference_allowed_pack_refs = cast(
+            list[str], d.pop("reference_allowed_pack_refs")
+        )
+
+        reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
+
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -144,6 +160,8 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
             is_adhoc=is_adhoc,
             label=label,
             ref=ref,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
+            reference_visibility=reference_visibility,
             updated=updated,
             description=description,
             pack_ref=pack_ref,

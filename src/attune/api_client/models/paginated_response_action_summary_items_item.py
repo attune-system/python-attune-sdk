@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
@@ -33,11 +33,13 @@ class PaginatedResponseActionSummaryItemsItem:
         accesses_mcp (bool): Hint that this action may invoke the Attune MCP server and spawn child executions. Default:
             False.
         created (datetime.datetime): Creation timestamp Example: 2024-01-13T10:30:00Z.
+        enabled (bool): Whether this action is enabled Example: True.
         entrypoint (str): Entry point Example: /actions/slack/post_message.py.
         id (int): Action ID Example: 1.
         label (str): Human-readable label Example: Post Message to Slack.
         pack_ref (str): Pack reference Example: slack.
         ref (str): Unique reference identifier Example: slack.post_message.
+        reference_visibility (ActionReferenceVisibility):
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
         artifact_retention_limit (int | None | Unset): Per-action retention limit override for non-log artifacts created
             by executions. Example: 10.
@@ -48,12 +50,16 @@ class PaginatedResponseActionSummaryItemsItem:
         log_retention_limit (int | None | Unset): Per-action retention limit override for stdout/stderr execution log
             artifacts. Example: 4.
         log_retention_policy (None | RetentionPolicyType | Unset):
+        reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to reference this action when visibility is
+            restricted. Example: ['incident_response', 'deployments'].
         required_worker_runtimes (PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes | Unset): Additional
             worker runtime requirements keyed by runtime name/alias. Use "*" for any available version.
         runtime (int | None | Unset): Runtime ID Example: 1.
         runtime_ref (None | str | Unset): Runtime reference (stable identifier, e.g., "core.python") Example:
             core.python.
         runtime_version_constraint (None | str | Unset): Semver version constraint for the runtime Example: >=3.12.
+        timeout_seconds (int | None | Unset): Default execution timeout (seconds) snapshotted onto executions of this
+            action. Example: 300.
         worker_affinity (WorkerAffinity | Unset):
         worker_selector (PaginatedResponseActionSummaryItemsItemWorkerSelector | Unset): Exact worker label
             requirements.
@@ -62,11 +68,13 @@ class PaginatedResponseActionSummaryItemsItem:
     """
 
     created: datetime.datetime
+    enabled: bool
     entrypoint: str
     id: int
     label: str
     pack_ref: str
     ref: str
+    reference_visibility: ActionReferenceVisibility
     updated: datetime.datetime
     accesses_mcp: bool = False
     artifact_retention_limit: int | None | Unset = UNSET
@@ -75,12 +83,14 @@ class PaginatedResponseActionSummaryItemsItem:
     description: None | str | Unset = UNSET
     log_retention_limit: int | None | Unset = UNSET
     log_retention_policy: None | RetentionPolicyType | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | Unset = UNSET
     required_worker_runtimes: (
         PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes | Unset
     ) = UNSET
     runtime: int | None | Unset = UNSET
     runtime_ref: None | str | Unset = UNSET
     runtime_version_constraint: None | str | Unset = UNSET
+    timeout_seconds: int | None | Unset = UNSET
     worker_affinity: WorkerAffinity | Unset = UNSET
     worker_selector: PaginatedResponseActionSummaryItemsItemWorkerSelector | Unset = (
         UNSET
@@ -94,6 +104,8 @@ class PaginatedResponseActionSummaryItemsItem:
 
         created = self.created.isoformat()
 
+        enabled = self.enabled
+
         entrypoint = self.entrypoint
 
         id = self.id
@@ -103,6 +115,8 @@ class PaginatedResponseActionSummaryItemsItem:
         pack_ref = self.pack_ref
 
         ref = self.ref
+
+        reference_visibility = self.reference_visibility.value
 
         updated = self.updated.isoformat()
 
@@ -146,6 +160,10 @@ class PaginatedResponseActionSummaryItemsItem:
         else:
             log_retention_policy = self.log_retention_policy
 
+        reference_allowed_pack_refs: list[str] | Unset = UNSET
+        if not isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
         required_worker_runtimes: dict[str, Any] | Unset = UNSET
         if not isinstance(self.required_worker_runtimes, Unset):
             required_worker_runtimes = self.required_worker_runtimes.to_dict()
@@ -167,6 +185,12 @@ class PaginatedResponseActionSummaryItemsItem:
             runtime_version_constraint = UNSET
         else:
             runtime_version_constraint = self.runtime_version_constraint
+
+        timeout_seconds: int | None | Unset
+        if isinstance(self.timeout_seconds, Unset):
+            timeout_seconds = UNSET
+        else:
+            timeout_seconds = self.timeout_seconds
 
         worker_affinity: dict[str, Any] | Unset = UNSET
         if not isinstance(self.worker_affinity, Unset):
@@ -195,11 +219,13 @@ class PaginatedResponseActionSummaryItemsItem:
             {
                 "accesses_mcp": accesses_mcp,
                 "created": created,
+                "enabled": enabled,
                 "entrypoint": entrypoint,
                 "id": id,
                 "label": label,
                 "pack_ref": pack_ref,
                 "ref": ref,
+                "reference_visibility": reference_visibility,
                 "updated": updated,
             }
         )
@@ -217,6 +243,8 @@ class PaginatedResponseActionSummaryItemsItem:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
             field_dict["log_retention_policy"] = log_retention_policy
+        if reference_allowed_pack_refs is not UNSET:
+            field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
         if required_worker_runtimes is not UNSET:
             field_dict["required_worker_runtimes"] = required_worker_runtimes
         if runtime is not UNSET:
@@ -225,6 +253,8 @@ class PaginatedResponseActionSummaryItemsItem:
             field_dict["runtime_ref"] = runtime_ref
         if runtime_version_constraint is not UNSET:
             field_dict["runtime_version_constraint"] = runtime_version_constraint
+        if timeout_seconds is not UNSET:
+            field_dict["timeout_seconds"] = timeout_seconds
         if worker_affinity is not UNSET:
             field_dict["worker_affinity"] = worker_affinity
         if worker_selector is not UNSET:
@@ -250,7 +280,9 @@ class PaginatedResponseActionSummaryItemsItem:
         d = dict(src_dict)
         accesses_mcp = d.pop("accesses_mcp")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
+
+        enabled = d.pop("enabled")
 
         entrypoint = d.pop("entrypoint")
 
@@ -262,7 +294,9 @@ class PaginatedResponseActionSummaryItemsItem:
 
         ref = d.pop("ref")
 
-        updated = isoparse(d.pop("updated"))
+        reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
+
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_artifact_retention_limit(data: object) -> int | None | Unset:
             if data is None:
@@ -341,6 +375,10 @@ class PaginatedResponseActionSummaryItemsItem:
             d.pop("log_retention_policy", UNSET)
         )
 
+        reference_allowed_pack_refs = cast(
+            list[str], d.pop("reference_allowed_pack_refs", UNSET)
+        )
+
         _required_worker_runtimes = d.pop("required_worker_runtimes", UNSET)
         required_worker_runtimes: (
             PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes | Unset
@@ -383,6 +421,15 @@ class PaginatedResponseActionSummaryItemsItem:
             d.pop("runtime_version_constraint", UNSET)
         )
 
+        def _parse_timeout_seconds(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
+
         _worker_affinity = d.pop("worker_affinity", UNSET)
         worker_affinity: WorkerAffinity | Unset
         if isinstance(_worker_affinity, Unset):
@@ -424,11 +471,13 @@ class PaginatedResponseActionSummaryItemsItem:
         paginated_response_action_summary_items_item = cls(
             accesses_mcp=accesses_mcp,
             created=created,
+            enabled=enabled,
             entrypoint=entrypoint,
             id=id,
             label=label,
             pack_ref=pack_ref,
             ref=ref,
+            reference_visibility=reference_visibility,
             updated=updated,
             artifact_retention_limit=artifact_retention_limit,
             artifact_retention_policy=artifact_retention_policy,
@@ -436,10 +485,12 @@ class PaginatedResponseActionSummaryItemsItem:
             description=description,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
             required_worker_runtimes=required_worker_runtimes,
             runtime=runtime,
             runtime_ref=runtime_ref,
             runtime_version_constraint=runtime_version_constraint,
+            timeout_seconds=timeout_seconds,
             worker_affinity=worker_affinity,
             worker_selector=worker_selector,
             worker_tolerations=worker_tolerations,

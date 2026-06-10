@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -33,6 +34,9 @@ class UpdateTriggerRequest:
         description (None | TriggerStringPatchType0 | TriggerStringPatchType1 | Unset):
         enabled (bool | None | Unset): Whether the trigger is enabled Example: True.
         label (None | str | Unset): Human-readable label Example: Webhook Trigger (Updated).
+        reference_allowed_pack_refs (list[str] | None | Unset): Replace the restricted visibility allow-list. Example:
+            ['incident_response', 'deployments'].
+        reference_visibility (ActionReferenceVisibility | None | Unset):
     """
 
     out_schema: None | UpdateTriggerRequestOutSchemaType0
@@ -42,6 +46,8 @@ class UpdateTriggerRequest:
     )
     enabled: bool | None | Unset = UNSET
     label: None | str | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | None | Unset = UNSET
+    reference_visibility: ActionReferenceVisibility | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -88,6 +94,23 @@ class UpdateTriggerRequest:
         else:
             label = self.label
 
+        reference_allowed_pack_refs: list[str] | None | Unset
+        if isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = UNSET
+        elif isinstance(self.reference_allowed_pack_refs, list):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        else:
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        reference_visibility: None | str | Unset
+        if isinstance(self.reference_visibility, Unset):
+            reference_visibility = UNSET
+        elif isinstance(self.reference_visibility, ActionReferenceVisibility):
+            reference_visibility = self.reference_visibility.value
+        else:
+            reference_visibility = self.reference_visibility
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -102,6 +125,10 @@ class UpdateTriggerRequest:
             field_dict["enabled"] = enabled
         if label is not UNSET:
             field_dict["label"] = label
+        if reference_allowed_pack_refs is not UNSET:
+            field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
+        if reference_visibility is not UNSET:
+            field_dict["reference_visibility"] = reference_visibility
 
         return field_dict
 
@@ -205,12 +232,56 @@ class UpdateTriggerRequest:
 
         label = _parse_label(d.pop("label", UNSET))
 
+        def _parse_reference_allowed_pack_refs(
+            data: object,
+        ) -> list[str] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                reference_allowed_pack_refs_type_0 = cast(list[str], data)
+
+                return reference_allowed_pack_refs_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[str] | None | Unset, data)
+
+        reference_allowed_pack_refs = _parse_reference_allowed_pack_refs(
+            d.pop("reference_allowed_pack_refs", UNSET)
+        )
+
+        def _parse_reference_visibility(
+            data: object,
+        ) -> ActionReferenceVisibility | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                reference_visibility_type_1 = ActionReferenceVisibility(data)
+
+                return reference_visibility_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ActionReferenceVisibility | None | Unset, data)
+
+        reference_visibility = _parse_reference_visibility(
+            d.pop("reference_visibility", UNSET)
+        )
+
         update_trigger_request = cls(
             out_schema=out_schema,
             param_schema=param_schema,
             description=description,
             enabled=enabled,
             label=label,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
+            reference_visibility=reference_visibility,
         )
 
         update_trigger_request.additional_properties = d

@@ -7,7 +7,6 @@ from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -145,7 +144,7 @@ class PaginatedResponseAuditEventSummaryItemsItem:
         d = dict(src_dict)
         category = d.pop("category")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         event_type = d.pop("event_type")
 

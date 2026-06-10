@@ -14,6 +14,7 @@ def _get_kwargs(
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -23,6 +24,13 @@ def _get_kwargs(
     params["page_size"] = page_size
 
     params["executable_with_current_access"] = executable_with_current_access
+
+    json_referencing_pack_ref: None | str | Unset
+    if isinstance(referencing_pack_ref, Unset):
+        json_referencing_pack_ref = UNSET
+    else:
+        json_referencing_pack_ref = referencing_pack_ref
+    params["referencing_pack_ref"] = json_referencing_pack_ref
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -66,6 +74,7 @@ def sync_detailed(
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[PaginatedResponseActionSummary]:
     """List all actions with pagination
 
@@ -73,6 +82,7 @@ def sync_detailed(
         page (int | Unset):
         page_size (int | Unset):
         executable_with_current_access (bool | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -86,6 +96,7 @@ def sync_detailed(
         page=page,
         page_size=page_size,
         executable_with_current_access=executable_with_current_access,
+        referencing_pack_ref=referencing_pack_ref,
     )
 
     response = client.get_httpx_client().request(
@@ -101,6 +112,7 @@ def sync(
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> PaginatedResponseActionSummary | None:
     """List all actions with pagination
 
@@ -108,6 +120,7 @@ def sync(
         page (int | Unset):
         page_size (int | Unset):
         executable_with_current_access (bool | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -122,6 +135,7 @@ def sync(
         page=page,
         page_size=page_size,
         executable_with_current_access=executable_with_current_access,
+        referencing_pack_ref=referencing_pack_ref,
     ).parsed
 
 
@@ -131,6 +145,7 @@ async def asyncio_detailed(
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[PaginatedResponseActionSummary]:
     """List all actions with pagination
 
@@ -138,6 +153,7 @@ async def asyncio_detailed(
         page (int | Unset):
         page_size (int | Unset):
         executable_with_current_access (bool | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -151,6 +167,7 @@ async def asyncio_detailed(
         page=page,
         page_size=page_size,
         executable_with_current_access=executable_with_current_access,
+        referencing_pack_ref=referencing_pack_ref,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -164,6 +181,7 @@ async def asyncio(
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> PaginatedResponseActionSummary | None:
     """List all actions with pagination
 
@@ -171,6 +189,7 @@ async def asyncio(
         page (int | Unset):
         page_size (int | Unset):
         executable_with_current_access (bool | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -186,5 +205,6 @@ async def asyncio(
             page=page,
             page_size=page_size,
             executable_with_current_access=executable_with_current_access,
+            referencing_pack_ref=referencing_pack_ref,
         )
     ).parsed

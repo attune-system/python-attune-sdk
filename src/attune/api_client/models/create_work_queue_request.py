@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.work_queue_batch_mode import WorkQueueBatchMode
 from ..models.work_queue_update_strategy import WorkQueueUpdateStrategy
 from ..types import UNSET, Unset
@@ -44,6 +45,9 @@ class CreateWorkQueueRequest:
             queue. Omit
             to inherit the dispatch action default. Provide an empty array to force no
             API token. Example: ['core.agent_reader'].
+        reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to target this queue when visibility is
+            restricted. Example: ['incident_response', 'deployments'].
+        reference_visibility (ActionReferenceVisibility | None | Unset):  Default: ActionReferenceVisibility.PUBLIC.
         update_strategy (WorkQueueUpdateStrategy | Unset):
     """
 
@@ -61,6 +65,10 @@ class CreateWorkQueueRequest:
     item_schema: CreateWorkQueueRequestItemSchema | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | Unset = UNSET
+    reference_visibility: ActionReferenceVisibility | None | Unset = (
+        ActionReferenceVisibility.PUBLIC
+    )
     update_strategy: WorkQueueUpdateStrategy | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -116,6 +124,18 @@ class CreateWorkQueueRequest:
         else:
             permission_set_refs = self.permission_set_refs
 
+        reference_allowed_pack_refs: list[str] | Unset = UNSET
+        if not isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        reference_visibility: None | str | Unset
+        if isinstance(self.reference_visibility, Unset):
+            reference_visibility = UNSET
+        elif isinstance(self.reference_visibility, ActionReferenceVisibility):
+            reference_visibility = self.reference_visibility.value
+        else:
+            reference_visibility = self.reference_visibility
+
         update_strategy: str | Unset = UNSET
         if not isinstance(self.update_strategy, Unset):
             update_strategy = self.update_strategy.value
@@ -151,6 +171,10 @@ class CreateWorkQueueRequest:
             field_dict["pack_ref"] = pack_ref
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if reference_allowed_pack_refs is not UNSET:
+            field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
+        if reference_visibility is not UNSET:
+            field_dict["reference_visibility"] = reference_visibility
         if update_strategy is not UNSET:
             field_dict["update_strategy"] = update_strategy
 
@@ -248,6 +272,31 @@ class CreateWorkQueueRequest:
             d.pop("permission_set_refs", UNSET)
         )
 
+        reference_allowed_pack_refs = cast(
+            list[str], d.pop("reference_allowed_pack_refs", UNSET)
+        )
+
+        def _parse_reference_visibility(
+            data: object,
+        ) -> ActionReferenceVisibility | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                reference_visibility_type_1 = ActionReferenceVisibility(data)
+
+                return reference_visibility_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ActionReferenceVisibility | None | Unset, data)
+
+        reference_visibility = _parse_reference_visibility(
+            d.pop("reference_visibility", UNSET)
+        )
+
         _update_strategy = d.pop("update_strategy", UNSET)
         update_strategy: WorkQueueUpdateStrategy | Unset
         if isinstance(_update_strategy, Unset):
@@ -270,6 +319,8 @@ class CreateWorkQueueRequest:
             item_schema=item_schema,
             pack_ref=pack_ref,
             permission_set_refs=permission_set_refs,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
+            reference_visibility=reference_visibility,
             update_strategy=update_strategy,
         )
 

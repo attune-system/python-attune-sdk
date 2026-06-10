@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
@@ -209,7 +208,7 @@ class ApiResponseSensorResponseData:
         from ..models.worker_toleration import WorkerToleration
 
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
 
@@ -244,7 +243,7 @@ class ApiResponseSensorResponseData:
 
         runtime_ref = d.pop("runtime_ref")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         worker_affinity = WorkerAffinity.from_dict(d.pop("worker_affinity"))
 

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.worker_health_state import WorkerHealthState
 from ..models.worker_role import WorkerRole
@@ -192,7 +191,7 @@ class PaginatedResponseWorkerSummaryItemsItem:
         d = dict(src_dict)
         cordoned = d.pop("cordoned")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         health_state = WorkerHealthState(d.pop("health_state"))
 
@@ -213,7 +212,7 @@ class PaginatedResponseWorkerSummaryItemsItem:
 
             supported_runtimes.append(supported_runtimes_item)
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         worker_role = WorkerRole(d.pop("worker_role"))
 
@@ -236,7 +235,7 @@ class PaginatedResponseWorkerSummaryItemsItem:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                cordoned_at_type_0 = isoparse(data)
+                cordoned_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return cordoned_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -282,7 +281,7 @@ class PaginatedResponseWorkerSummaryItemsItem:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                last_heartbeat_type_0 = isoparse(data)
+                last_heartbeat_type_0 = datetime.datetime.fromisoformat(data)
 
                 return last_heartbeat_type_0
             except (TypeError, ValueError, AttributeError, KeyError):

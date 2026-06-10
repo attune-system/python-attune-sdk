@@ -13,6 +13,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -20,6 +21,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_referencing_pack_ref: None | str | Unset
+    if isinstance(referencing_pack_ref, Unset):
+        json_referencing_pack_ref = UNSET
+    else:
+        json_referencing_pack_ref = referencing_pack_ref
+    params["referencing_pack_ref"] = json_referencing_pack_ref
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -66,12 +74,14 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseTriggerSummary]:
     """List enabled triggers
 
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -84,6 +94,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        referencing_pack_ref=referencing_pack_ref,
     )
 
     response = client.get_httpx_client().request(
@@ -98,12 +109,14 @@ def sync(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseTriggerSummary | None:
     """List enabled triggers
 
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -117,6 +130,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        referencing_pack_ref=referencing_pack_ref,
     ).parsed
 
 
@@ -125,12 +139,14 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseTriggerSummary]:
     """List enabled triggers
 
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -143,6 +159,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        referencing_pack_ref=referencing_pack_ref,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -155,12 +172,14 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseTriggerSummary | None:
     """List enabled triggers
 
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        referencing_pack_ref (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -175,5 +194,6 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            referencing_pack_ref=referencing_pack_ref,
         )
     ).parsed

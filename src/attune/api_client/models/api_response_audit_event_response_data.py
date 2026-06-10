@@ -7,7 +7,6 @@ from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -264,7 +263,7 @@ class ApiResponseAuditEventResponseData:
 
         correlation_chain = _parse_correlation_chain(d.pop("correlation_chain"))
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         def _parse_details(
             data: object,

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.execution_status import ExecutionStatus
 from ..types import UNSET, Unset
@@ -37,6 +36,8 @@ class PaginatedResponseExecutionSummaryItemsItem:
         started_at (datetime.datetime | None | Unset): When the execution actually started running (worker picked it
             up).
             Null if the execution hasn't started running yet. Example: 2024-01-13T10:31:00Z.
+        timeout_seconds (int | None | Unset): Resolved execution timeout in seconds, snapshotted at creation time.
+            Example: 600.
         trigger_ref (None | str | Unset): Trigger reference (if triggered by a trigger) Example: core.timer.
         workflow_task (None | PaginatedResponseExecutionSummaryItemsItemWorkflowTaskType0 | Unset): Workflow task
             metadata (only populated for workflow task executions)
@@ -52,6 +53,7 @@ class PaginatedResponseExecutionSummaryItemsItem:
     parent: int | None | Unset = UNSET
     rule_ref: None | str | Unset = UNSET
     started_at: datetime.datetime | None | Unset = UNSET
+    timeout_seconds: int | None | Unset = UNSET
     trigger_ref: None | str | Unset = UNSET
     workflow_task: (
         None | PaginatedResponseExecutionSummaryItemsItemWorkflowTaskType0 | Unset
@@ -105,6 +107,12 @@ class PaginatedResponseExecutionSummaryItemsItem:
         else:
             started_at = self.started_at
 
+        timeout_seconds: int | None | Unset
+        if isinstance(self.timeout_seconds, Unset):
+            timeout_seconds = UNSET
+        else:
+            timeout_seconds = self.timeout_seconds
+
         trigger_ref: None | str | Unset
         if isinstance(self.trigger_ref, Unset):
             trigger_ref = UNSET
@@ -143,6 +151,8 @@ class PaginatedResponseExecutionSummaryItemsItem:
             field_dict["rule_ref"] = rule_ref
         if started_at is not UNSET:
             field_dict["started_at"] = started_at
+        if timeout_seconds is not UNSET:
+            field_dict["timeout_seconds"] = timeout_seconds
         if trigger_ref is not UNSET:
             field_dict["trigger_ref"] = trigger_ref
         if workflow_task is not UNSET:
@@ -159,13 +169,13 @@ class PaginatedResponseExecutionSummaryItemsItem:
         d = dict(src_dict)
         action_ref = d.pop("action_ref")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         id = d.pop("id")
 
         status = ExecutionStatus(d.pop("status"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_enforcement(data: object) -> int | None | Unset:
             if data is None:
@@ -213,7 +223,7 @@ class PaginatedResponseExecutionSummaryItemsItem:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                started_at_type_0 = isoparse(data)
+                started_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return started_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -221,6 +231,15 @@ class PaginatedResponseExecutionSummaryItemsItem:
             return cast(datetime.datetime | None | Unset, data)
 
         started_at = _parse_started_at(d.pop("started_at", UNSET))
+
+        def _parse_timeout_seconds(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
 
         def _parse_trigger_ref(data: object) -> None | str | Unset:
             if data is None:
@@ -268,6 +287,7 @@ class PaginatedResponseExecutionSummaryItemsItem:
             parent=parent,
             rule_ref=rule_ref,
             started_at=started_at,
+            timeout_seconds=timeout_seconds,
             trigger_ref=trigger_ref,
             workflow_task=workflow_task,
         )

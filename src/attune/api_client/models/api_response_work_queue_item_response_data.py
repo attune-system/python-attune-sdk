@@ -7,7 +7,6 @@ from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.work_queue_item_status import WorkQueueItemStatus
 from ..types import UNSET, Unset
@@ -246,7 +245,7 @@ class ApiResponseWorkQueueItemResponseData:
 
         attempt_count = d.pop("attempt_count")
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enqueue_source = d.pop("enqueue_source")
 
@@ -287,7 +286,7 @@ class ApiResponseWorkQueueItemResponseData:
 
         status = WorkQueueItemStatus(d.pop("status"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_item_key(data: object) -> None | str | Unset:
             if data is None:
@@ -306,7 +305,7 @@ class ApiResponseWorkQueueItemResponseData:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                lease_expires_at_type_0 = isoparse(data)
+                lease_expires_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return lease_expires_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import UNSET, Unset
 
@@ -177,7 +176,7 @@ class RuleResponse:
 
         conditions = RuleResponseConditions.from_dict(d.pop("conditions"))
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
 
@@ -197,7 +196,7 @@ class RuleResponse:
 
         trigger_ref = d.pop("trigger_ref")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_action(data: object) -> int | None | Unset:
             if data is None:

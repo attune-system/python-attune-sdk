@@ -15,18 +15,17 @@ T = TypeVar("T", bound="RetentionTargetConfig")
 class RetentionTargetConfig:
     """Runtime database row retention settings.
 
-    Attributes:
-        enabled (bool | Unset): Whether this retention target is processed.
-        max_age_seconds (int | None | Unset): Maximum row age in seconds. `None` means keep forever.
+    A target with `max_age_seconds: None` keeps rows forever (purging disabled).
+    A target with `max_age_seconds: Some(n)` purges rows older than `n` seconds.
+
+        Attributes:
+            max_age_seconds (int | None | Unset): Maximum row age in seconds. `None` means keep forever (no purging).
     """
 
-    enabled: bool | Unset = UNSET
     max_age_seconds: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        enabled = self.enabled
-
         max_age_seconds: int | None | Unset
         if isinstance(self.max_age_seconds, Unset):
             max_age_seconds = UNSET
@@ -36,8 +35,6 @@ class RetentionTargetConfig:
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
-        if enabled is not UNSET:
-            field_dict["enabled"] = enabled
         if max_age_seconds is not UNSET:
             field_dict["max_age_seconds"] = max_age_seconds
 
@@ -46,7 +43,6 @@ class RetentionTargetConfig:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        enabled = d.pop("enabled", UNSET)
 
         def _parse_max_age_seconds(data: object) -> int | None | Unset:
             if data is None:
@@ -58,7 +54,6 @@ class RetentionTargetConfig:
         max_age_seconds = _parse_max_age_seconds(d.pop("max_age_seconds", UNSET))
 
         retention_target_config = cls(
-            enabled=enabled,
             max_age_seconds=max_age_seconds,
         )
 

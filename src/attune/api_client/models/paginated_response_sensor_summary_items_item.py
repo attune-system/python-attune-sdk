@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
@@ -132,7 +131,7 @@ class PaginatedResponseSensorSummaryItemsItem:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
 
@@ -142,7 +141,7 @@ class PaginatedResponseSensorSummaryItemsItem:
 
         ref = d.pop("ref")
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_artifact_retention_limit(data: object) -> int | None | Unset:
             if data is None:

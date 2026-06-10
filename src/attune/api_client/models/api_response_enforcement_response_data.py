@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.enforcement_condition import EnforcementCondition
 from ..models.enforcement_status import EnforcementStatus
@@ -170,7 +169,7 @@ class ApiResponseEnforcementResponseData:
 
         config = _parse_config(d.pop("config"))
 
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         id = d.pop("id")
 
@@ -199,7 +198,7 @@ class ApiResponseEnforcementResponseData:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                resolved_at_type_0 = isoparse(data)
+                resolved_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return resolved_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):

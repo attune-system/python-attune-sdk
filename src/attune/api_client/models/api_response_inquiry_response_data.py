@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.inquiry_status import InquiryStatus
 from ..types import UNSET, Unset
@@ -144,7 +143,7 @@ class ApiResponseInquiryResponseData:
         )
 
         d = dict(src_dict)
-        created = isoparse(d.pop("created"))
+        created = datetime.datetime.fromisoformat(d.pop("created"))
 
         execution = d.pop("execution")
 
@@ -192,7 +191,7 @@ class ApiResponseInquiryResponseData:
 
         status = InquiryStatus(d.pop("status"))
 
-        updated = isoparse(d.pop("updated"))
+        updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
         def _parse_assigned_to(data: object) -> int | None | Unset:
             if data is None:
@@ -211,7 +210,7 @@ class ApiResponseInquiryResponseData:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                responded_at_type_0 = isoparse(data)
+                responded_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return responded_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
@@ -228,7 +227,7 @@ class ApiResponseInquiryResponseData:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                timeout_at_type_0 = isoparse(data)
+                timeout_at_type_0 = datetime.datetime.fromisoformat(data)
 
                 return timeout_at_type_0
             except (TypeError, ValueError, AttributeError, KeyError):

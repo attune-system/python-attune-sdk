@@ -6,6 +6,7 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="PaginatedResponseActionSearchHitItemsItem")
@@ -24,6 +25,7 @@ class PaginatedResponseActionSearchHitItemsItem:
             pack_ref (str): Pack reference Example: slack.
             ref (str): Action reference (globally unique identifier, e.g., "slack.post_message") Example:
                 slack.post_message.
+            reference_visibility (ActionReferenceVisibility):
             description (None | str | Unset): Action description Example: Posts a message to a Slack channel.
             runtime_ref (None | str | Unset): Runtime reference (e.g., "core.python"). None for workflow actions. Example:
                 core.python.
@@ -34,6 +36,7 @@ class PaginatedResponseActionSearchHitItemsItem:
     label: str
     pack_ref: str
     ref: str
+    reference_visibility: ActionReferenceVisibility
     description: None | str | Unset = UNSET
     runtime_ref: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -48,6 +51,8 @@ class PaginatedResponseActionSearchHitItemsItem:
         pack_ref = self.pack_ref
 
         ref = self.ref
+
+        reference_visibility = self.reference_visibility.value
 
         description: None | str | Unset
         if isinstance(self.description, Unset):
@@ -70,6 +75,7 @@ class PaginatedResponseActionSearchHitItemsItem:
                 "label": label,
                 "pack_ref": pack_ref,
                 "ref": ref,
+                "reference_visibility": reference_visibility,
             }
         )
         if description is not UNSET:
@@ -91,6 +97,8 @@ class PaginatedResponseActionSearchHitItemsItem:
         pack_ref = d.pop("pack_ref")
 
         ref = d.pop("ref")
+
+        reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -116,6 +124,7 @@ class PaginatedResponseActionSearchHitItemsItem:
             label=label,
             pack_ref=pack_ref,
             ref=ref,
+            reference_visibility=reference_visibility,
             description=description,
             runtime_ref=runtime_ref,
         )

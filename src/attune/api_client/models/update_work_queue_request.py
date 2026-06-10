@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.work_queue_batch_mode import WorkQueueBatchMode
 from ..models.work_queue_update_strategy import WorkQueueUpdateStrategy
 from ..types import UNSET, Unset
@@ -47,6 +48,9 @@ class UpdateWorkQueueRequest:
             queue. Omit
             to keep the current value. Provide null to inherit the dispatch action
             default, or an empty array to force no API token. Example: ['core.agent_reader'].
+        reference_allowed_pack_refs (list[str] | None | Unset): Replace the restricted visibility allow-list. Example:
+            ['incident_response', 'deployments'].
+        reference_visibility (ActionReferenceVisibility | None | Unset):
         update_strategy (None | Unset | WorkQueueUpdateStrategy):
     """
 
@@ -63,6 +67,8 @@ class UpdateWorkQueueRequest:
     label: None | str | Unset = UNSET
     pack_ref: None | NullableStringPatchType1 | SetString | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | None | Unset = UNSET
+    reference_visibility: ActionReferenceVisibility | None | Unset = UNSET
     update_strategy: None | Unset | WorkQueueUpdateStrategy = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -170,6 +176,23 @@ class UpdateWorkQueueRequest:
         else:
             permission_set_refs = self.permission_set_refs
 
+        reference_allowed_pack_refs: list[str] | None | Unset
+        if isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = UNSET
+        elif isinstance(self.reference_allowed_pack_refs, list):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        else:
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        reference_visibility: None | str | Unset
+        if isinstance(self.reference_visibility, Unset):
+            reference_visibility = UNSET
+        elif isinstance(self.reference_visibility, ActionReferenceVisibility):
+            reference_visibility = self.reference_visibility.value
+        else:
+            reference_visibility = self.reference_visibility
+
         update_strategy: None | str | Unset
         if isinstance(self.update_strategy, Unset):
             update_strategy = UNSET
@@ -207,6 +230,10 @@ class UpdateWorkQueueRequest:
             field_dict["pack_ref"] = pack_ref
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if reference_allowed_pack_refs is not UNSET:
+            field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
+        if reference_visibility is not UNSET:
+            field_dict["reference_visibility"] = reference_visibility
         if update_strategy is not UNSET:
             field_dict["update_strategy"] = update_strategy
 
@@ -439,6 +466,48 @@ class UpdateWorkQueueRequest:
             d.pop("permission_set_refs", UNSET)
         )
 
+        def _parse_reference_allowed_pack_refs(
+            data: object,
+        ) -> list[str] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                reference_allowed_pack_refs_type_0 = cast(list[str], data)
+
+                return reference_allowed_pack_refs_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[str] | None | Unset, data)
+
+        reference_allowed_pack_refs = _parse_reference_allowed_pack_refs(
+            d.pop("reference_allowed_pack_refs", UNSET)
+        )
+
+        def _parse_reference_visibility(
+            data: object,
+        ) -> ActionReferenceVisibility | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                reference_visibility_type_1 = ActionReferenceVisibility(data)
+
+                return reference_visibility_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ActionReferenceVisibility | None | Unset, data)
+
+        reference_visibility = _parse_reference_visibility(
+            d.pop("reference_visibility", UNSET)
+        )
+
         def _parse_update_strategy(
             data: object,
         ) -> None | Unset | WorkQueueUpdateStrategy:
@@ -472,6 +541,8 @@ class UpdateWorkQueueRequest:
             label=label,
             pack_ref=pack_ref,
             permission_set_refs=permission_set_refs,
+            reference_allowed_pack_refs=reference_allowed_pack_refs,
+            reference_visibility=reference_visibility,
             update_strategy=update_strategy,
         )
 
