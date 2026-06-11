@@ -28,6 +28,12 @@ from .api_response_action_response_data_required_worker_runtimes import (
 from .api_response_action_response_data_worker_selector import (
     ApiResponseActionResponseDataWorkerSelector,
 )
+from .api_response_apply_work_queue_items_response import (
+    ApiResponseApplyWorkQueueItemsResponse,
+)
+from .api_response_apply_work_queue_items_response_data import (
+    ApiResponseApplyWorkQueueItemsResponseData,
+)
 from .api_response_audit_event_response import ApiResponseAuditEventResponse
 from .api_response_audit_event_response_data import ApiResponseAuditEventResponseData
 from .api_response_audit_event_response_data_correlation_chain_type_0 import (
@@ -107,6 +113,12 @@ from .api_response_permission_assignment_response import (
 )
 from .api_response_permission_assignment_response_data import (
     ApiResponsePermissionAssignmentResponseData,
+)
+from .api_response_preview_work_queue_items_response import (
+    ApiResponsePreviewWorkQueueItemsResponse,
+)
+from .api_response_preview_work_queue_items_response_data import (
+    ApiResponsePreviewWorkQueueItemsResponseData,
 )
 from .api_response_queue_stats_response import ApiResponseQueueStatsResponse
 from .api_response_queue_stats_response_data import ApiResponseQueueStatsResponseData
@@ -205,6 +217,11 @@ from .api_response_workflow_response_data_out_schema_type_0 import (
 from .api_response_workflow_response_data_param_schema_type_0 import (
     ApiResponseWorkflowResponseDataParamSchemaType0,
 )
+from .apply_work_queue_items_request import ApplyWorkQueueItemsRequest
+from .apply_work_queue_items_request_payload_patch_type_0 import (
+    ApplyWorkQueueItemsRequestPayloadPatchType0,
+)
+from .apply_work_queue_items_response import ApplyWorkQueueItemsResponse
 from .audit_category import AuditCategory
 from .audit_event_response import AuditEventResponse
 from .audit_event_response_correlation_chain_type_0 import (
@@ -651,6 +668,8 @@ from .permission_assignment_response import PermissionAssignmentResponse
 from .permission_set_role_assignment_response import PermissionSetRoleAssignmentResponse
 from .permission_set_summary import PermissionSetSummary
 from .preferred_worker_selector_term import PreferredWorkerSelectorTerm
+from .preview_work_queue_items_request import PreviewWorkQueueItemsRequest
+from .preview_work_queue_items_response import PreviewWorkQueueItemsResponse
 from .provider_profile_response import ProviderProfileResponse
 from .queue_stats_response import QueueStatsResponse
 from .refresh_token_request import RefreshTokenRequest
@@ -852,6 +871,9 @@ from .validate_pack_workflows_response_200_data_errors import (
 from .webhook_receiver_request import WebhookReceiverRequest
 from .webhook_receiver_response import WebhookReceiverResponse
 from .work_queue_batch_mode import WorkQueueBatchMode
+from .work_queue_item_bulk_operation import WorkQueueItemBulkOperation
+from .work_queue_item_json_path_selector import WorkQueueItemJsonPathSelector
+from .work_queue_item_json_path_selector_vars import WorkQueueItemJsonPathSelectorVars
 from .work_queue_item_response import WorkQueueItemResponse
 from .work_queue_item_response_ack_summary_type_0 import (
     WorkQueueItemResponseAckSummaryType0,
@@ -906,6 +928,8 @@ __all__ = (
     "ApiResponseActionResponseDataParamSchemaType0",
     "ApiResponseActionResponseDataRequiredWorkerRuntimes",
     "ApiResponseActionResponseDataWorkerSelector",
+    "ApiResponseApplyWorkQueueItemsResponse",
+    "ApiResponseApplyWorkQueueItemsResponseData",
     "ApiResponseAuditEventResponse",
     "ApiResponseAuditEventResponseData",
     "ApiResponseAuditEventResponseDataCorrelationChainType0",
@@ -948,6 +972,8 @@ __all__ = (
     "ApiResponsePackResponseDataMeta",
     "ApiResponsePermissionAssignmentResponse",
     "ApiResponsePermissionAssignmentResponseData",
+    "ApiResponsePreviewWorkQueueItemsResponse",
+    "ApiResponsePreviewWorkQueueItemsResponseData",
     "ApiResponseQueueStatsResponse",
     "ApiResponseQueueStatsResponseData",
     "ApiResponseRetentionConfig",
@@ -995,6 +1021,9 @@ __all__ = (
     "ApiResponseWorkQueueResponseDataActionParams",
     "ApiResponseWorkQueueResponseDataConfig",
     "ApiResponseWorkQueueResponseDataItemSchema",
+    "ApplyWorkQueueItemsRequest",
+    "ApplyWorkQueueItemsRequestPayloadPatchType0",
+    "ApplyWorkQueueItemsResponse",
     "AuditCategory",
     "AuditEventResponse",
     "AuditEventResponseCorrelationChainType0",
@@ -1271,6 +1300,8 @@ __all__ = (
     "PermissionSetRoleAssignmentResponse",
     "PermissionSetSummary",
     "PreferredWorkerSelectorTerm",
+    "PreviewWorkQueueItemsRequest",
+    "PreviewWorkQueueItemsResponse",
     "ProviderProfileResponse",
     "QueueStatsResponse",
     "RefreshTokenRequest",
@@ -1430,6 +1461,9 @@ __all__ = (
     "WorkflowSummary",
     "WorkflowSyncResult",
     "WorkQueueBatchMode",
+    "WorkQueueItemBulkOperation",
+    "WorkQueueItemJsonPathSelector",
+    "WorkQueueItemJsonPathSelectorVars",
     "WorkQueueItemResponse",
     "WorkQueueItemResponseAckSummaryType0",
     "WorkQueueItemResponseLastErrorType0",
