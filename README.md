@@ -6,7 +6,7 @@ A lightweight Python package providing boilerplate for writing [Attune](https://
 
 ```bash
 pip install attune-sdk              # includes API client, httpx, attrs
-pip install attune-sdk[sensor]      # adds pika for MQ-based sensors
+pip install attune-sdk[sensor]      # adds websocket-client for managed sensors
 pip install attune-sdk[dev]         # adds pytest + openapi-python-client
 ```
 
@@ -87,8 +87,7 @@ models under `attune.api_client.models`.
 ## Writing Sensors
 
 Sensors are long-running processes that emit events. The SDK provides rule
-lifecycle management, signal handling (SIGINT/SIGTERM), and MQ integration
-out of the box.
+lifecycle management, signal handling (SIGINT/SIGTERM), and notifier WebSocket lifecycle delivery out of the box.
 
 The sensor context is a module-level singleton, accessible anywhere:
 
@@ -174,7 +173,10 @@ attune.run_sensor(FileTailSensor)
 ### Rule Lifecycle Hooks
 
 All sensor classes support rule lifecycle hooks that fire when the platform
-creates, enables, disables, deletes, or updates a rule:
+creates, enables, disables, deletes, or updates a rule. Managed sensors
+bootstrap from `ATTUNE_SENSOR_TRIGGERS` and then receive live lifecycle deltas
+from the notifier WebSocket using `Authorization: Bearer <ATTUNE_API_TOKEN>`
+and `trigger_ref:<ref>` subscriptions:
 
 ```python
 class StatefulSensor(attune.PollingSensor):
@@ -223,8 +225,8 @@ behavior (call `super()` to keep the auto-management).
 | `ATTUNE_SENSOR_ID` | Sensor database ID |
 | `ATTUNE_API_URL` | API base URL |
 | `ATTUNE_API_TOKEN` | Sensor-scoped API token |
-| `ATTUNE_MQ_URL` | RabbitMQ connection URL |
-| `ATTUNE_MQ_EXCHANGE` | RabbitMQ exchange name |
+| `ATTUNE_NOTIFIER_WS_URL` | Notifier WebSocket URL (for example `ws://localhost:8081/ws`) |
+| `ATTUNE_SENSOR_TRIGGERS` | Bootstrap JSON array of managed rule bindings |
 | `ATTUNE_LOG_LEVEL` | Log verbosity |
 
 ## Development

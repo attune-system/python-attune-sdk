@@ -73,7 +73,7 @@ class TestSensorBase:
 
         # Create
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 10,
             "rule_ref": "pack.rule",
             "trigger_params": {"interval": 5},
@@ -82,7 +82,7 @@ class TestSensorBase:
 
         # Update params
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 10,
             "rule_ref": "pack.rule",
             "trigger_params": {"interval": 10},
@@ -91,17 +91,61 @@ class TestSensorBase:
 
         # Disable
         sensor._handle_rule_message({
-            "event_type": "RuleDisabled",
+            "event_type": "rule.disabled",
             "rule_id": 10,
         })
         assert ("disabled", 10) in events
 
         # Delete
         sensor._handle_rule_message({
-            "event_type": "RuleDeleted",
+            "event_type": "rule.deleted",
             "rule_id": 10,
         })
         assert ("deleted", 10) in events
+
+
+
+
+    def test_handle_lifecycle_envelope_dispatches_notification_payload(self):
+        events = []
+
+        class HookSensor(Sensor):
+            def on_rule_created(self, rule):
+                events.append(("created", rule.rule_id, rule.trigger_ref))
+
+        sensor = HookSensor()
+        sensor._handle_lifecycle_envelope({
+            "type": "notification",
+            "payload": {
+                "event_type": "rule.created",
+                "rule_id": 11,
+                "rule_ref": "pack.rule",
+                "trigger_ref": "pack.trigger",
+                "trigger_params": {"interval": 5},
+                "active": True,
+            },
+        })
+
+        assert events == [("created", 11, "pack.trigger")]
+
+    def test_managed_trigger_refs_are_deduplicated(self):
+        sensor = Sensor()
+        sensor._handle_rule_message({
+            "event_type": "rule.created",
+            "rule_id": 1,
+            "rule_ref": "pack.rule1",
+            "trigger_ref": "pack.trigger",
+            "trigger_params": {},
+        })
+        sensor._handle_rule_message({
+            "event_type": "rule.created",
+            "rule_id": 2,
+            "rule_ref": "pack.rule2",
+            "trigger_ref": "pack.trigger",
+            "trigger_params": {},
+        })
+
+        assert sensor._managed_trigger_refs() == ["pack.trigger"]
 
 
 class TestPollingSensor:
@@ -118,7 +162,7 @@ class TestPollingSensor:
 
         sensor = TestSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {"interval": "0.05"},
@@ -140,13 +184,13 @@ class TestPollingSensor:
 
         sensor = TestSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {},
         })
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 2,
             "rule_ref": "pack.rule2",
             "trigger_params": {},
@@ -173,14 +217,14 @@ class TestPollingSensor:
 
         sensor = TestSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {},
         })
         # Let it poll a few times
         time.sleep(0.15)
-        sensor._handle_rule_message({"event_type": "RuleDisabled", "rule_id": 1})
+        sensor._handle_rule_message({"event_type": "rule.disabled", "rule_id": 1})
         count_at_disable = poll_count
         time.sleep(0.15)
         # Should not have polled more after disable
@@ -201,7 +245,7 @@ class TestAsyncPollingSensor:
 
         sensor = TestSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {},
@@ -227,7 +271,7 @@ class TestAsyncPollingSensor:
 
         sensor = TestSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {},
@@ -552,7 +596,7 @@ class TestHttpClientLifecycle:
 
         sensor = QuickSensor()
         sensor._handle_rule_message({
-            "event_type": "RuleCreated",
+            "event_type": "rule.created",
             "rule_id": 1,
             "rule_ref": "pack.rule1",
             "trigger_params": {},

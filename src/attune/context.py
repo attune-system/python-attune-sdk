@@ -88,8 +88,7 @@ class SensorContext:
         sensor_id: The sensor database ID.
         api_url: The Attune API base URL.
         api_token: The sensor-scoped API token.
-        mq_url: The RabbitMQ connection URL.
-        mq_exchange: The RabbitMQ exchange name.
+        notifier_ws_url: The notifier WebSocket URL for managed sensor lifecycle updates.
         log_level: The configured log level.
         pack_ref: The pack reference derived from sensor_ref.
     """
@@ -98,8 +97,7 @@ class SensorContext:
     sensor_id: str
     api_url: str
     api_token: str
-    mq_url: str
-    mq_exchange: str
+    notifier_ws_url: str
     log_level: str
     pack_ref: str
 
@@ -160,8 +158,7 @@ def _build_sensor_context() -> SensorContext:
         sensor_id=os.environ.get("ATTUNE_SENSOR_ID", "0"),
         api_url=os.environ.get("ATTUNE_API_URL", "http://localhost:8080"),
         api_token=os.environ.get("ATTUNE_API_TOKEN", ""),
-        mq_url=os.environ.get("ATTUNE_MQ_URL", "amqp://localhost:5672"),
-        mq_exchange=os.environ.get("ATTUNE_MQ_EXCHANGE", "attune"),
+        notifier_ws_url=os.environ.get("ATTUNE_NOTIFIER_WS_URL", "ws://localhost:8081/ws"),
         log_level=os.environ.get("ATTUNE_LOG_LEVEL", "info").upper(),
         pack_ref=pack_ref,
     )

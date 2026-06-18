@@ -50,13 +50,13 @@ class TestSensorContext:
     def test_reads_env_vars(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_SENSOR_REF", "mypack.my_sensor")
         monkeypatch.setenv("ATTUNE_SENSOR_ID", "7")
-        monkeypatch.setenv("ATTUNE_MQ_URL", "amqp://rabbit:5672")
+        monkeypatch.setenv("ATTUNE_NOTIFIER_WS_URL", "ws://notifier:8081/ws")
 
         ctx = _build_sensor_context()
         assert ctx.sensor_ref == "mypack.my_sensor"
         assert ctx.sensor_id == "7"
         assert ctx.pack_ref == "mypack"
-        assert ctx.mq_url == "amqp://rabbit:5672"
+        assert ctx.notifier_ws_url == "ws://notifier:8081/ws"
 
     def test_config_from_env(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_SENSOR_REF", "test.sensor")

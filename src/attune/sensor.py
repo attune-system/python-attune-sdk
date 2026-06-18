@@ -6,9 +6,9 @@ Architecture
 ~~~~~~~~~~~~
 
 Attune sensors are long-running processes. The platform delivers **rule
-lifecycle events** via RabbitMQ (or ``ATTUNE_SENSOR_TRIGGERS`` env on
-startup) so the sensor knows which rules are active and what parameters
-they carry.
+lifecycle events** via the authenticated notifier WebSocket (or
+``ATTUNE_SENSOR_TRIGGERS`` env on startup) so the sensor knows which rules
+are active and what parameters they carry.
 
 Class hierarchy::
 
@@ -136,6 +136,7 @@ class Sensor:
         self._rules: dict[int, RuleState] = {}
         self._rules_lock = threading.Lock()
         self._http_client: Any = None
+        self._lifecycle_ws: Any = None
         self._setup_logging()
         self.logger = logging.getLogger(
             f"attune.sensor.{self.context.sensor_ref}"
@@ -289,12 +290,20 @@ class Sensor:
         self.on_rule_enabled(rule)
 
     # ------------------------------------------------------------------
-    # Rule management (called by the MQ consumer or bootstrap)
+    # Rule management (called by the lifecycle listener or bootstrap)
     # ------------------------------------------------------------------
 
     def _handle_rule_message(self, message: dict[str, Any]) -> None:
-        """Dispatch a rule lifecycle message from RabbitMQ."""
-        event_type = message.get("event_type", "")
+        """Dispatch a normalized rule lifecycle message."""
+        event_type = str(message.get("event_type", ""))
+        event_type = {
+            "rule.created": "RuleCreated",
+            "rule.enabled": "RuleEnabled",
+            "rule.disabled": "RuleDisabled",
+            "rule.deleted": "RuleDeleted",
+            "rule.updated": "RuleUpdated",
+        }.get(event_type, event_type)
+
         rule_id = message.get("rule_id")
         if rule_id is None:
             return
@@ -302,7 +311,7 @@ class Sensor:
         rule_id = int(rule_id)
         rule_ref = message.get("rule_ref", f"rule_{rule_id}")
         trigger_ref = message.get("trigger_ref") or message.get("trigger_type", "")
-        trigger_params = message.get("trigger_params", {})
+        trigger_params = message.get("trigger_params") or {}
 
         if event_type in ("RuleCreated", "RuleEnabled"):
             rule = RuleState(
@@ -323,7 +332,7 @@ class Sensor:
             else:
                 self.on_rule_created(rule)
 
-        elif event_type in ("RuleDisabled",):
+        elif event_type == "RuleDisabled":
             with self._rules_lock:
                 rule = self._rules.get(rule_id)
                 if rule:
@@ -331,7 +340,7 @@ class Sensor:
             if rule:
                 self.on_rule_disabled(rule)
 
-        elif event_type in ("RuleDeleted",):
+        elif event_type == "RuleDeleted":
             with self._rules_lock:
                 rule = self._rules.pop(rule_id, None)
             if rule:
@@ -343,6 +352,8 @@ class Sensor:
                 if existing:
                     old_params = dict(existing.trigger_params)
                     existing.trigger_params = trigger_params
+                    existing.trigger_ref = trigger_ref or existing.trigger_ref
+                    existing.rule_ref = rule_ref
                     rule = existing
                 else:
                     rule = RuleState(
@@ -356,6 +367,8 @@ class Sensor:
                     old_params = {}
             if old_params != trigger_params:
                 self.on_rule_updated(rule, old_params)
+            elif not existing:
+                self.on_rule_created(rule)
 
     def _bootstrap_rules(self) -> None:
         """Load initial active rules from ATTUNE_SENSOR_TRIGGERS env var."""
@@ -389,97 +402,140 @@ class Sensor:
             )
 
     # ------------------------------------------------------------------
-    # MQ consumer (optional — for sensors using RabbitMQ rule lifecycle)
+    # Notifier WebSocket lifecycle stream
     # ------------------------------------------------------------------
 
-    def _start_mq_consumer(self) -> threading.Thread | None:
-        """Start a background thread consuming rule lifecycle messages from RabbitMQ.
+    def _managed_trigger_refs(self) -> list[str]:
+        """Return unique trigger refs derived from bootstrapped managed rules."""
+        with self._rules_lock:
+            trigger_refs = {rule.trigger_ref for rule in self._rules.values() if rule.trigger_ref}
+        return sorted(trigger_refs)
 
-        Returns None if MQ is not configured.
-        """
-        mq_url = self.context.mq_url
-        if not mq_url or mq_url == "amqp://localhost:5672":
-            # Only start if explicitly configured
-            env_set = os.environ.get("ATTUNE_MQ_URL")
-            if not env_set:
-                return None
+    def _create_lifecycle_websocket(self) -> Any:
+        """Create an authenticated notifier WebSocket connection."""
+        try:
+            import websocket
+        except ImportError as exc:
+            raise ImportError(
+                "websocket-client is required for managed sensor lifecycle delivery. "
+                "Install with: pip install attune-sdk[sensor]"
+            ) from exc
+
+        ws = websocket.create_connection(
+            self.context.notifier_ws_url,
+            timeout=10,
+            header=[f"Authorization: Bearer {self.context.api_token}"],
+        )
+        ws.settimeout(5)
+        return ws
+
+    def _close_lifecycle_websocket(self) -> None:
+        """Close the active lifecycle WebSocket, if any."""
+        if self._lifecycle_ws is not None:
+            try:
+                self._lifecycle_ws.close()
+            except Exception:
+                pass
+            self._lifecycle_ws = None
+
+    def _handle_lifecycle_envelope(self, message: dict[str, Any]) -> None:
+        """Handle a notifier WebSocket envelope."""
+        message_type = message.get("type")
+        if message_type == "notification":
+            payload = message.get("payload")
+            if isinstance(payload, dict):
+                self._handle_rule_message(payload)
+        elif message_type == "error":
+            self.logger.warning(
+                "Notifier subscription error",
+                extra={"message": message.get("message")},
+            )
+
+    def _subscribe_lifecycle_filters(self, ws: Any, trigger_refs: list[str]) -> None:
+        """Subscribe the WebSocket to managed trigger lifecycle filters."""
+        for trigger_ref in trigger_refs:
+            ws.send(
+                json.dumps(
+                    {
+                        "type": "subscribe",
+                        "filter": f"trigger_ref:{trigger_ref}",
+                    }
+                )
+            )
+
+    def _start_lifecycle_listener(self) -> threading.Thread | None:
+        """Start a background thread consuming rule lifecycle messages from the notifier."""
+        trigger_refs = self._managed_trigger_refs()
+        if not trigger_refs:
+            return None
 
         thread = threading.Thread(
-            target=self._mq_consume_loop,
-            name="mq-consumer",
+            target=self._lifecycle_consume_loop,
+            name="lifecycle-listener",
             daemon=True,
         )
         thread.start()
         return thread
 
-    def _mq_consume_loop(self) -> None:
-        """Reconnecting MQ consumer loop. Runs in a daemon thread."""
+    def _lifecycle_consume_loop(self) -> None:
+        """Reconnecting notifier WebSocket loop. Runs in a daemon thread."""
         try:
-            import pika
-            import pika.exceptions
+            import websocket
         except ImportError:
             self.logger.error(
-                "pika library required for MQ rule lifecycle. Install with: pip install pika"
+                "websocket-client is required for managed sensor lifecycle delivery. "
+                "Install with: pip install attune-sdk[sensor]"
             )
             return
 
-        queue_name = f"sensor.{self.context.sensor_ref}"
-        routing_keys = [
-            "rule.created",
-            "rule.enabled",
-            "rule.disabled",
-            "rule.deleted",
-            "rule.updated",
-        ]
-
         while not self._shutdown_event.is_set():
-            connection = None
+            ws = None
+            trigger_refs = self._managed_trigger_refs()
+            if not trigger_refs:
+                return
+
             try:
-                params = pika.URLParameters(self.context.mq_url)
-                params.heartbeat = 30
-                params.blocked_connection_timeout = 30
-                connection = pika.BlockingConnection(params)
-                channel = connection.channel()
-
-                channel.exchange_declare(
-                    exchange=self.context.mq_exchange,
-                    exchange_type="topic",
-                    durable=True,
+                ws = self._create_lifecycle_websocket()
+                self._lifecycle_ws = ws
+                self._subscribe_lifecycle_filters(ws, trigger_refs)
+                self.logger.info(
+                    "Notifier connected",
+                    extra={"trigger_refs": trigger_refs},
                 )
-                channel.queue_declare(queue=queue_name, durable=True)
-                for rk in routing_keys:
-                    channel.queue_bind(
-                        queue=queue_name,
-                        exchange=self.context.mq_exchange,
-                        routing_key=rk,
-                    )
 
-                self.logger.info("MQ connected", extra={"queue": queue_name})
-
-                for method, _properties, body in channel.consume(
-                    queue=queue_name, inactivity_timeout=1
-                ):
-                    if self._shutdown_event.is_set():
-                        break
-                    if method is None:
-                        continue
+                while not self._shutdown_event.is_set():
                     try:
-                        message = json.loads(body)
-                        self._handle_rule_message(message)
+                        raw_message = ws.recv()
+                    except websocket.WebSocketTimeoutException:
+                        continue
+                    if raw_message is None:
+                        raise websocket.WebSocketConnectionClosedException(
+                            "notifier websocket closed"
+                        )
+                    if isinstance(raw_message, bytes):
+                        raw_message = raw_message.decode("utf-8")
+                    try:
+                        message = json.loads(raw_message)
                     except json.JSONDecodeError:
-                        self.logger.warning("Invalid JSON in MQ message")
-                    except Exception as exc:
-                        self.logger.error("Error processing MQ message: %s", exc)
-                    channel.basic_ack(delivery_tag=method.delivery_tag)
+                        self.logger.warning("Invalid JSON in notifier websocket message")
+                        continue
+                    if isinstance(message, dict):
+                        self._handle_lifecycle_envelope(message)
 
             except Exception as exc:
-                self.logger.warning("MQ connection error, retrying in 5s: %s", exc)
+                if not self._shutdown_event.is_set():
+                    self.logger.warning(
+                        "Notifier websocket error, retrying in 5s: %s",
+                        exc,
+                    )
             finally:
-                if connection and not connection.is_closed:
+                if ws is not None:
                     try:
-                        connection.close()
+                        ws.close()
                     except Exception:
                         pass
+                if self._lifecycle_ws is ws:
+                    self._lifecycle_ws = None
 
             self._shutdown_event.wait(timeout=5)
 
@@ -580,11 +636,11 @@ class Sensor:
         signal.signal(signal.SIGTERM, self._handle_signal)
         signal.signal(signal.SIGINT, self._handle_signal)
 
-        mq_thread = None
+        lifecycle_thread = None
         try:
             self._bootstrap_rules()
             self.setup()
-            mq_thread = self._start_mq_consumer()
+            lifecycle_thread = self._start_lifecycle_listener()
             self.logger.info("Sensor started", extra={"active_rules": len(self._rules)})
             self.run()
         except Exception as exc:
@@ -599,8 +655,9 @@ class Sensor:
             if self._http_client is not None:
                 self._http_client.close()
                 self._http_client = None
-            if mq_thread:
-                mq_thread.join(timeout=5)
+            self._close_lifecycle_websocket()
+            if lifecycle_thread:
+                lifecycle_thread.join(timeout=5)
             self.logger.info("Sensor stopped")
 
         return 0
@@ -889,19 +946,45 @@ class AsyncPollingSensor(Sensor):
 
     def _start_poll_task(self, rule: RuleState) -> None:
         """Start an async polling task for the given rule."""
-        self._cancel_poll_task(rule.rule_id)
+        def start_task() -> None:
+            task = self._poll_tasks.pop(rule.rule_id, None)
+            if task and not task.done():
+                task.cancel()
+            if self._loop and self._loop.is_running():
+                new_task = self._loop.create_task(
+                    self._poll_task(rule.rule_id),
+                    name=f"poll-{rule.rule_ref}",
+                )
+                self._poll_tasks[rule.rule_id] = new_task
+
         if self._loop and self._loop.is_running():
-            task = self._loop.create_task(
-                self._poll_task(rule.rule_id),
-                name=f"poll-{rule.rule_ref}",
-            )
-            self._poll_tasks[rule.rule_id] = task
+            try:
+                running_loop = asyncio.get_running_loop()
+            except RuntimeError:
+                running_loop = None
+            if running_loop is self._loop:
+                start_task()
+            else:
+                self._loop.call_soon_threadsafe(start_task)
 
     def _cancel_poll_task(self, rule_id: int) -> None:
         """Cancel the polling task for a rule."""
-        task = self._poll_tasks.pop(rule_id, None)
-        if task and not task.done():
-            task.cancel()
+        def cancel_task() -> None:
+            task = self._poll_tasks.pop(rule_id, None)
+            if task and not task.done():
+                task.cancel()
+
+        if self._loop and self._loop.is_running():
+            try:
+                running_loop = asyncio.get_running_loop()
+            except RuntimeError:
+                running_loop = None
+            if running_loop is self._loop:
+                cancel_task()
+            else:
+                self._loop.call_soon_threadsafe(cancel_task)
+        else:
+            cancel_task()
 
     # Rule lifecycle hooks
 
@@ -930,7 +1013,11 @@ class AsyncPollingSensor(Sensor):
             with self._rules_lock:
                 for rule in self._rules.values():
                     if rule.enabled:
-                        self._start_poll_task(rule)
+                        task = self._loop.create_task(
+                            self._poll_task(rule.rule_id),
+                            name=f"poll-{rule.rule_ref}",
+                        )
+                        self._poll_tasks[rule.rule_id] = task
 
             # Wait for shutdown
             while not self._shutdown_event.is_set():
@@ -957,10 +1044,10 @@ class AsyncPollingSensor(Sensor):
         signal.signal(signal.SIGTERM, self._handle_signal)
         signal.signal(signal.SIGINT, self._handle_signal)
 
-        mq_thread = None
+        lifecycle_thread = None
         try:
             self._bootstrap_rules()
-            mq_thread = self._start_mq_consumer()
+            lifecycle_thread = self._start_lifecycle_listener()
             self.logger.info("Sensor started", extra={"active_rules": len(self._rules)})
             self.run()
         except Exception as exc:
@@ -971,8 +1058,9 @@ class AsyncPollingSensor(Sensor):
             if self._http_client is not None:
                 self._http_client.close()
                 self._http_client = None
-            if mq_thread:
-                mq_thread.join(timeout=5)
+            self._close_lifecycle_websocket()
+            if lifecycle_thread:
+                lifecycle_thread.join(timeout=5)
             self.logger.info("Sensor stopped")
 
         return 0
