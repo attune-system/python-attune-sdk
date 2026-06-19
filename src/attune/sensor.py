@@ -76,6 +76,7 @@ import os
 import signal
 import sys
 import threading
+import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -136,7 +137,9 @@ class Sensor:
         self._rules: dict[int, RuleState] = {}
         self._rules_lock = threading.Lock()
         self._http_client: Any = None
+        self._http_client_token: str | None = None
         self._lifecycle_ws: Any = None
+        self._lifecycle_ws_token: str | None = None
         self._setup_logging()
         self.logger = logging.getLogger(
             f"attune.sensor.{self.context.sensor_ref}"
@@ -179,8 +182,15 @@ class Sensor:
     @property
     def http_client(self) -> Any:
         """Lazy-initialized httpx.Client for API communication."""
+        current_token = self.context.current_api_token
         if self._http_client is None:
             self._http_client = self._create_http_client()
+            self._http_client_token = current_token
+        elif self._http_client_token is None:
+            self._http_client_token = current_token
+        elif current_token != self._http_client_token:
+            self.logger.info("Sensor API token rotated, rebuilding HTTP client")
+            self._rebuild_http_client()
         return self._http_client
 
     def _create_http_client(self) -> Any:
@@ -192,12 +202,14 @@ class Sensor:
                 "The 'httpx' library is required for event emission. "
                 "Install with: pip install attune[http]"
             )
+        token = self.context.current_api_token
+        headers = {"Content-Type": "application/json"}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+
         return httpx.Client(
             base_url=self.context.api_url,
-            headers={
-                "Authorization": f"Bearer {self.context.api_token}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             timeout=10,
         )
 
@@ -210,6 +222,7 @@ class Sensor:
                 pass
             self._http_client = None
         self._http_client = self._create_http_client()
+        self._http_client_token = self.context.current_api_token
 
     @property
     def config(self) -> dict[str, str]:
@@ -421,12 +434,16 @@ class Sensor:
                 "Install with: pip install attune-sdk[sensor]"
             ) from exc
 
+        token_state = self.context.current_token_state
+        headers = [f"Authorization: Bearer {token_state.token}"] if token_state.token else []
+
         ws = websocket.create_connection(
             self.context.notifier_ws_url,
             timeout=10,
-            header=[f"Authorization: Bearer {self.context.api_token}"],
+            header=headers,
         )
         ws.settimeout(5)
+        self._lifecycle_ws_token = token_state.token
         return ws
 
     def _close_lifecycle_websocket(self) -> None:
@@ -437,6 +454,29 @@ class Sensor:
             except Exception:
                 pass
             self._lifecycle_ws = None
+            self._lifecycle_ws_token = None
+
+    def _should_reconnect_lifecycle_websocket(self) -> bool:
+        """Whether lifecycle WebSocket should reconnect for token rotation."""
+        current_state = self.context.current_token_state
+
+        if (
+            self._lifecycle_ws_token is not None
+            and current_state.token
+            and current_state.token != self._lifecycle_ws_token
+        ):
+            self.logger.info("Sensor API token rotated, reconnecting notifier websocket")
+            return True
+
+        if current_state.is_expiring_within(self.context.token_reconnect_window_seconds):
+            exp = current_state.expires_at_epoch
+            self.logger.info(
+                "Sensor API token expiring soon, reconnecting notifier websocket",
+                extra={"expires_at_epoch": exp, "now_epoch": time.time()},
+            )
+            return True
+
+        return False
 
     def _handle_lifecycle_envelope(self, message: dict[str, Any]) -> None:
         """Handle a notifier WebSocket envelope."""
@@ -507,6 +547,8 @@ class Sensor:
                     try:
                         raw_message = ws.recv()
                     except websocket.WebSocketTimeoutException:
+                        if self._should_reconnect_lifecycle_websocket():
+                            break
                         continue
                     if raw_message is None:
                         raise websocket.WebSocketConnectionClosedException(
@@ -536,6 +578,7 @@ class Sensor:
                         pass
                 if self._lifecycle_ws is ws:
                     self._lifecycle_ws = None
+                    self._lifecycle_ws_token = None
 
             self._shutdown_event.wait(timeout=5)
 
@@ -558,9 +601,8 @@ class Sensor:
             rule: The rule context (used to derive trigger_ref and add source metadata).
             trigger_ref: Explicit trigger ref override. Falls back to rule's trigger_ref
                 or the sensor ref.
-            target_rule: When True and a rule is provided, include the rule_ref in the
-                event so the executor only evaluates that specific rule instead of all
-                rules matching the trigger.
+            target_rule: When True and a rule is provided, scope the event to that
+                specific rule by sending a numeric trigger_instance_id.
 
         Returns:
             The event ID if successfully posted, or None on failure.
@@ -576,10 +618,8 @@ class Sensor:
             "payload": payload,
             "source": self.context.sensor_ref,
         }
-        if rule:
-            body["trigger_instance_id"] = f"rule_{rule.rule_ref}"
-            if target_rule:
-                body["rule_ref"] = rule.rule_ref
+        if rule and target_rule:
+            body["trigger_instance_id"] = f"rule_{rule.rule_id}"
 
         try:
             resp = self.http_client.post("/api/v1/events", json=body)
@@ -655,6 +695,7 @@ class Sensor:
             if self._http_client is not None:
                 self._http_client.close()
                 self._http_client = None
+                self._http_client_token = None
             self._close_lifecycle_websocket()
             if lifecycle_thread:
                 lifecycle_thread.join(timeout=5)
@@ -684,7 +725,7 @@ class PollingSensor(Sensor):
 
     def __init__(self) -> None:
         super().__init__()
-        self._poll_threads: dict[int, threading.Event] = {}
+        self._poll_controls: dict[int, tuple[threading.Event, threading.Thread]] = {}
 
     def poll(self, rule: RuleState) -> None:
         """Called periodically for each active rule.
@@ -725,20 +766,28 @@ class PollingSensor(Sensor):
         """Start a polling thread for the given rule."""
         self._stop_poll_thread(rule.rule_id)
         stop_event = threading.Event()
-        self._poll_threads[rule.rule_id] = stop_event
         thread = threading.Thread(
             target=self._poll_loop,
             args=(rule.rule_id, stop_event),
             name=f"poll-{rule.rule_ref}",
             daemon=True,
         )
+        self._poll_controls[rule.rule_id] = (stop_event, thread)
         thread.start()
 
     def _stop_poll_thread(self, rule_id: int) -> None:
         """Stop the polling thread for a rule."""
-        stop_event = self._poll_threads.pop(rule_id, None)
-        if stop_event:
+        control = self._poll_controls.pop(rule_id, None)
+        if control:
+            stop_event, thread = control
             stop_event.set()
+            if thread is not threading.current_thread():
+                thread.join(timeout=15)
+                if thread.is_alive():
+                    self.logger.warning(
+                        "Polling thread for rule %s did not stop before restart",
+                        rule_id,
+                    )
 
     # Rule lifecycle hooks — start/stop polling threads
 
@@ -765,7 +814,7 @@ class PollingSensor(Sensor):
 
     def cleanup(self) -> None:
         """Stop all polling threads."""
-        for rule_id in list(self._poll_threads.keys()):
+        for rule_id in list(self._poll_controls.keys()):
             self._stop_poll_thread(rule_id)
 
 
@@ -791,6 +840,7 @@ class AsyncPollingSensor(Sensor):
         self._poll_tasks: dict[int, asyncio.Task] = {}
         self._loop: asyncio.AbstractEventLoop | None = None
         self._async_http_client: Any = None
+        self._async_http_client_token: str | None = None
 
     async def poll(self, rule: RuleState) -> None:
         """Called periodically for each active rule (async).
@@ -807,8 +857,21 @@ class AsyncPollingSensor(Sensor):
     @property
     def async_http_client(self) -> Any:
         """Lazy-initialized httpx.AsyncClient for API communication."""
+        current_token = self.context.current_api_token
         if self._async_http_client is None:
             self._async_http_client = self._create_async_http_client()
+            self._async_http_client_token = current_token
+        elif self._async_http_client_token is None:
+            self._async_http_client_token = current_token
+        elif current_token != self._async_http_client_token:
+            old_client = self._async_http_client
+            self._async_http_client = self._create_async_http_client()
+            self._async_http_client_token = current_token
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(old_client.aclose())
+            except RuntimeError:
+                pass
         return self._async_http_client
 
     def _create_async_http_client(self) -> Any:
@@ -820,12 +883,14 @@ class AsyncPollingSensor(Sensor):
                 "The 'httpx' library is required for event emission. "
                 "Install with: pip install attune[http]"
             )
+        token = self.context.current_api_token
+        headers = {"Content-Type": "application/json"}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+
         return httpx.AsyncClient(
             base_url=self.context.api_url,
-            headers={
-                "Authorization": f"Bearer {self.context.api_token}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             timeout=10,
         )
 
@@ -838,6 +903,7 @@ class AsyncPollingSensor(Sensor):
                 pass
             self._async_http_client = None
         self._async_http_client = self._create_async_http_client()
+        self._async_http_client_token = self.context.current_api_token
 
     async def async_emit(
         self,
@@ -854,9 +920,8 @@ class AsyncPollingSensor(Sensor):
             rule: The rule context (used to derive trigger_ref and add source metadata).
             trigger_ref: Explicit trigger ref override. Falls back to rule's trigger_ref
                 or the sensor ref.
-            target_rule: When True and a rule is provided, include the rule_ref in the
-                event so the executor only evaluates that specific rule instead of all
-                rules matching the trigger.
+            target_rule: When True and a rule is provided, scope the event to that
+                specific rule by sending a numeric trigger_instance_id.
 
         Returns:
             The event ID if successfully posted, or None on failure.
@@ -872,12 +937,18 @@ class AsyncPollingSensor(Sensor):
             "payload": payload,
             "source": self.context.sensor_ref,
         }
-        if rule:
-            body["trigger_instance_id"] = f"rule_{rule.rule_ref}"
-            if target_rule:
-                body["rule_ref"] = rule.rule_ref
+        if rule and target_rule:
+            body["trigger_instance_id"] = f"rule_{rule.rule_id}"
 
         try:
+            current_token = self.context.current_api_token
+            if self._async_http_client is None:
+                await self._rebuild_async_http_client()
+            elif self._async_http_client_token is None:
+                self._async_http_client_token = current_token
+            elif current_token != self._async_http_client_token:
+                await self._rebuild_async_http_client()
+
             resp = await self.async_http_client.post("/api/v1/events", json=body)
             resp.raise_for_status()
             event_id = resp.json().get("data", {}).get("id")
@@ -1034,6 +1105,7 @@ class AsyncPollingSensor(Sensor):
             if self._async_http_client is not None:
                 await self._async_http_client.aclose()
                 self._async_http_client = None
+                self._async_http_client_token = None
 
     def run(self) -> None:
         """Run the async event loop."""
@@ -1058,6 +1130,7 @@ class AsyncPollingSensor(Sensor):
             if self._http_client is not None:
                 self._http_client.close()
                 self._http_client = None
+                self._http_client_token = None
             self._close_lifecycle_websocket()
             if lifecycle_thread:
                 lifecycle_thread.join(timeout=5)

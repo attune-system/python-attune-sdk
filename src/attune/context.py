@@ -2,9 +2,10 @@
 Execution context — module-level singletons providing access to environment
 variables and execution metadata.
 
-These are computed once at import time from environment variables and are
-immutable for the lifetime of the process (which is a single action execution
-or sensor run).
+Action context values are computed once at import time. Sensor context values
+are also built at import time, but managed-sensor auth can be resolved from a
+mutable token source so long-running sensors can pick up runtime-driven token
+rotation.
 
 Usage::
 
@@ -17,12 +18,156 @@ Usage::
 from __future__ import annotations
 
 import os
+import json
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
     from attune.api_client import AuthenticatedClient
+
+
+def _parse_expiry_timestamp(raw: str | int | float | None) -> float | None:
+    """Parse an expiry timestamp from unix seconds or ISO-8601."""
+    if raw is None:
+        return None
+    if isinstance(raw, (int, float)):
+        if raw <= 0:
+            return None
+        return float(raw)
+
+    value = str(raw).strip()
+    if not value:
+        return None
+
+    try:
+        parsed = float(value)
+        if parsed > 0:
+            return parsed
+    except ValueError:
+        pass
+
+    iso_value = value.replace("Z", "+00:00")
+    try:
+        dt = datetime.fromisoformat(iso_value)
+    except ValueError:
+        return None
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
+
+
+@dataclass(frozen=True)
+class SensorTokenState:
+    """Snapshot of managed sensor auth state."""
+
+    token: str
+    expires_at: str | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "token", self.token or "")
+        if self.expires_at is not None and not str(self.expires_at).strip():
+            object.__setattr__(self, "expires_at", None)
+
+    @property
+    def has_token(self) -> bool:
+        """Whether a non-empty token is available."""
+        return bool(self.token)
+
+    @property
+    def expires_at_epoch(self) -> float | None:
+        """Expiry timestamp as unix seconds if parseable."""
+        return _parse_expiry_timestamp(self.expires_at)
+
+    def is_expiring_within(
+        self, seconds: float, *, now_epoch: float | None = None
+    ) -> bool:
+        """Whether the token expires within ``seconds``."""
+        exp = self.expires_at_epoch
+        if exp is None:
+            return False
+        import time
+
+        now = time.time() if now_epoch is None else now_epoch
+        return now >= (exp - max(0.0, seconds))
+
+
+class SensorTokenProvider(Protocol):
+    """Resolves the current managed sensor token state."""
+
+    def current_token_state(self) -> SensorTokenState:
+        """Return the latest token snapshot."""
+
+
+@dataclass(frozen=True)
+class EnvSensorTokenProvider:
+    """Environment-backed token provider with fallback to initial state."""
+
+    initial_state: SensorTokenState
+    token_env_var: str = "ATTUNE_API_TOKEN"
+    expires_env_vars: tuple[str, ...] = (
+        "ATTUNE_API_TOKEN_EXPIRES_AT",
+        "ATTUNE_SENSOR_TOKEN_EXPIRES_AT",
+    )
+
+    def current_token_state(self) -> SensorTokenState:
+        token = os.environ.get(self.token_env_var, self.initial_state.token) or ""
+        expires_at = None
+        for key in self.expires_env_vars:
+            value = os.environ.get(key)
+            if value:
+                expires_at = value
+                break
+        if expires_at is None:
+            expires_at = self.initial_state.expires_at
+        return SensorTokenState(token=token, expires_at=expires_at)
+
+
+@dataclass(frozen=True)
+class FileSensorTokenProvider:
+    """File-backed token provider for managed sensor token rotation."""
+
+    state_path: Path
+    fallback_state: SensorTokenState | None = None
+
+    def current_token_state(self) -> SensorTokenState:
+        try:
+            return self._read_state()
+        except Exception as exc:
+            if self.fallback_state and self.fallback_state.has_token:
+                return self.fallback_state
+            raise RuntimeError(
+                f"Unable to read sensor token state from {self.state_path}: {exc}"
+            ) from exc
+
+    def _read_state(self) -> SensorTokenState:
+        if not self.state_path.exists():
+            raise FileNotFoundError("state file does not exist")
+
+        raw = self.state_path.read_text(encoding="utf-8")
+        body = json.loads(raw)
+        if not isinstance(body, dict):
+            raise ValueError("state file JSON must be an object")
+
+        token = ""
+        for key in ("token", "api_token"):
+            value = body.get(key)
+            if isinstance(value, str) and value.strip():
+                token = value
+                break
+        if not token:
+            raise ValueError("state file does not contain a token")
+
+        expires_at = None
+        for key in ("expires_at", "token_expires_at"):
+            value = body.get(key)
+            if isinstance(value, str) and value.strip():
+                expires_at = value
+                break
+
+        return SensorTokenState(token=token, expires_at=expires_at)
 
 
 @dataclass(frozen=True)
@@ -100,6 +245,8 @@ class SensorContext:
     notifier_ws_url: str
     log_level: str
     pack_ref: str
+    token_provider: SensorTokenProvider = field(repr=False, compare=False)
+    token_reconnect_window_seconds: float = 30.0
 
     @property
     def config(self) -> dict[str, str]:
@@ -130,6 +277,25 @@ class SensorContext:
         """
         return _get_sensor_client(self)
 
+    @property
+    def current_token_state(self) -> SensorTokenState:
+        """Current managed-sensor token state."""
+        return self.token_provider.current_token_state()
+
+    @property
+    def current_api_token(self) -> str:
+        """Current sensor-scoped API token (supports runtime rotation)."""
+        return self.current_token_state.token
+
+    def is_api_token_expiring_within(self, seconds: float | None = None) -> bool:
+        """Whether the current sensor token is near expiry."""
+        window = (
+            self.token_reconnect_window_seconds
+            if seconds is None
+            else max(0.0, float(seconds))
+        )
+        return self.current_token_state.is_expiring_within(window)
+
 
 def _build_action_context() -> ActionContext:
     """Build the action context from current environment variables."""
@@ -150,6 +316,27 @@ def _build_action_context() -> ActionContext:
 
 def _build_sensor_context() -> SensorContext:
     """Build the sensor context from current environment variables."""
+    initial_token = os.environ.get("ATTUNE_API_TOKEN", "")
+    initial_expires_at = os.environ.get("ATTUNE_API_TOKEN_EXPIRES_AT") or os.environ.get(
+        "ATTUNE_SENSOR_TOKEN_EXPIRES_AT"
+    )
+    initial_state = SensorTokenState(token=initial_token, expires_at=initial_expires_at)
+    token_provider: SensorTokenProvider = EnvSensorTokenProvider(initial_state=initial_state)
+    token_state_path = os.environ.get("ATTUNE_SENSOR_TOKEN_STATE_PATH")
+    if token_state_path:
+        token_provider = FileSensorTokenProvider(
+            state_path=Path(token_state_path),
+            fallback_state=initial_state if initial_state.has_token else None,
+        )
+
+    reconnect_window_raw = os.environ.get(
+        "ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS", "30"
+    )
+    try:
+        token_reconnect_window_seconds = max(0.0, float(reconnect_window_raw))
+    except ValueError:
+        token_reconnect_window_seconds = 30.0
+
     sensor_ref = os.environ.get("ATTUNE_SENSOR_REF", "")
     parts = sensor_ref.split(".")
     pack_ref = parts[0] if len(parts) >= 2 else ""
@@ -157,10 +344,12 @@ def _build_sensor_context() -> SensorContext:
         sensor_ref=sensor_ref,
         sensor_id=os.environ.get("ATTUNE_SENSOR_ID", "0"),
         api_url=os.environ.get("ATTUNE_API_URL", "http://localhost:8080"),
-        api_token=os.environ.get("ATTUNE_API_TOKEN", ""),
+        api_token=initial_token,
         notifier_ws_url=os.environ.get("ATTUNE_NOTIFIER_WS_URL", "ws://localhost:8081/ws"),
         log_level=os.environ.get("ATTUNE_LOG_LEVEL", "info").upper(),
         pack_ref=pack_ref,
+        token_provider=token_provider,
+        token_reconnect_window_seconds=token_reconnect_window_seconds,
     )
 
 
@@ -191,14 +380,35 @@ def _get_action_client(ctx: ActionContext) -> AuthenticatedClient:
 def _get_sensor_client(ctx: SensorContext) -> AuthenticatedClient:
     """Return (or create) the cached sensor client."""
     global _sensor_client
+    token = ctx.current_api_token
     if _sensor_client is None:
         from attune.api_client import AuthenticatedClient
 
         _sensor_client = AuthenticatedClient(
             base_url=ctx.api_url,
-            token=ctx.api_token,
+            token=token,
         )
+    else:
+        _sync_authenticated_client_token(_sensor_client, token)
     return _sensor_client
+
+
+def _sync_authenticated_client_token(client: AuthenticatedClient, token: str) -> None:
+    """Update an existing generated client with a new bearer token."""
+    if client.token == token:
+        return
+
+    client.token = token
+    auth_header = f"{client.prefix} {token}" if client.prefix else token
+    client._headers[client.auth_header_name] = auth_header  # type: ignore[attr-defined]
+
+    sync_client = getattr(client, "_client", None)
+    if sync_client is not None:
+        sync_client.headers[client.auth_header_name] = auth_header
+
+    async_client = getattr(client, "_async_client", None)
+    if async_client is not None:
+        async_client.headers[client.auth_header_name] = auth_header
 
 
 #: Module-level action context singleton. Computed once at import time.

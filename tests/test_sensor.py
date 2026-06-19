@@ -1,8 +1,10 @@
 """Tests for attune.sensor module."""
 
 import asyncio
+import sys
 import threading
 import time
+import types
 from unittest.mock import MagicMock, patch, PropertyMock
 
 import pytest
@@ -230,6 +232,58 @@ class TestPollingSensor:
         # Should not have polled more after disable
         assert poll_count <= count_at_disable + 1  # allow 1 in-flight
 
+    def test_rule_restart_waits_for_previous_poll_to_exit(self):
+        entered_first_poll = threading.Event()
+        release_first_poll = threading.Event()
+        concurrent_polls = 0
+        max_concurrent_polls = 0
+        counter_lock = threading.Lock()
+
+        class TestSensor(PollingSensor):
+            interval = 60.0
+
+            def poll(self, rule):
+                nonlocal concurrent_polls, max_concurrent_polls
+                with counter_lock:
+                    concurrent_polls += 1
+                    max_concurrent_polls = max(max_concurrent_polls, concurrent_polls)
+                try:
+                    if not entered_first_poll.is_set():
+                        entered_first_poll.set()
+                        release_first_poll.wait(timeout=2)
+                    else:
+                        self.shutdown()
+                finally:
+                    with counter_lock:
+                        concurrent_polls -= 1
+
+        sensor = TestSensor()
+        sensor._handle_rule_message({
+            "event_type": "rule.created",
+            "rule_id": 1,
+            "rule_ref": "pack.rule1",
+            "trigger_params": {"interval": "60"},
+        })
+        assert entered_first_poll.wait(timeout=1)
+
+        updater = threading.Thread(
+            target=lambda: sensor._handle_rule_message({
+                "event_type": "rule.created",
+                "rule_id": 1,
+                "rule_ref": "pack.rule1",
+                "trigger_params": {"interval": "30"},
+            })
+        )
+        updater.start()
+        time.sleep(0.1)
+
+        assert max_concurrent_polls == 1
+
+        release_first_poll.set()
+        updater.join(timeout=2)
+        sensor.cleanup()
+        assert max_concurrent_polls == 1
+
 
 class TestAsyncPollingSensor:
     def test_async_poll_called(self):
@@ -288,7 +342,8 @@ class TestAsyncPollingSensor:
 
 
 class TestSensorHttpClient:
-    def test_http_client_lazy_initialized(self):
+    def test_http_client_lazy_initialized(self, monkeypatch):
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-a")
         sensor = Sensor()
         assert sensor._http_client is None
         client = sensor.http_client
@@ -307,6 +362,62 @@ class TestSensorHttpClient:
         sensor._rebuild_http_client()
         client2 = sensor.http_client
         assert client1 is not client2
+
+    def test_http_client_rebuilt_when_token_changes(self, monkeypatch):
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-a")
+        sensor = Sensor()
+        client1 = sensor.http_client
+
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-b")
+        client2 = sensor.http_client
+
+        assert client1 is not client2
+        assert client2.headers.get("Authorization") == "Bearer token-b"
+
+    def test_lifecycle_websocket_uses_current_token(self, monkeypatch):
+        class FakeWebSocket:
+            def settimeout(self, timeout):
+                self.timeout = timeout
+
+            def close(self):
+                pass
+
+        calls: list[dict[str, object]] = []
+
+        fake_ws_module = types.SimpleNamespace()
+
+        def create_connection(url, timeout, header):
+            calls.append({"url": url, "timeout": timeout, "header": list(header)})
+            return FakeWebSocket()
+
+        fake_ws_module.create_connection = create_connection
+        monkeypatch.setitem(sys.modules, "websocket", fake_ws_module)
+
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-a")
+        sensor = Sensor()
+        sensor._create_lifecycle_websocket()
+
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-b")
+        sensor._create_lifecycle_websocket()
+
+        assert calls[0]["header"] == ["Authorization: Bearer token-a"]
+        assert calls[1]["header"] == ["Authorization: Bearer token-b"]
+
+    def test_lifecycle_reconnect_detects_token_rotation(self, monkeypatch):
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-a")
+        sensor = Sensor()
+        sensor._lifecycle_ws_token = "token-a"
+
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-b")
+        assert sensor._should_reconnect_lifecycle_websocket() is True
+
+    def test_lifecycle_reconnect_is_safe_without_expiry_metadata(self, monkeypatch):
+        monkeypatch.setenv("ATTUNE_API_TOKEN", "token-a")
+        monkeypatch.delenv("ATTUNE_API_TOKEN_EXPIRES_AT", raising=False)
+        monkeypatch.delenv("ATTUNE_SENSOR_TOKEN_EXPIRES_AT", raising=False)
+        sensor = Sensor()
+        sensor._lifecycle_ws_token = "token-a"
+        assert sensor._should_reconnect_lifecycle_websocket() is False
 
 
 class TestSensorEmit:
@@ -352,8 +463,7 @@ class TestSensorEmit:
         sensor.emit({"data": 1}, rule=rule, target_rule=True)
 
         body = mock_client.post.call_args[1]["json"]
-        assert body["rule_ref"] == "mypack.my_rule"
-        assert body["trigger_instance_id"] == "rule_mypack.my_rule"
+        assert body["trigger_instance_id"] == "rule_5"
 
     def test_emit_excludes_rule_ref_when_target_rule_false(self):
         sensor = self._make_sensor()
@@ -366,7 +476,7 @@ class TestSensorEmit:
 
         body = mock_client.post.call_args[1]["json"]
         assert "rule_ref" not in body
-        assert body["trigger_instance_id"] == "rule_mypack.my_rule"
+        assert "trigger_instance_id" not in body
 
     def test_emit_uses_rule_trigger_ref(self):
         sensor = self._make_sensor()
@@ -477,7 +587,7 @@ class TestAsyncSensorEmit:
         result = await sensor.async_emit({"data": 1}, rule=rule, target_rule=True)
 
         assert result == 10
-        assert captured_body["rule_ref"] == "pack.rule"
+        assert captured_body["trigger_instance_id"] == "rule_3"
 
     @pytest.mark.asyncio
     async def test_async_emit_excludes_rule_ref_when_target_rule_false(self):
@@ -496,6 +606,7 @@ class TestAsyncSensorEmit:
         await sensor.async_emit({"data": 1}, rule=rule, target_rule=False)
 
         assert "rule_ref" not in captured_body
+        assert "trigger_instance_id" not in captured_body
 
     @pytest.mark.asyncio
     async def test_async_emit_reconnects_on_transport_error(self):

@@ -100,6 +100,12 @@ print(attune.sensor_context.api_url)
 print(attune.sensor_context.config)  # ATTUNE_SENSOR_CONFIG_* vars
 ```
 
+Managed sensors support runtime-driven token rotation. The SDK resolves the
+current auth token from `sensor_context.current_token_state` /
+`sensor_context.current_api_token` on demand, so long-running API usage and
+notifier reconnects can pick up rotated credentials.
+See the cross-SDK contract: [docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
+
 ### Synchronous Polling (`PollingSensor`)
 
 One polling thread per active rule:
@@ -202,6 +208,24 @@ class StatefulSensor(attune.PollingSensor):
 poll threads/tasks in response to these hooks. Override them to add custom
 behavior (call `super()` to keep the auto-management).
 
+### Managed Sensor Token Rotation
+
+When `ATTUNE_SENSOR_TOKEN_STATE_PATH` is set, the SDK reads token state from
+that JSON file on demand. Expected fields:
+
+```json
+{
+  "token": "eyJ...",
+  "expires_at": "2026-12-31T00:00:00Z"
+}
+```
+
+Compatibility aliases are also accepted: `api_token` and `token_expires_at`.
+If the state file is unavailable, the SDK falls back to the startup
+`ATTUNE_API_TOKEN` value when present; otherwise token reads fail clearly.
+For cross-language runtime/platform expectations, use the shared contract:
+[docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
+
 ## Environment Variables
 
 ### Actions
@@ -225,6 +249,10 @@ behavior (call `super()` to keep the auto-management).
 | `ATTUNE_SENSOR_ID` | Sensor database ID |
 | `ATTUNE_API_URL` | API base URL |
 | `ATTUNE_API_TOKEN` | Sensor-scoped API token |
+| `ATTUNE_API_TOKEN_EXPIRES_AT` | Optional ISO-8601/epoch expiry metadata for the fallback token |
+| `ATTUNE_SENSOR_TOKEN_EXPIRES_AT` | Optional legacy expiry metadata fallback |
+| `ATTUNE_SENSOR_TOKEN_STATE_PATH` | Optional runtime-managed token state file for rotation |
+| `ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS` | Optional pre-expiry reconnect window (default `30`) |
 | `ATTUNE_NOTIFIER_WS_URL` | Notifier WebSocket URL (for example `ws://localhost:8081/ws`) |
 | `ATTUNE_SENSOR_TRIGGERS` | Bootstrap JSON array of managed rule bindings |
 | `ATTUNE_LOG_LEVEL` | Log verbosity |
