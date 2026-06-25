@@ -46,6 +46,40 @@ def main(url: str, method: str = "GET"):
 attune.run_action(main)
 ```
 
+### Working with Artifacts
+
+Use `attune.artifacts` for action-owned artifacts with context-aware defaults.
+The helpers default `scope="action"`, `owner=attune.context.action_ref`,
+`created_by=attune.context.action_ref`, `execution=attune.context.execution_id`
+(when present), and `visibility="private"`.
+
+```python
+import attune
+
+def main():
+    allocation = attune.artifacts.allocate_file_version(
+        "python_example.demo.log",
+        name="Execution Log",
+    )
+    allocation.write_text("hello\n")
+
+    progress = attune.artifacts.create_progress("python_example.demo.progress")
+    progress.append({"message": "started", "percent": 10})
+
+    return {
+        "artifact_id": allocation.artifact_id,
+        "version_id": allocation.version_id,
+        "path": str(allocation.absolute_path),
+    }
+
+attune.run_action(main)
+```
+
+`allocate_file_version()` uses Attune's upsert-and-allocate API, returns the
+local absolute path under `ATTUNE_ARTIFACTS_DIR`, and creates parent
+directories for you. `create_progress()` creates or reuses a progress artifact
+and `append()` streams entries without silent failure paths.
+
 ### Using the API Client
 
 The SDK includes a fully typed, auto-generated OpenAPI client. The easiest way

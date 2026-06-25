@@ -30,18 +30,25 @@ Access execution context anywhere::
     print(attune.sensor_context.sensor_ref)  # sensor context
 """
 
-from attune.action import run_action
-from attune.api_client import AuthenticatedClient, Client
-from attune.client import AttuneClient
-from attune.context import (
+from . import artifacts
+from .action import run_action
+from .api_client import AuthenticatedClient, Client
+from .artifacts import ArtifactAllocation, ProgressArtifact, allocate_file_version, create_progress
+from .client import AttuneClient
+from .context import (
     ActionContext,
     SensorContext,
     action_context as context,
     sensor_context,
 )
-from attune.sensor import AsyncPollingSensor, PollingSensor, RuleState, Sensor, run_sensor
+from .sensor import AsyncPollingSensor, PollingSensor, RuleState, Sensor, run_sensor
 
 __all__ = [
+    "artifacts",
+    "ArtifactAllocation",
+    "ProgressArtifact",
+    "allocate_file_version",
+    "create_progress",
     "run_action",
     "run_sensor",
     "context",
