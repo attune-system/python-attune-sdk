@@ -26,6 +26,7 @@ class PaginatedResponseEventSummaryItemsItem:
             core.timer_rule.
         source (int | None | Unset):
         source_ref (None | str | Unset): Source reference Example: monitoring.webhook_sensor.
+        trace_tag (None | str | Unset): Trace tag associated to this event. Example: core.timer.1234.
         trigger (int | None | Unset):
     """
 
@@ -37,6 +38,7 @@ class PaginatedResponseEventSummaryItemsItem:
     rule_ref: None | str | Unset = UNSET
     source: int | None | Unset = UNSET
     source_ref: None | str | Unset = UNSET
+    trace_tag: None | str | Unset = UNSET
     trigger: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -73,6 +75,12 @@ class PaginatedResponseEventSummaryItemsItem:
         else:
             source_ref = self.source_ref
 
+        trace_tag: None | str | Unset
+        if isinstance(self.trace_tag, Unset):
+            trace_tag = UNSET
+        else:
+            trace_tag = self.trace_tag
+
         trigger: int | None | Unset
         if isinstance(self.trigger, Unset):
             trigger = UNSET
@@ -97,6 +105,8 @@ class PaginatedResponseEventSummaryItemsItem:
             field_dict["source"] = source
         if source_ref is not UNSET:
             field_dict["source_ref"] = source_ref
+        if trace_tag is not UNSET:
+            field_dict["trace_tag"] = trace_tag
         if trigger is not UNSET:
             field_dict["trigger"] = trigger
 
@@ -149,6 +159,15 @@ class PaginatedResponseEventSummaryItemsItem:
 
         source_ref = _parse_source_ref(d.pop("source_ref", UNSET))
 
+        def _parse_trace_tag(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag = _parse_trace_tag(d.pop("trace_tag", UNSET))
+
         def _parse_trigger(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -167,6 +186,7 @@ class PaginatedResponseEventSummaryItemsItem:
             rule_ref=rule_ref,
             source=source,
             source_ref=source_ref,
+            trace_tag=trace_tag,
             trigger=trigger,
         )
 

@@ -41,6 +41,8 @@ class UpdateRuleRequest:
             Omit to
             keep the current value. Provide null to inherit the action default, or an
             empty array to force no API token. Example: ['core.agent_reader'].
+        trace_tag_template (None | str | Unset): Optional template used to resolve execution trace tags for this rule.
+            Omit to keep current value. Provide null to clear. Example: {{ event.trigger }}.{{ event.id }}.
         trigger_ref (None | str | Unset): Trigger reference that activates this rule Example: system.error_event.
     """
 
@@ -52,6 +54,7 @@ class UpdateRuleRequest:
     enabled: bool | None | Unset = UNSET
     label: None | str | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    trace_tag_template: None | str | Unset = UNSET
     trigger_ref: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -117,6 +120,12 @@ class UpdateRuleRequest:
         else:
             permission_set_refs = self.permission_set_refs
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         trigger_ref: None | str | Unset
         if isinstance(self.trigger_ref, Unset):
             trigger_ref = UNSET
@@ -142,6 +151,8 @@ class UpdateRuleRequest:
             field_dict["label"] = label
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
         if trigger_ref is not UNSET:
             field_dict["trigger_ref"] = trigger_ref
 
@@ -269,6 +280,17 @@ class UpdateRuleRequest:
             d.pop("permission_set_refs", UNSET)
         )
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         def _parse_trigger_ref(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -287,6 +309,7 @@ class UpdateRuleRequest:
             enabled=enabled,
             label=label,
             permission_set_refs=permission_set_refs,
+            trace_tag_template=trace_tag_template,
             trigger_ref=trigger_ref,
         )
 

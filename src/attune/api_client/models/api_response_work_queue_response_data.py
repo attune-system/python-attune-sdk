@@ -58,6 +58,7 @@ class ApiResponseWorkQueueResponseData:
         pack_ref (None | str | Unset):  Example: core.
         permission_set_refs (list[str] | None | Unset):  Example: ['core.agent_reader'].
         resolved_dispatch_tuning (None | ResolvedWorkQueueDispatchTuningResponse | Unset):
+        trace_tag_template (None | str | Unset):  Example: {{ queue.ref }}.{{ queue_item.id }}.
     """
 
     accepting_new_items: bool
@@ -86,6 +87,7 @@ class ApiResponseWorkQueueResponseData:
     resolved_dispatch_tuning: None | ResolvedWorkQueueDispatchTuningResponse | Unset = (
         UNSET
     )
+    trace_tag_template: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -172,6 +174,12 @@ class ApiResponseWorkQueueResponseData:
         else:
             resolved_dispatch_tuning = self.resolved_dispatch_tuning
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -208,6 +216,8 @@ class ApiResponseWorkQueueResponseData:
             field_dict["permission_set_refs"] = permission_set_refs
         if resolved_dispatch_tuning is not UNSET:
             field_dict["resolved_dispatch_tuning"] = resolved_dispatch_tuning
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
 
         return field_dict
 
@@ -347,6 +357,17 @@ class ApiResponseWorkQueueResponseData:
             d.pop("resolved_dispatch_tuning", UNSET)
         )
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         api_response_work_queue_response_data = cls(
             accepting_new_items=accepting_new_items,
             action_params=action_params,
@@ -372,6 +393,7 @@ class ApiResponseWorkQueueResponseData:
             pack_ref=pack_ref,
             permission_set_refs=permission_set_refs,
             resolved_dispatch_tuning=resolved_dispatch_tuning,
+            trace_tag_template=trace_tag_template,
         )
 
         api_response_work_queue_response_data.additional_properties = d

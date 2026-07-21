@@ -43,6 +43,8 @@ class PaginatedResponseRuleSummaryItemsItem:
         permission_set_refs (list[str] | None | Unset): Optional execution permission override. Null means inherit
             action default;
             empty array means force no execution API token. Example: ['core.agent_reader'].
+        trace_tag_template (None | str | Unset): Optional template used to resolve execution trace tags for this rule.
+            Example: {{ event.trigger }}.{{ event.id }}.
     """
 
     action_params: PaginatedResponseRuleSummaryItemsItemActionParams
@@ -58,6 +60,7 @@ class PaginatedResponseRuleSummaryItemsItem:
     updated: datetime.datetime
     description: None | str | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    trace_tag_template: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -98,6 +101,12 @@ class PaginatedResponseRuleSummaryItemsItem:
         else:
             permission_set_refs = self.permission_set_refs
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -119,6 +128,8 @@ class PaginatedResponseRuleSummaryItemsItem:
             field_dict["description"] = description
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
 
         return field_dict
 
@@ -186,6 +197,17 @@ class PaginatedResponseRuleSummaryItemsItem:
             d.pop("permission_set_refs", UNSET)
         )
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         paginated_response_rule_summary_items_item = cls(
             action_params=action_params,
             action_ref=action_ref,
@@ -200,6 +222,7 @@ class PaginatedResponseRuleSummaryItemsItem:
             updated=updated,
             description=description,
             permission_set_refs=permission_set_refs,
+            trace_tag_template=trace_tag_template,
         )
 
         paginated_response_rule_summary_items_item.additional_properties = d

@@ -36,6 +36,8 @@ class CreateRuleRequest:
         permission_set_refs (list[str] | None | Unset): Permission set refs to apply to executions created by this rule.
             Omit to
             inherit the action default. Provide an empty array to force no API token. Example: ['core.agent_reader'].
+        trace_tag_template (None | str | Unset): Optional template used to resolve execution trace tags for this rule.
+            Example: {{ event.trigger }}.{{ event.id }}.
         trigger_params (CreateRuleRequestTriggerParams | Unset): Parameters for trigger configuration and event
             filtering
     """
@@ -50,6 +52,7 @@ class CreateRuleRequest:
     description: None | str | Unset = UNSET
     enabled: bool | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    trace_tag_template: None | str | Unset = UNSET
     trigger_params: CreateRuleRequestTriggerParams | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -89,6 +92,12 @@ class CreateRuleRequest:
         else:
             permission_set_refs = self.permission_set_refs
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         trigger_params: dict[str, Any] | Unset = UNSET
         if not isinstance(self.trigger_params, Unset):
             trigger_params = self.trigger_params.to_dict()
@@ -114,6 +123,8 @@ class CreateRuleRequest:
             field_dict["enabled"] = enabled
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
         if trigger_params is not UNSET:
             field_dict["trigger_params"] = trigger_params
 
@@ -184,6 +195,17 @@ class CreateRuleRequest:
             d.pop("permission_set_refs", UNSET)
         )
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         _trigger_params = d.pop("trigger_params", UNSET)
         trigger_params: CreateRuleRequestTriggerParams | Unset
         if isinstance(_trigger_params, Unset):
@@ -202,6 +224,7 @@ class CreateRuleRequest:
             description=description,
             enabled=enabled,
             permission_set_refs=permission_set_refs,
+            trace_tag_template=trace_tag_template,
             trigger_params=trigger_params,
         )
 

@@ -38,6 +38,8 @@ class PaginatedResponseExecutionSummaryItemsItem:
             Null if the execution hasn't started running yet. Example: 2024-01-13T10:31:00Z.
         timeout_seconds (int | None | Unset): Resolved execution timeout in seconds, snapshotted at creation time.
             Example: 600.
+        trace_tag (None | str | Unset): System-wide trace tag for correlating related automatic activity. Example:
+            core.timer.1234.
         trigger_ref (None | str | Unset): Trigger reference (if triggered by a trigger) Example: core.timer.
         workflow_task (None | PaginatedResponseExecutionSummaryItemsItemWorkflowTaskType0 | Unset): Workflow task
             metadata (only populated for workflow task executions)
@@ -54,6 +56,7 @@ class PaginatedResponseExecutionSummaryItemsItem:
     rule_ref: None | str | Unset = UNSET
     started_at: datetime.datetime | None | Unset = UNSET
     timeout_seconds: int | None | Unset = UNSET
+    trace_tag: None | str | Unset = UNSET
     trigger_ref: None | str | Unset = UNSET
     workflow_task: (
         None | PaginatedResponseExecutionSummaryItemsItemWorkflowTaskType0 | Unset
@@ -113,6 +116,12 @@ class PaginatedResponseExecutionSummaryItemsItem:
         else:
             timeout_seconds = self.timeout_seconds
 
+        trace_tag: None | str | Unset
+        if isinstance(self.trace_tag, Unset):
+            trace_tag = UNSET
+        else:
+            trace_tag = self.trace_tag
+
         trigger_ref: None | str | Unset
         if isinstance(self.trigger_ref, Unset):
             trigger_ref = UNSET
@@ -153,6 +162,8 @@ class PaginatedResponseExecutionSummaryItemsItem:
             field_dict["started_at"] = started_at
         if timeout_seconds is not UNSET:
             field_dict["timeout_seconds"] = timeout_seconds
+        if trace_tag is not UNSET:
+            field_dict["trace_tag"] = trace_tag
         if trigger_ref is not UNSET:
             field_dict["trigger_ref"] = trigger_ref
         if workflow_task is not UNSET:
@@ -241,6 +252,15 @@ class PaginatedResponseExecutionSummaryItemsItem:
 
         timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
 
+        def _parse_trace_tag(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag = _parse_trace_tag(d.pop("trace_tag", UNSET))
+
         def _parse_trigger_ref(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -288,6 +308,7 @@ class PaginatedResponseExecutionSummaryItemsItem:
             rule_ref=rule_ref,
             started_at=started_at,
             timeout_seconds=timeout_seconds,
+            trace_tag=trace_tag,
             trigger_ref=trigger_ref,
             workflow_task=workflow_task,
         )

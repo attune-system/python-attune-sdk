@@ -53,6 +53,7 @@ class ApiResponseWorkQueueItemResponseData:
         requested_by_enforcement (int | None | Unset):
         requested_by_execution (int | None | Unset):
         requested_by_identity (int | None | Unset):
+        trace_tag (None | str | Unset):  Example: core.timer.1234.
     """
 
     ack_summary: ApiResponseWorkQueueItemResponseDataAckSummaryType0 | None
@@ -75,6 +76,7 @@ class ApiResponseWorkQueueItemResponseData:
     requested_by_enforcement: int | None | Unset = UNSET
     requested_by_execution: int | None | Unset = UNSET
     requested_by_identity: int | None | Unset = UNSET
+    trace_tag: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -169,6 +171,12 @@ class ApiResponseWorkQueueItemResponseData:
         else:
             requested_by_identity = self.requested_by_identity
 
+        trace_tag: None | str | Unset
+        if isinstance(self.trace_tag, Unset):
+            trace_tag = UNSET
+        else:
+            trace_tag = self.trace_tag
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -202,6 +210,8 @@ class ApiResponseWorkQueueItemResponseData:
             field_dict["requested_by_execution"] = requested_by_execution
         if requested_by_identity is not UNSET:
             field_dict["requested_by_identity"] = requested_by_identity
+        if trace_tag is not UNSET:
+            field_dict["trace_tag"] = trace_tag
 
         return field_dict
 
@@ -373,6 +383,15 @@ class ApiResponseWorkQueueItemResponseData:
             d.pop("requested_by_identity", UNSET)
         )
 
+        def _parse_trace_tag(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag = _parse_trace_tag(d.pop("trace_tag", UNSET))
+
         api_response_work_queue_item_response_data = cls(
             ack_summary=ack_summary,
             attempt_count=attempt_count,
@@ -394,6 +413,7 @@ class ApiResponseWorkQueueItemResponseData:
             requested_by_enforcement=requested_by_enforcement,
             requested_by_execution=requested_by_execution,
             requested_by_identity=requested_by_identity,
+            trace_tag=trace_tag,
         )
 
         api_response_work_queue_item_response_data.additional_properties = d

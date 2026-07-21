@@ -51,6 +51,8 @@ class ApiResponseRuleResponseData:
         permission_set_refs (list[str] | None | Unset): Optional execution permission override. Null means inherit
             action default;
             empty array means force no execution API token. Example: ['core.agent_reader'].
+        trace_tag_template (None | str | Unset): Optional template used to resolve execution trace tags for this rule.
+            Example: {{ event.trigger }}.{{ event.id }}.
         trigger (int | None | Unset): Trigger ID (null if the referenced trigger has been deleted) Example: 1.
     """
 
@@ -72,6 +74,7 @@ class ApiResponseRuleResponseData:
     description: None | str | Unset = UNSET
     owner_identity: int | None | Unset = UNSET
     permission_set_refs: list[str] | None | Unset = UNSET
+    trace_tag_template: None | str | Unset = UNSET
     trigger: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -131,6 +134,12 @@ class ApiResponseRuleResponseData:
         else:
             permission_set_refs = self.permission_set_refs
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         trigger: int | None | Unset
         if isinstance(self.trigger, Unset):
             trigger = UNSET
@@ -165,6 +174,8 @@ class ApiResponseRuleResponseData:
             field_dict["owner_identity"] = owner_identity
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
         if trigger is not UNSET:
             field_dict["trigger"] = trigger
 
@@ -263,6 +274,17 @@ class ApiResponseRuleResponseData:
             d.pop("permission_set_refs", UNSET)
         )
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         def _parse_trigger(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -291,6 +313,7 @@ class ApiResponseRuleResponseData:
             description=description,
             owner_identity=owner_identity,
             permission_set_refs=permission_set_refs,
+            trace_tag_template=trace_tag_template,
             trigger=trigger,
         )
 

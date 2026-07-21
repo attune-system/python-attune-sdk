@@ -62,6 +62,8 @@ class CancelExecutionResponse200Data:
             Null if the execution hasn't started running yet. Example: 2024-01-13T10:31:00Z.
         timeout_seconds (int | None | Unset): Resolved execution timeout in seconds, snapshotted at creation time.
             Example: 600.
+        trace_tag (None | str | Unset): System-wide trace tag for correlating related automatic activity. Example:
+            core.timer.1234.
         worker (int | None | Unset): Worker ID currently assigned to this execution Example: 1.
         worker_affinity (CancelExecutionResponse200DataWorkerAffinityType0 | None | Unset): Worker affinity override
             stored on the execution, if any.
@@ -90,6 +92,7 @@ class CancelExecutionResponse200Data:
     permission_set_refs: list[str] | Unset = UNSET
     started_at: datetime.datetime | None | Unset = UNSET
     timeout_seconds: int | None | Unset = UNSET
+    trace_tag: None | str | Unset = UNSET
     worker: int | None | Unset = UNSET
     worker_affinity: (
         CancelExecutionResponse200DataWorkerAffinityType0 | None | Unset
@@ -192,6 +195,12 @@ class CancelExecutionResponse200Data:
         else:
             timeout_seconds = self.timeout_seconds
 
+        trace_tag: None | str | Unset
+        if isinstance(self.trace_tag, Unset):
+            trace_tag = UNSET
+        else:
+            trace_tag = self.trace_tag
+
         worker: int | None | Unset
         if isinstance(self.worker, Unset):
             worker = UNSET
@@ -275,6 +284,8 @@ class CancelExecutionResponse200Data:
             field_dict["started_at"] = started_at
         if timeout_seconds is not UNSET:
             field_dict["timeout_seconds"] = timeout_seconds
+        if trace_tag is not UNSET:
+            field_dict["trace_tag"] = trace_tag
         if worker is not UNSET:
             field_dict["worker"] = worker
         if worker_affinity is not UNSET:
@@ -431,6 +442,15 @@ class CancelExecutionResponse200Data:
 
         timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
 
+        def _parse_trace_tag(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag = _parse_trace_tag(d.pop("trace_tag", UNSET))
+
         def _parse_worker(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -564,6 +584,7 @@ class CancelExecutionResponse200Data:
             permission_set_refs=permission_set_refs,
             started_at=started_at,
             timeout_seconds=timeout_seconds,
+            trace_tag=trace_tag,
             worker=worker,
             worker_affinity=worker_affinity,
             worker_selector=worker_selector,

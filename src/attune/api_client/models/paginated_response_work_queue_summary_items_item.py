@@ -30,6 +30,7 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
         updated (datetime.datetime):  Example: 2024-01-13T10:30:00Z.
         description (None | str | Unset):  Example: Dispatches inbound work items to the core processor.
         pack_ref (None | str | Unset):  Example: core.
+        trace_tag_template (None | str | Unset):  Example: {{ queue.ref }}.{{ queue_item.id }}.
     """
 
     accepting_new_items: bool
@@ -45,6 +46,7 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
     updated: datetime.datetime
     description: None | str | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
+    trace_tag_template: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -82,6 +84,12 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
         else:
             pack_ref = self.pack_ref
 
+        trace_tag_template: None | str | Unset
+        if isinstance(self.trace_tag_template, Unset):
+            trace_tag_template = UNSET
+        else:
+            trace_tag_template = self.trace_tag_template
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -103,6 +111,8 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
             field_dict["description"] = description
         if pack_ref is not UNSET:
             field_dict["pack_ref"] = pack_ref
+        if trace_tag_template is not UNSET:
+            field_dict["trace_tag_template"] = trace_tag_template
 
         return field_dict
 
@@ -151,6 +161,17 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
 
+        def _parse_trace_tag_template(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag_template = _parse_trace_tag_template(
+            d.pop("trace_tag_template", UNSET)
+        )
+
         paginated_response_work_queue_summary_items_item = cls(
             accepting_new_items=accepting_new_items,
             created=created,
@@ -165,6 +186,7 @@ class PaginatedResponseWorkQueueSummaryItemsItem:
             updated=updated,
             description=description,
             pack_ref=pack_ref,
+            trace_tag_template=trace_tag_template,
         )
 
         paginated_response_work_queue_summary_items_item.additional_properties = d

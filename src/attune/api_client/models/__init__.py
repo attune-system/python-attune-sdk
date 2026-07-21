@@ -48,6 +48,21 @@ from .api_response_auth_settings_response_data import (
 )
 from .api_response_current_user_response import ApiResponseCurrentUserResponse
 from .api_response_current_user_response_data import ApiResponseCurrentUserResponseData
+from .api_response_dashboard_metadata_response import (
+    ApiResponseDashboardMetadataResponse,
+)
+from .api_response_dashboard_metadata_response_data import (
+    ApiResponseDashboardMetadataResponseData,
+)
+from .api_response_dashboard_metadata_response_data_spec import (
+    ApiResponseDashboardMetadataResponseDataSpec,
+)
+from .api_response_dashboard_source_catalog_response import (
+    ApiResponseDashboardSourceCatalogResponse,
+)
+from .api_response_dashboard_source_catalog_response_data import (
+    ApiResponseDashboardSourceCatalogResponseData,
+)
 from .api_response_enforcement_response import ApiResponseEnforcementResponse
 from .api_response_enforcement_response_data import ApiResponseEnforcementResponseData
 from .api_response_enforcement_response_data_conditions import (
@@ -114,6 +129,8 @@ from .api_response_permission_assignment_response import (
 from .api_response_permission_assignment_response_data import (
     ApiResponsePermissionAssignmentResponseData,
 )
+from .api_response_policy_response import ApiResponsePolicyResponse
+from .api_response_policy_response_data import ApiResponsePolicyResponseData
 from .api_response_preview_work_queue_items_response import (
     ApiResponsePreviewWorkQueueItemsResponse,
 )
@@ -155,8 +172,12 @@ from .api_response_sensor_response_data_worker_selector import (
     ApiResponseSensorResponseDataWorkerSelector,
 )
 from .api_response_string import ApiResponseString
+from .api_response_success_response import ApiResponseSuccessResponse
+from .api_response_success_response_data import ApiResponseSuccessResponseData
 from .api_response_token_response import ApiResponseTokenResponse
 from .api_response_token_response_data import ApiResponseTokenResponseData
+from .api_response_trace_report_response import ApiResponseTraceReportResponse
+from .api_response_trace_report_response_data import ApiResponseTraceReportResponseData
 from .api_response_trigger_response import ApiResponseTriggerResponse
 from .api_response_trigger_response_data import ApiResponseTriggerResponseData
 from .api_response_trigger_response_data_out_schema_type_0 import (
@@ -174,6 +195,12 @@ from .api_response_vec_audit_event_response_data_item_correlation_chain_type_0 i
 )
 from .api_response_vec_audit_event_response_data_item_details_type_0 import (
     ApiResponseVecAuditEventResponseDataItemDetailsType0,
+)
+from .api_response_vec_dashboard_list_item_response import (
+    ApiResponseVecDashboardListItemResponse,
+)
+from .api_response_vec_dashboard_list_item_response_data_item import (
+    ApiResponseVecDashboardListItemResponseDataItem,
 )
 from .api_response_webhook_receiver_response import ApiResponseWebhookReceiverResponse
 from .api_response_webhook_receiver_response_data import (
@@ -232,6 +259,7 @@ from .audit_event_summary import AuditEventSummary
 from .audit_outcome import AuditOutcome
 from .auth_settings_response_200 import AuthSettingsResponse200
 from .auth_settings_response_200_data import AuthSettingsResponse200Data
+from .authorization_basis import AuthorizationBasis
 from .cancel_execution_response_200 import CancelExecutionResponse200
 from .cancel_execution_response_200_data import CancelExecutionResponse200Data
 from .cancel_execution_response_200_data_config import (
@@ -255,6 +283,9 @@ from .cancel_execution_response_200_data_workflow_task_type_0 import (
 from .change_password_request import ChangePasswordRequest
 from .change_password_response_200 import ChangePasswordResponse200
 from .change_password_response_200_data import ChangePasswordResponse200Data
+from .clone_dashboard_request import CloneDashboardRequest
+from .concurrency_policy_request import ConcurrencyPolicyRequest
+from .concurrency_policy_response import ConcurrencyPolicyResponse
 from .cordon_worker_request import CordonWorkerRequest
 from .create_action_request import CreateActionRequest
 from .create_action_request_out_schema_type_0 import CreateActionRequestOutSchemaType0
@@ -279,6 +310,11 @@ from .create_action_response_201_data_required_worker_runtimes import (
 from .create_action_response_201_data_worker_selector import (
     CreateActionResponse201DataWorkerSelector,
 )
+from .create_dashboard_request import CreateDashboardRequest
+from .create_dashboard_request_spec import CreateDashboardRequestSpec
+from .create_event_request import CreateEventRequest
+from .create_event_request_config import CreateEventRequestConfig
+from .create_event_request_payload import CreateEventRequestPayload
 from .create_execution_request import CreateExecutionRequest
 from .create_execution_request_env_vars import CreateExecutionRequestEnvVars
 from .create_execution_request_parameters import CreateExecutionRequestParameters
@@ -339,6 +375,7 @@ from .create_permission_set_role_assignment_response_201 import (
 from .create_permission_set_role_assignment_response_201_data import (
     CreatePermissionSetRoleAssignmentResponse201Data,
 )
+from .create_policy_request import CreatePolicyRequest
 from .create_rule_request import CreateRuleRequest
 from .create_rule_request_action_params import CreateRuleRequestActionParams
 from .create_rule_request_conditions import CreateRuleRequestConditions
@@ -380,6 +417,31 @@ from .create_workflow_response_201_data_param_schema_type_0 import (
     CreateWorkflowResponse201DataParamSchemaType0,
 )
 from .current_user_response import CurrentUserResponse
+from .dashboard_authorization_mode import DashboardAuthorizationMode
+from .dashboard_data_request import DashboardDataRequest
+from .dashboard_data_request_filters import DashboardDataRequestFilters
+from .dashboard_data_response import DashboardDataResponse
+from .dashboard_effective_time_range import DashboardEffectiveTimeRange
+from .dashboard_freshness_mode import DashboardFreshnessMode
+from .dashboard_list_item_response import DashboardListItemResponse
+from .dashboard_metadata_response import DashboardMetadataResponse
+from .dashboard_metadata_response_spec import DashboardMetadataResponseSpec
+from .dashboard_scope_type import DashboardScopeType
+from .dashboard_source_catalog_response import DashboardSourceCatalogResponse
+from .dashboard_source_contract_response import DashboardSourceContractResponse
+from .dashboard_source_error import DashboardSourceError
+from .dashboard_source_error_details_type_0 import DashboardSourceErrorDetailsType0
+from .dashboard_source_meta import DashboardSourceMeta
+from .dashboard_source_meta_authorized_refs_type_0 import (
+    DashboardSourceMetaAuthorizedRefsType0,
+)
+from .dashboard_source_meta_unit_hints import DashboardSourceMetaUnitHints
+from .dashboard_source_param_schema_response import DashboardSourceParamSchemaResponse
+from .dashboard_source_result import DashboardSourceResult
+from .dashboard_source_result_data_type_0 import DashboardSourceResultDataType0
+from .dashboard_source_status import DashboardSourceStatus
+from .dashboard_time_range_request import DashboardTimeRangeRequest
+from .dashboard_visibility import DashboardVisibility
 from .delete_identity_response_200 import DeleteIdentityResponse200
 from .delete_identity_response_200_data import DeleteIdentityResponse200Data
 from .delete_identity_role_assignment_response_200 import (
@@ -405,6 +467,9 @@ from .delete_permission_set_role_assignment_response_200_data import (
     DeletePermissionSetRoleAssignmentResponse200Data,
 )
 from .effective_permission_response import EffectivePermissionResponse
+from .effective_permission_response_constraints_type_0 import (
+    EffectivePermissionResponseConstraintsType0,
+)
 from .enforcement_condition import EnforcementCondition
 from .enforcement_response import EnforcementResponse
 from .enforcement_response_conditions import EnforcementResponseConditions
@@ -440,6 +505,7 @@ from .execution_summary import ExecutionSummary
 from .execution_summary_workflow_task_type_0 import ExecutionSummaryWorkflowTaskType0
 from .freeze_identity_response_200 import FreezeIdentityResponse200
 from .freeze_identity_response_200_data import FreezeIdentityResponse200Data
+from .freshness_mode import FreshnessMode
 from .get_action_response_200 import GetActionResponse200
 from .get_action_response_200_data import GetActionResponse200Data
 from .get_action_response_200_data_out_schema_type_0 import (
@@ -611,6 +677,10 @@ from .paginated_response_pack_test_summary import PaginatedResponsePackTestSumma
 from .paginated_response_pack_test_summary_items_item import (
     PaginatedResponsePackTestSummaryItemsItem,
 )
+from .paginated_response_policy_summary import PaginatedResponsePolicySummary
+from .paginated_response_policy_summary_items_item import (
+    PaginatedResponsePolicySummaryItemsItem,
+)
 from .paginated_response_rule_summary import PaginatedResponseRuleSummary
 from .paginated_response_rule_summary_items_item import (
     PaginatedResponseRuleSummaryItemsItem,
@@ -667,11 +737,22 @@ from .pagination_meta import PaginationMeta
 from .permission_assignment_response import PermissionAssignmentResponse
 from .permission_set_role_assignment_response import PermissionSetRoleAssignmentResponse
 from .permission_set_summary import PermissionSetSummary
+from .policy_method import PolicyMethod
+from .policy_response import PolicyResponse
+from .policy_scope_request import PolicyScopeRequest
+from .policy_scope_response import PolicyScopeResponse
+from .policy_scope_type import PolicyScopeType
+from .policy_summary import PolicySummary
 from .preferred_worker_selector_term import PreferredWorkerSelectorTerm
+from .preview_dashboard_request import PreviewDashboardRequest
 from .preview_work_queue_items_request import PreviewWorkQueueItemsRequest
 from .preview_work_queue_items_response import PreviewWorkQueueItemsResponse
 from .provider_profile_response import ProviderProfileResponse
 from .queue_stats_response import QueueStatsResponse
+from .quota_policy_request import QuotaPolicyRequest
+from .quota_policy_response import QuotaPolicyResponse
+from .rate_limit_policy_request import RateLimitPolicyRequest
+from .rate_limit_policy_response import RateLimitPolicyResponse
 from .refresh_token_request import RefreshTokenRequest
 from .refresh_token_response_200 import RefreshTokenResponse200
 from .refresh_token_response_200_data import RefreshTokenResponse200Data
@@ -721,6 +802,8 @@ from .set_json import SetJson
 from .set_json_op import SetJsonOp
 from .set_string import SetString
 from .set_string_op import SetStringOp
+from .source_availability import SourceAvailability
+from .source_type import SourceType
 from .success_response import SuccessResponse
 from .sync_pack_workflows_response_200 import SyncPackWorkflowsResponse200
 from .sync_pack_workflows_response_200_data import SyncPackWorkflowsResponse200Data
@@ -739,6 +822,9 @@ from .token_login_response_200 import TokenLoginResponse200
 from .token_login_response_200_data import TokenLoginResponse200Data
 from .token_response import TokenResponse
 from .toleration_operator import TolerationOperator
+from .trace_enforcement_summary import TraceEnforcementSummary
+from .trace_report_response import TraceReportResponse
+from .trace_work_queue_dispatch_summary import TraceWorkQueueDispatchSummary
 from .trigger_response import TriggerResponse
 from .trigger_response_out_schema_type_0 import TriggerResponseOutSchemaType0
 from .trigger_response_param_schema_type_0 import TriggerResponseParamSchemaType0
@@ -777,6 +863,8 @@ from .update_action_response_200_data_worker_selector import (
 from .update_current_user_request import UpdateCurrentUserRequest
 from .update_current_user_response_200 import UpdateCurrentUserResponse200
 from .update_current_user_response_200_data import UpdateCurrentUserResponse200Data
+from .update_dashboard_request import UpdateDashboardRequest
+from .update_dashboard_request_spec_type_0 import UpdateDashboardRequestSpecType0
 from .update_identity_request import UpdateIdentityRequest
 from .update_identity_response_200 import UpdateIdentityResponse200
 from .update_identity_response_200_data import UpdateIdentityResponse200Data
@@ -799,6 +887,7 @@ from .update_pack_response_200_data_meta import UpdatePackResponse200DataMeta
 from .update_permission_set_request import UpdatePermissionSetRequest
 from .update_permission_set_response_200 import UpdatePermissionSetResponse200
 from .update_permission_set_response_200_data import UpdatePermissionSetResponse200Data
+from .update_policy_request import UpdatePolicyRequest
 from .update_rule_request import UpdateRuleRequest
 from .update_rule_request_action_params_type_0 import UpdateRuleRequestActionParamsType0
 from .update_rule_request_conditions_type_0 import UpdateRuleRequestConditionsType0
@@ -871,6 +960,7 @@ from .validate_pack_workflows_response_200_data_errors import (
 from .webhook_receiver_request import WebhookReceiverRequest
 from .webhook_receiver_response import WebhookReceiverResponse
 from .work_queue_batch_mode import WorkQueueBatchMode
+from .work_queue_dispatch_status import WorkQueueDispatchStatus
 from .work_queue_item_bulk_operation import WorkQueueItemBulkOperation
 from .work_queue_item_json_path_selector import WorkQueueItemJsonPathSelector
 from .work_queue_item_json_path_selector_vars import WorkQueueItemJsonPathSelectorVars
@@ -938,6 +1028,11 @@ __all__ = (
     "ApiResponseAuthSettingsResponseData",
     "ApiResponseCurrentUserResponse",
     "ApiResponseCurrentUserResponseData",
+    "ApiResponseDashboardMetadataResponse",
+    "ApiResponseDashboardMetadataResponseData",
+    "ApiResponseDashboardMetadataResponseDataSpec",
+    "ApiResponseDashboardSourceCatalogResponse",
+    "ApiResponseDashboardSourceCatalogResponseData",
     "ApiResponseEnforcementResponse",
     "ApiResponseEnforcementResponseData",
     "ApiResponseEnforcementResponseDataConditions",
@@ -972,6 +1067,8 @@ __all__ = (
     "ApiResponsePackResponseDataMeta",
     "ApiResponsePermissionAssignmentResponse",
     "ApiResponsePermissionAssignmentResponseData",
+    "ApiResponsePolicyResponse",
+    "ApiResponsePolicyResponseData",
     "ApiResponsePreviewWorkQueueItemsResponse",
     "ApiResponsePreviewWorkQueueItemsResponseData",
     "ApiResponseQueueStatsResponse",
@@ -993,8 +1090,12 @@ __all__ = (
     "ApiResponseSensorResponseDataParamSchemaType0",
     "ApiResponseSensorResponseDataWorkerSelector",
     "ApiResponseString",
+    "ApiResponseSuccessResponse",
+    "ApiResponseSuccessResponseData",
     "ApiResponseTokenResponse",
     "ApiResponseTokenResponseData",
+    "ApiResponseTraceReportResponse",
+    "ApiResponseTraceReportResponseData",
     "ApiResponseTriggerResponse",
     "ApiResponseTriggerResponseData",
     "ApiResponseTriggerResponseDataOutSchemaType0",
@@ -1003,6 +1104,8 @@ __all__ = (
     "ApiResponseVecAuditEventResponseDataItem",
     "ApiResponseVecAuditEventResponseDataItemCorrelationChainType0",
     "ApiResponseVecAuditEventResponseDataItemDetailsType0",
+    "ApiResponseVecDashboardListItemResponse",
+    "ApiResponseVecDashboardListItemResponseDataItem",
     "ApiResponseWebhookReceiverResponse",
     "ApiResponseWebhookReceiverResponseData",
     "ApiResponseWorkflowResponse",
@@ -1030,6 +1133,7 @@ __all__ = (
     "AuditEventResponseDetailsType0",
     "AuditEventSummary",
     "AuditOutcome",
+    "AuthorizationBasis",
     "AuthSettingsResponse200",
     "AuthSettingsResponse200Data",
     "CancelExecutionResponse200",
@@ -1043,6 +1147,9 @@ __all__ = (
     "ChangePasswordRequest",
     "ChangePasswordResponse200",
     "ChangePasswordResponse200Data",
+    "CloneDashboardRequest",
+    "ConcurrencyPolicyRequest",
+    "ConcurrencyPolicyResponse",
     "CordonWorkerRequest",
     "CreateActionRequest",
     "CreateActionRequestOutSchemaType0",
@@ -1055,6 +1162,11 @@ __all__ = (
     "CreateActionResponse201DataParamSchemaType0",
     "CreateActionResponse201DataRequiredWorkerRuntimes",
     "CreateActionResponse201DataWorkerSelector",
+    "CreateDashboardRequest",
+    "CreateDashboardRequestSpec",
+    "CreateEventRequest",
+    "CreateEventRequestConfig",
+    "CreateEventRequestPayload",
     "CreateExecutionRequest",
     "CreateExecutionRequestEnvVars",
     "CreateExecutionRequestParameters",
@@ -1091,6 +1203,7 @@ __all__ = (
     "CreatePermissionSetRoleAssignmentRequest",
     "CreatePermissionSetRoleAssignmentResponse201",
     "CreatePermissionSetRoleAssignmentResponse201Data",
+    "CreatePolicyRequest",
     "CreateRuleRequest",
     "CreateRuleRequestActionParams",
     "CreateRuleRequestConditions",
@@ -1120,6 +1233,29 @@ __all__ = (
     "CreateWorkQueueRequestConfig",
     "CreateWorkQueueRequestItemSchema",
     "CurrentUserResponse",
+    "DashboardAuthorizationMode",
+    "DashboardDataRequest",
+    "DashboardDataRequestFilters",
+    "DashboardDataResponse",
+    "DashboardEffectiveTimeRange",
+    "DashboardFreshnessMode",
+    "DashboardListItemResponse",
+    "DashboardMetadataResponse",
+    "DashboardMetadataResponseSpec",
+    "DashboardScopeType",
+    "DashboardSourceCatalogResponse",
+    "DashboardSourceContractResponse",
+    "DashboardSourceError",
+    "DashboardSourceErrorDetailsType0",
+    "DashboardSourceMeta",
+    "DashboardSourceMetaAuthorizedRefsType0",
+    "DashboardSourceMetaUnitHints",
+    "DashboardSourceParamSchemaResponse",
+    "DashboardSourceResult",
+    "DashboardSourceResultDataType0",
+    "DashboardSourceStatus",
+    "DashboardTimeRangeRequest",
+    "DashboardVisibility",
     "DeleteIdentityResponse200",
     "DeleteIdentityResponse200Data",
     "DeleteIdentityRoleAssignmentResponse200",
@@ -1131,6 +1267,7 @@ __all__ = (
     "DeletePermissionSetRoleAssignmentResponse200",
     "DeletePermissionSetRoleAssignmentResponse200Data",
     "EffectivePermissionResponse",
+    "EffectivePermissionResponseConstraintsType0",
     "EnforcementCondition",
     "EnforcementResponse",
     "EnforcementResponseConditions",
@@ -1158,6 +1295,7 @@ __all__ = (
     "ExecutionSummaryWorkflowTaskType0",
     "FreezeIdentityResponse200",
     "FreezeIdentityResponse200Data",
+    "FreshnessMode",
     "GetActionResponse200",
     "GetActionResponse200Data",
     "GetActionResponse200DataOutSchemaType0",
@@ -1273,6 +1411,8 @@ __all__ = (
     "PaginatedResponsePackSummaryItemsItem",
     "PaginatedResponsePackTestSummary",
     "PaginatedResponsePackTestSummaryItemsItem",
+    "PaginatedResponsePolicySummary",
+    "PaginatedResponsePolicySummaryItemsItem",
     "PaginatedResponseRuleSummary",
     "PaginatedResponseRuleSummaryItemsItem",
     "PaginatedResponseRuleSummaryItemsItemActionParams",
@@ -1299,11 +1439,22 @@ __all__ = (
     "PermissionAssignmentResponse",
     "PermissionSetRoleAssignmentResponse",
     "PermissionSetSummary",
+    "PolicyMethod",
+    "PolicyResponse",
+    "PolicyScopeRequest",
+    "PolicyScopeResponse",
+    "PolicyScopeType",
+    "PolicySummary",
     "PreferredWorkerSelectorTerm",
+    "PreviewDashboardRequest",
     "PreviewWorkQueueItemsRequest",
     "PreviewWorkQueueItemsResponse",
     "ProviderProfileResponse",
     "QueueStatsResponse",
+    "QuotaPolicyRequest",
+    "QuotaPolicyResponse",
+    "RateLimitPolicyRequest",
+    "RateLimitPolicyResponse",
     "RefreshTokenRequest",
     "RefreshTokenResponse200",
     "RefreshTokenResponse200Data",
@@ -1345,6 +1496,8 @@ __all__ = (
     "SetJsonOp",
     "SetString",
     "SetStringOp",
+    "SourceAvailability",
+    "SourceType",
     "SuccessResponse",
     "SyncPackWorkflowsResponse200",
     "SyncPackWorkflowsResponse200Data",
@@ -1363,6 +1516,9 @@ __all__ = (
     "TokenLoginResponse200Data",
     "TokenResponse",
     "TolerationOperator",
+    "TraceEnforcementSummary",
+    "TraceReportResponse",
+    "TraceWorkQueueDispatchSummary",
     "TriggerResponse",
     "TriggerResponseOutSchemaType0",
     "TriggerResponseParamSchemaType0",
@@ -1387,6 +1543,8 @@ __all__ = (
     "UpdateCurrentUserRequest",
     "UpdateCurrentUserResponse200",
     "UpdateCurrentUserResponse200Data",
+    "UpdateDashboardRequest",
+    "UpdateDashboardRequestSpecType0",
     "UpdateIdentityRequest",
     "UpdateIdentityResponse200",
     "UpdateIdentityResponse200Data",
@@ -1407,6 +1565,7 @@ __all__ = (
     "UpdatePermissionSetRequest",
     "UpdatePermissionSetResponse200",
     "UpdatePermissionSetResponse200Data",
+    "UpdatePolicyRequest",
     "UpdateRuleRequest",
     "UpdateRuleRequestActionParamsType0",
     "UpdateRuleRequestConditionsType0",
@@ -1461,6 +1620,7 @@ __all__ = (
     "WorkflowSummary",
     "WorkflowSyncResult",
     "WorkQueueBatchMode",
+    "WorkQueueDispatchStatus",
     "WorkQueueItemBulkOperation",
     "WorkQueueItemJsonPathSelector",
     "WorkQueueItemJsonPathSelectorVars",

@@ -44,6 +44,8 @@ class ApiResponseEnforcementResponseData:
         resolved_at (datetime.datetime | None | Unset): Timestamp when the enforcement was resolved (status changed from
             created to processed/disabled) Example: 2024-01-13T10:30:01Z.
         rule (int | None | Unset):
+        trace_tag (None | str | Unset): Trace tag associated to this enforcement via linked executions. Example:
+            core.timer.1234.
     """
 
     condition: EnforcementCondition
@@ -58,6 +60,7 @@ class ApiResponseEnforcementResponseData:
     event: int | None | Unset = UNSET
     resolved_at: datetime.datetime | None | Unset = UNSET
     rule: int | None | Unset = UNSET
+    trace_tag: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -107,6 +110,12 @@ class ApiResponseEnforcementResponseData:
         else:
             rule = self.rule
 
+        trace_tag: None | str | Unset
+        if isinstance(self.trace_tag, Unset):
+            trace_tag = UNSET
+        else:
+            trace_tag = self.trace_tag
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -128,6 +137,8 @@ class ApiResponseEnforcementResponseData:
             field_dict["resolved_at"] = resolved_at
         if rule is not UNSET:
             field_dict["rule"] = rule
+        if trace_tag is not UNSET:
+            field_dict["trace_tag"] = trace_tag
 
         return field_dict
 
@@ -216,6 +227,15 @@ class ApiResponseEnforcementResponseData:
 
         rule = _parse_rule(d.pop("rule", UNSET))
 
+        def _parse_trace_tag(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        trace_tag = _parse_trace_tag(d.pop("trace_tag", UNSET))
+
         api_response_enforcement_response_data = cls(
             condition=condition,
             conditions=conditions,
@@ -229,6 +249,7 @@ class ApiResponseEnforcementResponseData:
             event=event,
             resolved_at=resolved_at,
             rule=rule,
+            trace_tag=trace_tag,
         )
 
         api_response_enforcement_response_data.additional_properties = d
