@@ -29,7 +29,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/executions/enforcement/{enforcement_id}".format(
+        "url": "/api/v1/enforcements/{enforcement_id}/executions".format(
             enforcement_id=quote(str(enforcement_id), safe=""),
         ),
         "params": params,

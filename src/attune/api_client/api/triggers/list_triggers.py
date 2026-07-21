@@ -13,6 +13,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
 
@@ -21,6 +22,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_q: None | str | Unset
+    if isinstance(q, Unset):
+        json_q = UNSET
+    else:
+        json_q = q
+    params["q"] = json_q
 
     json_referencing_pack_ref: None | str | Unset
     if isinstance(referencing_pack_ref, Unset):
@@ -74,6 +82,7 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseTriggerSummary]:
     """List all triggers with pagination
@@ -81,6 +90,7 @@ def sync_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         referencing_pack_ref (None | str | Unset):
 
     Raises:
@@ -94,6 +104,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         referencing_pack_ref=referencing_pack_ref,
     )
 
@@ -109,6 +120,7 @@ def sync(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseTriggerSummary | None:
     """List all triggers with pagination
@@ -116,6 +128,7 @@ def sync(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         referencing_pack_ref (None | str | Unset):
 
     Raises:
@@ -130,6 +143,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        q=q,
         referencing_pack_ref=referencing_pack_ref,
     ).parsed
 
@@ -139,6 +153,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseTriggerSummary]:
     """List all triggers with pagination
@@ -146,6 +161,7 @@ async def asyncio_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         referencing_pack_ref (None | str | Unset):
 
     Raises:
@@ -159,6 +175,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         referencing_pack_ref=referencing_pack_ref,
     )
 
@@ -172,6 +189,7 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseTriggerSummary | None:
     """List all triggers with pagination
@@ -179,6 +197,7 @@ async def asyncio(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         referencing_pack_ref (None | str | Unset):
 
     Raises:
@@ -194,6 +213,7 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            q=q,
             referencing_pack_ref=referencing_pack_ref,
         )
     ).parsed

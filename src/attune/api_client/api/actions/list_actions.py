@@ -13,6 +13,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
@@ -22,6 +23,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_q: None | str | Unset
+    if isinstance(q, Unset):
+        json_q = UNSET
+    else:
+        json_q = q
+    params["q"] = json_q
 
     params["executable_with_current_access"] = executable_with_current_access
 
@@ -73,6 +81,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[PaginatedResponseActionSummary]:
@@ -81,6 +90,7 @@ def sync_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         executable_with_current_access (bool | Unset):
         referencing_pack_ref (None | str | Unset):
 
@@ -95,6 +105,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         executable_with_current_access=executable_with_current_access,
         referencing_pack_ref=referencing_pack_ref,
     )
@@ -111,6 +122,7 @@ def sync(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> PaginatedResponseActionSummary | None:
@@ -119,6 +131,7 @@ def sync(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         executable_with_current_access (bool | Unset):
         referencing_pack_ref (None | str | Unset):
 
@@ -134,6 +147,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        q=q,
         executable_with_current_access=executable_with_current_access,
         referencing_pack_ref=referencing_pack_ref,
     ).parsed
@@ -144,6 +158,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> Response[PaginatedResponseActionSummary]:
@@ -152,6 +167,7 @@ async def asyncio_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         executable_with_current_access (bool | Unset):
         referencing_pack_ref (None | str | Unset):
 
@@ -166,6 +182,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         executable_with_current_access=executable_with_current_access,
         referencing_pack_ref=referencing_pack_ref,
     )
@@ -180,6 +197,7 @@ async def asyncio(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     executable_with_current_access: bool | Unset = UNSET,
     referencing_pack_ref: None | str | Unset = UNSET,
 ) -> PaginatedResponseActionSummary | None:
@@ -188,6 +206,7 @@ async def asyncio(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         executable_with_current_access (bool | Unset):
         referencing_pack_ref (None | str | Unset):
 
@@ -204,6 +223,7 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            q=q,
             executable_with_current_access=executable_with_current_access,
             referencing_pack_ref=referencing_pack_ref,
         )

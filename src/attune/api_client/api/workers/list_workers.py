@@ -16,6 +16,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     role: None | Unset | WorkerRole = UNSET,
     status: None | Unset | WorkerStatus = UNSET,
     cordoned: bool | None | Unset = UNSET,
@@ -27,6 +28,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_q: None | str | Unset
+    if isinstance(q, Unset):
+        json_q = UNSET
+    else:
+        json_q = q
+    params["q"] = json_q
 
     json_role: None | str | Unset
     if isinstance(role, Unset):
@@ -103,6 +111,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     role: None | Unset | WorkerRole = UNSET,
     status: None | Unset | WorkerStatus = UNSET,
     cordoned: bool | None | Unset = UNSET,
@@ -112,6 +121,7 @@ def sync_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         role (None | Unset | WorkerRole):
         status (None | Unset | WorkerStatus):
         cordoned (bool | None | Unset):
@@ -128,6 +138,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         role=role,
         status=status,
         cordoned=cordoned,
@@ -146,6 +157,7 @@ def sync(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     role: None | Unset | WorkerRole = UNSET,
     status: None | Unset | WorkerStatus = UNSET,
     cordoned: bool | None | Unset = UNSET,
@@ -155,6 +167,7 @@ def sync(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         role (None | Unset | WorkerRole):
         status (None | Unset | WorkerStatus):
         cordoned (bool | None | Unset):
@@ -172,6 +185,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        q=q,
         role=role,
         status=status,
         cordoned=cordoned,
@@ -184,6 +198,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     role: None | Unset | WorkerRole = UNSET,
     status: None | Unset | WorkerStatus = UNSET,
     cordoned: bool | None | Unset = UNSET,
@@ -193,6 +208,7 @@ async def asyncio_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         role (None | Unset | WorkerRole):
         status (None | Unset | WorkerStatus):
         cordoned (bool | None | Unset):
@@ -209,6 +225,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         role=role,
         status=status,
         cordoned=cordoned,
@@ -225,6 +242,7 @@ async def asyncio(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     role: None | Unset | WorkerRole = UNSET,
     status: None | Unset | WorkerStatus = UNSET,
     cordoned: bool | None | Unset = UNSET,
@@ -234,6 +252,7 @@ async def asyncio(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         role (None | Unset | WorkerRole):
         status (None | Unset | WorkerStatus):
         cordoned (bool | None | Unset):
@@ -252,6 +271,7 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            q=q,
             role=role,
             status=status,
             cordoned=cordoned,

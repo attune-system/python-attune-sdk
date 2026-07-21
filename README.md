@@ -69,6 +69,7 @@ def main():
     return {
         "artifact_id": allocation.artifact_id,
         "version_id": allocation.version_id,
+        "file_path": allocation.file_path,
         "path": str(allocation.absolute_path),
     }
 
@@ -117,6 +118,127 @@ client = AuthenticatedClient(base_url="http://localhost:8080", token="your-token
 
 All API modules live under `attune.api_client.api.<domain>` and all request/response
 models under `attune.api_client.models`.
+
+### Common Action Tasks
+
+Actions can use the typed API client with their execution-scoped credentials for
+common platform operations.
+
+#### Enqueue One Item
+
+```python
+import attune
+from attune.api_client.api.queues import enqueue_queue_item
+from attune.api_client.models.enqueue_work_queue_item_request import EnqueueWorkQueueItemRequest
+from attune.api_client.models.enqueue_work_queue_item_request_payload import (
+    EnqueueWorkQueueItemRequestPayload,
+)
+
+def main(order_id: str):
+    enqueue_queue_item.sync(
+        "acme.orders",
+        client=attune.context.client,
+        body=EnqueueWorkQueueItemRequest(
+            item_key=f"order-{order_id}",
+            priority=10,
+            payload=EnqueueWorkQueueItemRequestPayload.from_dict(
+                {"order_id": order_id}
+            ),
+        ),
+    )
+    return {"queued_order_id": order_id}
+
+attune.run_action(main)
+```
+
+#### Enqueue a Batch
+
+Use the bulk endpoint to enqueue all items in one request. Give each item a
+stable key so it can be identified across submissions:
+
+```python
+import attune
+from attune.api_client.api.queues import bulk_enqueue_queue_items
+from attune.api_client.models.bulk_enqueue_work_queue_items_request import (
+    BulkEnqueueWorkQueueItemsRequest,
+)
+from attune.api_client.models.enqueue_work_queue_item_request import EnqueueWorkQueueItemRequest
+from attune.api_client.models.enqueue_work_queue_item_request_payload import (
+    EnqueueWorkQueueItemRequestPayload,
+)
+
+def main(order_ids: list[str]):
+    result = bulk_enqueue_queue_items.sync(
+        "acme.orders",
+        client=attune.context.client,
+        body=BulkEnqueueWorkQueueItemsRequest(
+            items=[
+                EnqueueWorkQueueItemRequest(
+                    item_key=f"order-{order_id}",
+                    payload=EnqueueWorkQueueItemRequestPayload.from_dict(
+                        {"order_id": order_id}
+                    ),
+                )
+                for order_id in order_ids
+            ],
+        )
+    )
+    if result is None:
+        raise RuntimeError("Bulk queue enqueue failed")
+    return {
+        "created_count": result.data.created_count,
+        "updated_count": result.data.updated_count,
+    }
+
+attune.run_action(main)
+```
+
+#### Emit an Event
+
+```python
+import attune
+from attune.api_client.api.events import create_event
+from attune.api_client.models.create_event_request import CreateEventRequest
+from attune.api_client.models.create_event_request_payload import CreateEventRequestPayload
+
+def main(deployment_id: str, environment: str):
+    create_event.sync(
+        client=attune.context.client,
+        body=CreateEventRequest(
+            trigger_ref="acme.deployment.completed",
+            payload=CreateEventRequestPayload.from_dict(
+                {"deployment_id": deployment_id, "environment": environment}
+            ),
+        ),
+    )
+    return {"emitted_event": "acme.deployment.completed"}
+
+attune.run_action(main)
+```
+
+#### Read a File Artifact
+
+Pass the `file_path` returned by `allocate_file_version()` to a downstream
+action. It is relative to the shared artifact volume, so resolve and validate
+it before reading:
+
+```python
+import attune
+
+def main(file_path: str):
+    artifacts_dir = attune.context.artifacts_dir
+    if artifacts_dir is None:
+        raise RuntimeError("ATTUNE_ARTIFACTS_DIR is required to read file artifacts")
+
+    root = artifacts_dir.resolve()
+    artifact_path = (root / file_path).resolve()
+    if not artifact_path.is_relative_to(root):
+        raise ValueError("file_path must remain within ATTUNE_ARTIFACTS_DIR")
+
+    return {"contents": artifact_path.read_text(encoding="utf-8")}
+
+attune.run_action(main)
+```
 
 ## Writing Sensors
 

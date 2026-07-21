@@ -13,6 +13,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     pack_ref: None | str | Unset = UNSET,
     action_ref: None | str | Unset = UNSET,
     trigger_ref: None | str | Unset = UNSET,
@@ -24,6 +25,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_q: None | str | Unset
+    if isinstance(q, Unset):
+        json_q = UNSET
+    else:
+        json_q = q
+    params["q"] = json_q
 
     json_pack_ref: None | str | Unset
     if isinstance(pack_ref, Unset):
@@ -98,6 +106,7 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     pack_ref: None | str | Unset = UNSET,
     action_ref: None | str | Unset = UNSET,
     trigger_ref: None | str | Unset = UNSET,
@@ -108,6 +117,7 @@ def sync_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         pack_ref (None | str | Unset):
         action_ref (None | str | Unset):
         trigger_ref (None | str | Unset):
@@ -124,6 +134,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         pack_ref=pack_ref,
         action_ref=action_ref,
         trigger_ref=trigger_ref,
@@ -142,6 +153,7 @@ def sync(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     pack_ref: None | str | Unset = UNSET,
     action_ref: None | str | Unset = UNSET,
     trigger_ref: None | str | Unset = UNSET,
@@ -152,6 +164,7 @@ def sync(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         pack_ref (None | str | Unset):
         action_ref (None | str | Unset):
         trigger_ref (None | str | Unset):
@@ -169,6 +182,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        q=q,
         pack_ref=pack_ref,
         action_ref=action_ref,
         trigger_ref=trigger_ref,
@@ -181,6 +195,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     pack_ref: None | str | Unset = UNSET,
     action_ref: None | str | Unset = UNSET,
     trigger_ref: None | str | Unset = UNSET,
@@ -191,6 +206,7 @@ async def asyncio_detailed(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         pack_ref (None | str | Unset):
         action_ref (None | str | Unset):
         trigger_ref (None | str | Unset):
@@ -207,6 +223,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         page=page,
         page_size=page_size,
+        q=q,
         pack_ref=pack_ref,
         action_ref=action_ref,
         trigger_ref=trigger_ref,
@@ -223,6 +240,7 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
     pack_ref: None | str | Unset = UNSET,
     action_ref: None | str | Unset = UNSET,
     trigger_ref: None | str | Unset = UNSET,
@@ -233,6 +251,7 @@ async def asyncio(
     Args:
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
         pack_ref (None | str | Unset):
         action_ref (None | str | Unset):
         trigger_ref (None | str | Unset):
@@ -251,6 +270,7 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            q=q,
             pack_ref=pack_ref,
             action_ref=action_ref,
             trigger_ref=trigger_ref,

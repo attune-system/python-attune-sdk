@@ -16,7 +16,7 @@ class HealthResponse:
     Attributes:
         database (str): Database connectivity status Example: connected.
         status (str): Service status Example: ok.
-        version (str): Service version Example: 0.1.0.
+        version (str): Service version Example: 0.2.0.
     """
 
     database: str

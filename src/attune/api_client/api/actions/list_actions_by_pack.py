@@ -15,6 +15,7 @@ def _get_kwargs(
     *,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -22,6 +23,13 @@ def _get_kwargs(
     params["page"] = page
 
     params["page_size"] = page_size
+
+    json_q: None | str | Unset
+    if isinstance(q, Unset):
+        json_q = UNSET
+    else:
+        json_q = q
+    params["q"] = json_q
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -71,6 +79,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseActionSummary]:
     """List actions by pack reference
 
@@ -78,6 +87,7 @@ def sync_detailed(
         pack_ref (str):
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -91,6 +101,7 @@ def sync_detailed(
         pack_ref=pack_ref,
         page=page,
         page_size=page_size,
+        q=q,
     )
 
     response = client.get_httpx_client().request(
@@ -106,6 +117,7 @@ def sync(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseActionSummary | None:
     """List actions by pack reference
 
@@ -113,6 +125,7 @@ def sync(
         pack_ref (str):
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -127,6 +140,7 @@ def sync(
         client=client,
         page=page,
         page_size=page_size,
+        q=q,
     ).parsed
 
 
@@ -136,6 +150,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseActionSummary]:
     """List actions by pack reference
 
@@ -143,6 +158,7 @@ async def asyncio_detailed(
         pack_ref (str):
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -156,6 +172,7 @@ async def asyncio_detailed(
         pack_ref=pack_ref,
         page=page,
         page_size=page_size,
+        q=q,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -169,6 +186,7 @@ async def asyncio(
     client: AuthenticatedClient,
     page: int | Unset = UNSET,
     page_size: int | Unset = UNSET,
+    q: None | str | Unset = UNSET,
 ) -> Any | PaginatedResponseActionSummary | None:
     """List actions by pack reference
 
@@ -176,6 +194,7 @@ async def asyncio(
         pack_ref (str):
         page (int | Unset):
         page_size (int | Unset):
+        q (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -191,5 +210,6 @@ async def asyncio(
             client=client,
             page=page,
             page_size=page_size,
+            q=q,
         )
     ).parsed
