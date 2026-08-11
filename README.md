@@ -94,6 +94,9 @@ from attune.api_client.api.executions import get_execution
 
 # Sync — use endpoint_name.sync(client=...)
 packs = list_packs.sync(client=attune.context.client)
+if packs is None:
+    raise RuntimeError("Unable to list packs")
+pack_data = packs.to_dict()
 
 # Async — use endpoint_name.asyncio(client=...) with the same client instance
 packs = await list_packs.asyncio(client=attune.context.client)
@@ -108,6 +111,10 @@ async client needed. Each endpoint module exposes four functions:
 | `sync_detailed(client=...)` | `Response[T]` with status, headers, content |
 | `asyncio(client=...)` | Parsed response model (async) |
 | `asyncio_detailed(client=...)` | `Response[T]` (async) |
+
+Generated endpoint helpers may return `None` for documented error responses.
+Check the result before accessing fields. Generated response and model objects
+provide `to_dict()` when a plain JSON-compatible dictionary is needed.
 
 **Constructing a client manually** (e.g., outside an execution):
 
@@ -199,14 +206,16 @@ attune.run_action(main)
 import attune
 from attune.api_client.api.events import create_event
 from attune.api_client.models.create_event_request import CreateEventRequest
-from attune.api_client.models.create_event_request_payload import CreateEventRequestPayload
+from attune.api_client.models.create_event_request_payload_type_0 import (
+    CreateEventRequestPayloadType0,
+)
 
 def main(deployment_id: str, environment: str):
     create_event.sync(
         client=attune.context.client,
         body=CreateEventRequest(
             trigger_ref="acme.deployment.completed",
-            payload=CreateEventRequestPayload.from_dict(
+            payload=CreateEventRequestPayloadType0.from_dict(
                 {"deployment_id": deployment_id, "environment": environment}
             ),
         ),
@@ -253,14 +262,19 @@ import attune
 # attune.sensor_context is available at import time
 print(attune.sensor_context.sensor_ref)
 print(attune.sensor_context.api_url)
-print(attune.sensor_context.config)  # ATTUNE_SENSOR_CONFIG_* vars
+print(attune.sensor_context.config)  # caller-supplied ATTUNE_SENSOR_CONFIG_* vars
 ```
 
-Managed sensors support runtime-driven token rotation. The SDK resolves the
-current auth token from `sensor_context.current_token_state` /
-`sensor_context.current_api_token` on demand, so long-running API usage and
-notifier reconnects can pick up rotated credentials.
-See the cross-SDK contract: [docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
+The current managed sensor service rotates credentials with a controlled
+process restart and injects the replacement `ATTUNE_API_TOKEN` into the new
+process. The SDK also supports an externally managed token-state file for
+nonstandard runtimes; see
+[docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
+
+Persisted sensor `config` is not injected into managed child processes.
+Use each rule's `trigger_params` for managed configuration, or retrieve other
+configuration from an explicitly authorized source. `sensor_context.config`
+only exposes `ATTUNE_SENSOR_CONFIG_*` variables supplied by the caller.
 
 ### Synchronous Polling (`PollingSensor`)
 
@@ -301,7 +315,7 @@ class ApiSensor(attune.AsyncPollingSensor):
         url = rule.trigger_params["url"]
         resp = await self.http.get(url)
         if resp.status_code >= 500:
-            self.emit({"url": url, "status": resp.status_code}, rule=rule)
+            await self.async_emit({"url": url, "status": resp.status_code}, rule=rule)
 
     async def cleanup(self):
         await self.http.aclose()
@@ -364,10 +378,16 @@ class StatefulSensor(attune.PollingSensor):
 poll threads/tasks in response to these hooks. Override them to add custom
 behavior (call `super()` to keep the auto-management).
 
+Passing `rule=rule` to `emit()` or `async_emit()` targets that numeric rule by
+default using `trigger_instance_id="rule_<id>"`. Pass `target_rule=False` only
+for an intentional broadcast to every eligible enabled rule for the trigger.
+
 ### Managed Sensor Token Rotation
 
-When `ATTUNE_SENSOR_TOKEN_STATE_PATH` is set, the SDK reads token state from
-that JSON file on demand. Expected fields:
+The managed sensor service currently rotates tokens by restarting the sensor
+process. It does not inject `ATTUNE_SENSOR_TOKEN_STATE_PATH`. If another runtime
+explicitly provides that path, the SDK reads the JSON file on demand. Expected
+fields:
 
 ```json
 {
@@ -379,7 +399,7 @@ that JSON file on demand. Expected fields:
 Compatibility aliases are also accepted: `api_token` and `token_expires_at`.
 If the state file is unavailable, the SDK falls back to the startup
 `ATTUNE_API_TOKEN` value when present; otherwise token reads fail clearly.
-For cross-language runtime/platform expectations, use the shared contract:
+For Python token-source and failure behavior, see:
 [docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
 
 ## Environment Variables
@@ -394,6 +414,7 @@ For cross-language runtime/platform expectations, use the shared contract:
 | `ATTUNE_API_URL` | API base URL |
 | `ATTUNE_API_TOKEN` | Execution-scoped API token (optional) |
 | `ATTUNE_ARTIFACTS_DIR` | Shared artifact volume path |
+| `ATTUNE_RUNTIME_ENVS_DIR` | Runtime environments root |
 | `ATTUNE_RULE` | Rule reference (if rule-triggered) |
 | `ATTUNE_TRIGGER` | Trigger reference (if event-triggered) |
 
@@ -405,18 +426,29 @@ For cross-language runtime/platform expectations, use the shared contract:
 | `ATTUNE_SENSOR_ID` | Sensor database ID |
 | `ATTUNE_API_URL` | API base URL |
 | `ATTUNE_API_TOKEN` | Sensor-scoped API token |
+| `ATTUNE_PACK_REF` | Pack reference |
+| `ATTUNE_ARTIFACTS_DIR` | Shared artifact volume path |
 | `ATTUNE_API_TOKEN_EXPIRES_AT` | Optional ISO-8601/epoch expiry metadata for the fallback token |
 | `ATTUNE_SENSOR_TOKEN_EXPIRES_AT` | Optional legacy expiry metadata fallback |
-| `ATTUNE_SENSOR_TOKEN_STATE_PATH` | Optional runtime-managed token state file for rotation |
+| `ATTUNE_SENSOR_TOKEN_STATE_PATH` | Optional externally managed token state file; not injected by the managed service |
 | `ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS` | Optional pre-expiry reconnect window (default `30`) |
-| `ATTUNE_NOTIFIER_WS_URL` | Notifier WebSocket URL (for example `ws://localhost:8081/ws`) |
+| `ATTUNE_NOTIFIER_WS_URL` | Notifier WebSocket URL; remote endpoints require `wss://` by default |
+| `ATTUNE_ALLOW_INSECURE_NOTIFIER_WS` | Allow non-loopback `ws://` only on an explicitly trusted development network |
 | `ATTUNE_SENSOR_TRIGGERS` | Bootstrap JSON array of managed rule bindings |
+| `ATTUNE_SENSOR_TRIGGER_TYPES` | JSON array (or comma-separated fallback) of all trigger refs to subscribe to |
 | `ATTUNE_LOG_LEVEL` | Log verbosity |
+| `ATTUNE_LOG_FORMAT` | Managed runtime log format |
+| `ATTUNE_SENSOR_CONFIG_*` | Caller-supplied values exposed by `sensor_context.config`; persisted sensor config is not injected |
+
+`ATTUNE_SENSOR_TRIGGERS` is a startup snapshot. Ordinary rule changes arrive
+in-process through notifier lifecycle envelopes and do not restart the sensor.
+If `ATTUNE_SENSOR_TRIGGER_TYPES` is absent, the SDK derives subscriptions from
+the bootstrap snapshot.
 
 ## Development
 
 ```bash
-cd packs.external/python-attune
+cd python-attune-sdk
 pip install -e ".[dev]"
 pytest
 ```
@@ -434,4 +466,13 @@ To update it after API changes:
 ./scripts/generate-client.sh /path/to/openapi.json
 ```
 
-Requires `openapi-python-client` (included in `[dev]` extras).
+Requires `openapi-python-client==0.29.0` (included in `[dev]` extras). Generation
+is staged in a temporary directory, so a failed generation leaves the committed
+client intact.
+
+The contract tests use the checked operation-inventory snapshot by default. To
+compare every generated operation directly with a candidate spec, run:
+
+```bash
+ATTUNE_OPENAPI_PATH=/path/to/openapi.json pytest tests/test_api_client.py
+```

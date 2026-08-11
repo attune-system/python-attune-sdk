@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
+from typing_extensions import Self
 
 from ..models.dashboard_scope_type import DashboardScopeType
 from ..models.dashboard_visibility import DashboardVisibility
@@ -67,9 +68,9 @@ class UpdateDashboardRequest:
         description: dict[str, Any] | None | str | Unset
         if isinstance(self.description, Unset):
             description = UNSET
-        elif isinstance(self.description, SetString):
-            description = self.description.to_dict()
-        elif isinstance(self.description, NullableStringPatchType1):
+        elif isinstance(self.description, SetString) or isinstance(
+            self.description, NullableStringPatchType1
+        ):
             description = self.description.to_dict()
         else:
             description = self.description
@@ -159,7 +160,7 @@ class UpdateDashboardRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.nullable_string_patch_type_1 import NullableStringPatchType1
         from ..models.set_string import SetString
         from ..models.update_dashboard_request_spec_type_0 import (

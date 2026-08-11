@@ -44,7 +44,7 @@ Quick start — async polling::
         async def poll(self, rule):
             resp = await self.http.get(rule.trigger_params["url"])
             if resp.status_code != 200:
-                self.emit({"status": resp.status_code}, rule=rule)
+                await self.async_emit({"status": resp.status_code}, rule=rule)
 
         async def cleanup(self):
             await self.http.aclose()
@@ -70,6 +70,7 @@ Custom event loop (non-polling)::
 """
 
 import asyncio
+import ipaddress
 import json
 import logging
 import os
@@ -79,6 +80,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import quote, urlparse
 
 from attune.context import sensor_context
 
@@ -200,12 +202,16 @@ class Sensor:
         except ImportError:
             raise ImportError(
                 "The 'httpx' library is required for event emission. "
-                "Install with: pip install attune[http]"
+                "Install with: pip install attune-sdk"
             )
         token = self.context.current_api_token
+        if not token:
+            raise RuntimeError(
+                "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+                "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+            )
         headers = {"Content-Type": "application/json"}
-        if token:
-            headers["Authorization"] = f"Bearer {token}"
+        headers["Authorization"] = f"Bearer {token}"
 
         return httpx.Client(
             base_url=self.context.api_url,
@@ -325,6 +331,10 @@ class Sensor:
         rule_ref = message.get("rule_ref", f"rule_{rule_id}")
         trigger_ref = message.get("trigger_ref") or message.get("trigger_type", "")
         trigger_params = message.get("trigger_params") or {}
+        supplied_enabled = message.get("active")
+        if not isinstance(supplied_enabled, bool):
+            supplied_enabled = message.get("enabled")
+        enabled = supplied_enabled if isinstance(supplied_enabled, bool) else True
 
         if event_type in ("RuleCreated", "RuleEnabled"):
             rule = RuleState(
@@ -332,13 +342,16 @@ class Sensor:
                 rule_ref=rule_ref,
                 trigger_ref=trigger_ref,
                 trigger_params=trigger_params,
-                enabled=True,
+                enabled=enabled,
             )
             with self._rules_lock:
                 existing = self._rules.get(rule_id)
                 self._rules[rule_id] = rule
 
-            if existing and existing.trigger_params != trigger_params:
+            if not rule.enabled:
+                if existing and existing.enabled:
+                    self.on_rule_disabled(rule)
+            elif existing and existing.trigger_params != trigger_params:
                 self.on_rule_updated(rule, existing.trigger_params)
             elif event_type == "RuleEnabled" and existing:
                 self.on_rule_enabled(rule)
@@ -362,11 +375,14 @@ class Sensor:
         elif event_type == "RuleUpdated":
             with self._rules_lock:
                 existing = self._rules.get(rule_id)
+                was_enabled = existing.enabled if existing else False
                 if existing:
                     old_params = dict(existing.trigger_params)
                     existing.trigger_params = trigger_params
                     existing.trigger_ref = trigger_ref or existing.trigger_ref
                     existing.rule_ref = rule_ref
+                    if isinstance(supplied_enabled, bool):
+                        existing.enabled = supplied_enabled
                     rule = existing
                 else:
                     rule = RuleState(
@@ -374,11 +390,16 @@ class Sensor:
                         rule_ref=rule_ref,
                         trigger_ref=trigger_ref,
                         trigger_params=trigger_params,
-                        enabled=True,
+                        enabled=enabled,
                     )
                     self._rules[rule_id] = rule
                     old_params = {}
-            if old_params != trigger_params:
+            if not rule.enabled:
+                if was_enabled:
+                    self.on_rule_disabled(rule)
+            elif not was_enabled and existing:
+                self.on_rule_enabled(rule)
+            elif old_params != trigger_params:
                 self.on_rule_updated(rule, old_params)
             elif not existing:
                 self.on_rule_created(rule)
@@ -411,6 +432,7 @@ class Sensor:
                     "trigger_params": item.get(
                         "config", item.get("trigger_params", {})
                     ),
+                    "active": item.get("active", item.get("enabled", True)),
                 }
             )
 
@@ -419,13 +441,54 @@ class Sensor:
     # ------------------------------------------------------------------
 
     def _managed_trigger_refs(self) -> list[str]:
-        """Return unique trigger refs derived from bootstrapped managed rules."""
+        """Return all managed trigger refs, with bootstrap rules as fallback."""
+        configured_refs: set[str] = set()
+        raw = os.environ.get("ATTUNE_SENSOR_TRIGGER_TYPES", "")
+        if raw:
+            try:
+                parsed = json.loads(raw)
+            except json.JSONDecodeError:
+                parsed = [item.strip() for item in raw.split(",")]
+            if isinstance(parsed, list):
+                configured_refs = {
+                    item.strip()
+                    for item in parsed
+                    if isinstance(item, str) and item.strip()
+                }
+
         with self._rules_lock:
-            trigger_refs = {rule.trigger_ref for rule in self._rules.values() if rule.trigger_ref}
-        return sorted(trigger_refs)
+            trigger_refs = {
+                rule.trigger_ref for rule in self._rules.values() if rule.trigger_ref
+            }
+        return sorted(configured_refs or trigger_refs)
+
+    def _validate_notifier_ws_url(self) -> None:
+        """Reject plaintext remote notifier connections unless explicitly allowed."""
+        url = self.context.notifier_ws_url
+        parsed = urlparse(url)
+        if parsed.scheme == "wss" and parsed.hostname:
+            return
+        if parsed.scheme != "ws" or not parsed.hostname:
+            raise RuntimeError(
+                "ATTUNE_NOTIFIER_WS_URL must be a valid ws:// or wss:// URL"
+            )
+
+        hostname = parsed.hostname
+        is_loopback = hostname.lower() == "localhost"
+        if not is_loopback:
+            try:
+                is_loopback = ipaddress.ip_address(hostname).is_loopback
+            except ValueError:
+                pass
+        if not is_loopback and not self.context.allow_insecure_notifier_ws:
+            raise RuntimeError(
+                "Insecure notifier WebSocket URL is not loopback. Use wss:// or set "
+                "ATTUNE_ALLOW_INSECURE_NOTIFIER_WS=true for a trusted development network."
+            )
 
     def _create_lifecycle_websocket(self) -> Any:
         """Create an authenticated notifier WebSocket connection."""
+        self._validate_notifier_ws_url()
         try:
             import websocket
         except ImportError as exc:
@@ -435,7 +498,12 @@ class Sensor:
             ) from exc
 
         token_state = self.context.current_token_state
-        headers = [f"Authorization: Bearer {token_state.token}"] if token_state.token else []
+        if not token_state.token:
+            raise RuntimeError(
+                "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+                "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+            )
+        headers = [f"Authorization: Bearer {token_state.token}"]
 
         ws = websocket.create_connection(
             self.context.notifier_ws_url,
@@ -465,10 +533,14 @@ class Sensor:
             and current_state.token
             and current_state.token != self._lifecycle_ws_token
         ):
-            self.logger.info("Sensor API token rotated, reconnecting notifier websocket")
+            self.logger.info(
+                "Sensor API token rotated, reconnecting notifier websocket"
+            )
             return True
 
-        if current_state.is_expiring_within(self.context.token_reconnect_window_seconds):
+        if current_state.is_expiring_within(
+            self.context.token_reconnect_window_seconds
+        ):
             exp = current_state.expires_at_epoch
             self.logger.info(
                 "Sensor API token expiring soon, reconnecting notifier websocket",
@@ -484,12 +556,73 @@ class Sensor:
         if message_type == "notification":
             payload = message.get("payload")
             if isinstance(payload, dict):
-                self._handle_rule_message(payload)
+                reconciled = self._reconcile_deferred_rule_message(payload)
+                if reconciled is not None:
+                    self._handle_rule_message(reconciled)
         elif message_type == "error":
             self.logger.warning(
                 "Notifier subscription error",
-                extra={"message": message.get("message")},
+                extra={"notifier_message": message.get("message")},
             )
+
+    def _reconcile_deferred_rule_message(
+        self, message: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        """Refetch details omitted from a compact lifecycle notification."""
+        if message.get("auth_mode") != "deferred" or "trigger_params" in message:
+            return message
+
+        event_type = str(message.get("event_type", ""))
+        if event_type in {
+            "rule.disabled",
+            "rule.deleted",
+            "RuleDisabled",
+            "RuleDeleted",
+        }:
+            return message
+
+        try:
+            rule_id = int(message.get("rule_id"))
+        except (TypeError, ValueError):
+            return None
+
+        with self._rules_lock:
+            existing = self._rules.get(rule_id)
+        rule_ref = message.get("rule_ref")
+        if isinstance(rule_ref, str) and rule_ref:
+            try:
+                response = self.http_client.get(
+                    f"/api/v1/rules/{quote(rule_ref, safe='')}"
+                )
+                response.raise_for_status()
+                data = response.json().get("data")
+                if isinstance(data, dict) and int(data.get("id")) == rule_id:
+                    reconciled = dict(message)
+                    reconciled["rule_ref"] = data.get("ref", rule_ref)
+                    reconciled["trigger_ref"] = data.get(
+                        "trigger_ref", message.get("trigger_ref", "")
+                    )
+                    reconciled["trigger_params"] = data.get("trigger_params") or {}
+                    reconciled["active"] = bool(data.get("enabled", True))
+                    return reconciled
+            except Exception as exc:
+                self.logger.warning(
+                    "Unable to refetch deferred lifecycle rule %s: %s", rule_ref, exc
+                )
+
+        if existing is None:
+            self.logger.warning(
+                "Ignoring deferred lifecycle event for unknown rule %s", rule_id
+            )
+            return None
+
+        reconciled = dict(message)
+        reconciled["rule_ref"] = existing.rule_ref
+        reconciled["trigger_ref"] = existing.trigger_ref
+        reconciled["trigger_params"] = dict(existing.trigger_params)
+        if "active" not in reconciled and "enabled" not in reconciled:
+            reconciled["enabled"] = existing.enabled
+        return reconciled
 
     def _subscribe_lifecycle_filters(self, ws: Any, trigger_refs: list[str]) -> None:
         """Subscribe the WebSocket to managed trigger lifecycle filters."""
@@ -559,7 +692,9 @@ class Sensor:
                     try:
                         message = json.loads(raw_message)
                     except json.JSONDecodeError:
-                        self.logger.warning("Invalid JSON in notifier websocket message")
+                        self.logger.warning(
+                            "Invalid JSON in notifier websocket message"
+                        )
                         continue
                     if isinstance(message, dict):
                         self._handle_lifecycle_envelope(message)
@@ -592,7 +727,7 @@ class Sensor:
         *,
         rule: RuleState | None = None,
         trigger_ref: str | None = None,
-        target_rule: bool = False,
+        target_rule: bool | None = None,
     ) -> int | None:
         """Emit a sensor event via the Attune API.
 
@@ -601,8 +736,9 @@ class Sensor:
             rule: The rule context (used to derive trigger_ref and add source metadata).
             trigger_ref: Explicit trigger ref override. Falls back to rule's trigger_ref
                 or the sensor ref.
-            target_rule: When True and a rule is provided, scope the event to that
-                specific rule by sending a numeric trigger_instance_id.
+            target_rule: With a rule, ``None`` (the default) or ``True`` scopes the
+                event to that numeric rule ID. Set ``False`` for an intentional
+                broadcast to every eligible rule for the trigger.
 
         Returns:
             The event ID if successfully posted, or None on failure.
@@ -618,8 +754,14 @@ class Sensor:
             "payload": payload,
             "source": self.context.sensor_ref,
         }
-        if rule and target_rule:
+        if rule and target_rule is not False:
             body["trigger_instance_id"] = f"rule_{rule.rule_id}"
+
+        if self._http_client is None and not self.context.current_api_token:
+            raise RuntimeError(
+                "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+                "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+            )
 
         try:
             resp = self.http_client.post("/api/v1/events", json=body)
@@ -881,12 +1023,16 @@ class AsyncPollingSensor(Sensor):
         except ImportError:
             raise ImportError(
                 "The 'httpx' library is required for event emission. "
-                "Install with: pip install attune[http]"
+                "Install with: pip install attune-sdk"
             )
         token = self.context.current_api_token
+        if not token:
+            raise RuntimeError(
+                "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+                "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+            )
         headers = {"Content-Type": "application/json"}
-        if token:
-            headers["Authorization"] = f"Bearer {token}"
+        headers["Authorization"] = f"Bearer {token}"
 
         return httpx.AsyncClient(
             base_url=self.context.api_url,
@@ -911,7 +1057,7 @@ class AsyncPollingSensor(Sensor):
         *,
         rule: RuleState | None = None,
         trigger_ref: str | None = None,
-        target_rule: bool = False,
+        target_rule: bool | None = None,
     ) -> int | None:
         """Emit a sensor event via the Attune API (async).
 
@@ -920,8 +1066,9 @@ class AsyncPollingSensor(Sensor):
             rule: The rule context (used to derive trigger_ref and add source metadata).
             trigger_ref: Explicit trigger ref override. Falls back to rule's trigger_ref
                 or the sensor ref.
-            target_rule: When True and a rule is provided, scope the event to that
-                specific rule by sending a numeric trigger_instance_id.
+            target_rule: With a rule, ``None`` (the default) or ``True`` scopes the
+                event to that numeric rule ID. Set ``False`` for an intentional
+                broadcast to every eligible rule for the trigger.
 
         Returns:
             The event ID if successfully posted, or None on failure.
@@ -937,8 +1084,14 @@ class AsyncPollingSensor(Sensor):
             "payload": payload,
             "source": self.context.sensor_ref,
         }
-        if rule and target_rule:
+        if rule and target_rule is not False:
             body["trigger_instance_id"] = f"rule_{rule.rule_id}"
+
+        if self._async_http_client is None and not self.context.current_api_token:
+            raise RuntimeError(
+                "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+                "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+            )
 
         try:
             current_token = self.context.current_api_token
@@ -1017,6 +1170,7 @@ class AsyncPollingSensor(Sensor):
 
     def _start_poll_task(self, rule: RuleState) -> None:
         """Start an async polling task for the given rule."""
+
         def start_task() -> None:
             task = self._poll_tasks.pop(rule.rule_id, None)
             if task and not task.done():
@@ -1040,6 +1194,7 @@ class AsyncPollingSensor(Sensor):
 
     def _cancel_poll_task(self, rule_id: int) -> None:
         """Cancel the polling task for a rule."""
+
         def cancel_task() -> None:
             task = self._poll_tasks.pop(rule_id, None)
             if task and not task.done():

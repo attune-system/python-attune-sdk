@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.artifact_type import ArtifactType
 from ..models.artifact_visibility import ArtifactVisibility
@@ -64,9 +65,9 @@ class UpdateArtifactRequest:
         content_type: dict[str, Any] | None | Unset
         if isinstance(self.content_type, Unset):
             content_type = UNSET
-        elif isinstance(self.content_type, ArtifactStringPatchType0):
-            content_type = self.content_type.to_dict()
-        elif isinstance(self.content_type, ArtifactStringPatchType1):
+        elif isinstance(self.content_type, ArtifactStringPatchType0) or isinstance(
+            self.content_type, ArtifactStringPatchType1
+        ):
             content_type = self.content_type.to_dict()
         else:
             content_type = self.content_type
@@ -74,9 +75,9 @@ class UpdateArtifactRequest:
         data: dict[str, Any] | None | Unset
         if isinstance(self.data, Unset):
             data = UNSET
-        elif isinstance(self.data, ArtifactJsonPatchType0):
-            data = self.data.to_dict()
-        elif isinstance(self.data, ArtifactJsonPatchType1):
+        elif isinstance(self.data, ArtifactJsonPatchType0) or isinstance(
+            self.data, ArtifactJsonPatchType1
+        ):
             data = self.data.to_dict()
         else:
             data = self.data
@@ -84,9 +85,9 @@ class UpdateArtifactRequest:
         description: dict[str, Any] | None | Unset
         if isinstance(self.description, Unset):
             description = UNSET
-        elif isinstance(self.description, ArtifactStringPatchType0):
-            description = self.description.to_dict()
-        elif isinstance(self.description, ArtifactStringPatchType1):
+        elif isinstance(self.description, ArtifactStringPatchType0) or isinstance(
+            self.description, ArtifactStringPatchType1
+        ):
             description = self.description.to_dict()
         else:
             description = self.description
@@ -94,9 +95,9 @@ class UpdateArtifactRequest:
         name: dict[str, Any] | None | Unset
         if isinstance(self.name, Unset):
             name = UNSET
-        elif isinstance(self.name, ArtifactStringPatchType0):
-            name = self.name.to_dict()
-        elif isinstance(self.name, ArtifactStringPatchType1):
+        elif isinstance(self.name, ArtifactStringPatchType0) or isinstance(
+            self.name, ArtifactStringPatchType1
+        ):
             name = self.name.to_dict()
         else:
             name = self.name
@@ -172,7 +173,7 @@ class UpdateArtifactRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.artifact_json_patch_type_0 import ArtifactJsonPatchType0
         from ..models.artifact_json_patch_type_1 import ArtifactJsonPatchType1
         from ..models.artifact_string_patch_type_0 import ArtifactStringPatchType0

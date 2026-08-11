@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
@@ -164,9 +165,9 @@ class UpdateActionRequest:
         artifact_retention_limit: dict[str, Any] | None | Unset
         if isinstance(self.artifact_retention_limit, Unset):
             artifact_retention_limit = UNSET
-        elif isinstance(self.artifact_retention_limit, LogRetentionLimitPatchType0):
-            artifact_retention_limit = self.artifact_retention_limit.to_dict()
-        elif isinstance(self.artifact_retention_limit, LogRetentionLimitPatchType1):
+        elif isinstance(
+            self.artifact_retention_limit, LogRetentionLimitPatchType0
+        ) or isinstance(self.artifact_retention_limit, LogRetentionLimitPatchType1):
             artifact_retention_limit = self.artifact_retention_limit.to_dict()
         else:
             artifact_retention_limit = self.artifact_retention_limit
@@ -174,9 +175,9 @@ class UpdateActionRequest:
         artifact_retention_policy: dict[str, Any] | None | Unset
         if isinstance(self.artifact_retention_policy, Unset):
             artifact_retention_policy = UNSET
-        elif isinstance(self.artifact_retention_policy, LogRetentionPolicyPatchType0):
-            artifact_retention_policy = self.artifact_retention_policy.to_dict()
-        elif isinstance(self.artifact_retention_policy, LogRetentionPolicyPatchType1):
+        elif isinstance(
+            self.artifact_retention_policy, LogRetentionPolicyPatchType0
+        ) or isinstance(self.artifact_retention_policy, LogRetentionPolicyPatchType1):
             artifact_retention_policy = self.artifact_retention_policy.to_dict()
         else:
             artifact_retention_policy = self.artifact_retention_policy
@@ -221,9 +222,9 @@ class UpdateActionRequest:
         log_retention_limit: dict[str, Any] | None | Unset
         if isinstance(self.log_retention_limit, Unset):
             log_retention_limit = UNSET
-        elif isinstance(self.log_retention_limit, LogRetentionLimitPatchType0):
-            log_retention_limit = self.log_retention_limit.to_dict()
-        elif isinstance(self.log_retention_limit, LogRetentionLimitPatchType1):
+        elif isinstance(
+            self.log_retention_limit, LogRetentionLimitPatchType0
+        ) or isinstance(self.log_retention_limit, LogRetentionLimitPatchType1):
             log_retention_limit = self.log_retention_limit.to_dict()
         else:
             log_retention_limit = self.log_retention_limit
@@ -231,9 +232,9 @@ class UpdateActionRequest:
         log_retention_policy: dict[str, Any] | None | Unset
         if isinstance(self.log_retention_policy, Unset):
             log_retention_policy = UNSET
-        elif isinstance(self.log_retention_policy, LogRetentionPolicyPatchType0):
-            log_retention_policy = self.log_retention_policy.to_dict()
-        elif isinstance(self.log_retention_policy, LogRetentionPolicyPatchType1):
+        elif isinstance(
+            self.log_retention_policy, LogRetentionPolicyPatchType0
+        ) or isinstance(self.log_retention_policy, LogRetentionPolicyPatchType1):
             log_retention_policy = self.log_retention_policy.to_dict()
         else:
             log_retention_policy = self.log_retention_policy
@@ -299,9 +300,7 @@ class UpdateActionRequest:
             runtime_version_constraint = UNSET
         elif isinstance(
             self.runtime_version_constraint, RuntimeVersionConstraintPatchType0
-        ):
-            runtime_version_constraint = self.runtime_version_constraint.to_dict()
-        elif isinstance(
+        ) or isinstance(
             self.runtime_version_constraint, RuntimeVersionConstraintPatchType1
         ):
             runtime_version_constraint = self.runtime_version_constraint.to_dict()
@@ -311,9 +310,9 @@ class UpdateActionRequest:
         timeout_seconds: dict[str, Any] | None | Unset
         if isinstance(self.timeout_seconds, Unset):
             timeout_seconds = UNSET
-        elif isinstance(self.timeout_seconds, TimeoutSecondsPatchType0):
-            timeout_seconds = self.timeout_seconds.to_dict()
-        elif isinstance(self.timeout_seconds, TimeoutSecondsPatchType1):
+        elif isinstance(self.timeout_seconds, TimeoutSecondsPatchType0) or isinstance(
+            self.timeout_seconds, TimeoutSecondsPatchType1
+        ):
             timeout_seconds = self.timeout_seconds.to_dict()
         else:
             timeout_seconds = self.timeout_seconds
@@ -401,7 +400,7 @@ class UpdateActionRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.log_retention_limit_patch_type_0 import (
             LogRetentionLimitPatchType0,
         )

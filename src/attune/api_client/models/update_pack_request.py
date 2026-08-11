@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
@@ -94,9 +95,9 @@ class UpdatePackRequest:
         description: dict[str, Any] | None | Unset
         if isinstance(self.description, Unset):
             description = UNSET
-        elif isinstance(self.description, PackDescriptionPatchType0):
-            description = self.description.to_dict()
-        elif isinstance(self.description, PackDescriptionPatchType1):
+        elif isinstance(self.description, PackDescriptionPatchType0) or isinstance(
+            self.description, PackDescriptionPatchType1
+        ):
             description = self.description.to_dict()
         else:
             description = self.description
@@ -164,7 +165,7 @@ class UpdatePackRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.pack_description_patch_type_0 import PackDescriptionPatchType0
         from ..models.pack_description_patch_type_1 import PackDescriptionPatchType1
         from ..models.update_pack_request_conf_schema_type_0 import (

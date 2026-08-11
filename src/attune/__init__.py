@@ -31,16 +31,22 @@ Access execution context anywhere::
 """
 
 from . import artifacts
+from ._version import __version__
 from .action import run_action
 from .api_client import AuthenticatedClient, Client
-from .artifacts import ArtifactAllocation, ProgressArtifact, allocate_file_version, create_progress
+from .artifacts import (
+    ArtifactAllocation,
+    ProgressArtifact,
+    allocate_file_version,
+    create_progress,
+)
 from .client import AttuneClient
 from .context import (
     ActionContext,
     SensorContext,
-    action_context as context,
     sensor_context,
 )
+from .context import action_context as context
 from .sensor import AsyncPollingSensor, PollingSensor, RuleState, Sensor, run_sensor
 
 __all__ = [
@@ -62,6 +68,5 @@ __all__ = [
     "RuleState",
     "Sensor",
     "SensorContext",
+    "__version__",
 ]
-
-__version__ = "0.1.0"

@@ -5,13 +5,14 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.pack_upload_form import PackUploadForm
 from ...models.upload_pack_response_201 import UploadPackResponse201
 from ...types import Response
 
 
 def _get_kwargs(
     *,
-    body: str,
+    body: PackUploadForm,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -19,6 +20,8 @@ def _get_kwargs(
         "method": "post",
         "url": "/api/v1/packs/upload",
     }
+
+    _kwargs["files"] = body.to_multipart()
 
     headers["Content-Type"] = "multipart/form-data; boundary=+++"
 
@@ -62,7 +65,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: PackUploadForm,
 ) -> Response[Any | UploadPackResponse201]:
     r"""Upload and register a pack from a tar.gz archive (multipart/form-data)
 
@@ -75,7 +78,7 @@ def sync_detailed(
     - `skip_tests`: `\"true\"` to skip test execution after registration
 
     Args:
-        body (str):
+        body (PackUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -99,7 +102,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: PackUploadForm,
 ) -> Any | UploadPackResponse201 | None:
     r"""Upload and register a pack from a tar.gz archive (multipart/form-data)
 
@@ -112,7 +115,7 @@ def sync(
     - `skip_tests`: `\"true\"` to skip test execution after registration
 
     Args:
-        body (str):
+        body (PackUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -131,7 +134,7 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: PackUploadForm,
 ) -> Response[Any | UploadPackResponse201]:
     r"""Upload and register a pack from a tar.gz archive (multipart/form-data)
 
@@ -144,7 +147,7 @@ async def asyncio_detailed(
     - `skip_tests`: `\"true\"` to skip test execution after registration
 
     Args:
-        body (str):
+        body (PackUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -166,7 +169,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: PackUploadForm,
 ) -> Any | UploadPackResponse201 | None:
     r"""Upload and register a pack from a tar.gz archive (multipart/form-data)
 
@@ -179,7 +182,7 @@ async def asyncio(
     - `skip_tests`: `\"true\"` to skip test execution after registration
 
     Args:
-        body (str):
+        body (PackUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

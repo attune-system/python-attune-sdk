@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.cache_retention_config import CacheRetentionConfig
     from ..models.retention_targets_config import RetentionTargetsConfig
 
 
@@ -22,6 +24,13 @@ class RetentionConfig:
     Attributes:
         advisory_lock_key (int | Unset): Advisory lock key used to make accidental multi-supervisor deployments safe.
         batch_size (int | Unset): Maximum rows to delete per target per cycle for regular tables.
+        cache_retention (CacheRetentionConfig | Unset): Supervisor-owned cache generation/entry retention configuration.
+
+            Persisted as the `cache_retention` JSON object on
+            `runtime_retention_config`, exposed through the retention API, and reloaded
+            at the start of every supervisor cycle. Cache cleanup runs as a distinct
+            step inside the existing retention cycle and reuses its advisory lock and
+            cadence rather than electing a second leader.
         check_interval_seconds (int | Unset): How often the supervisor runs retention, in seconds.
         dry_run (bool | Unset): Report candidates without deleting rows/chunks.
         enabled (bool | Unset): Enable runtime row retention globally.
@@ -30,6 +39,7 @@ class RetentionConfig:
 
     advisory_lock_key: int | Unset = UNSET
     batch_size: int | Unset = UNSET
+    cache_retention: CacheRetentionConfig | Unset = UNSET
     check_interval_seconds: int | Unset = UNSET
     dry_run: bool | Unset = UNSET
     enabled: bool | Unset = UNSET
@@ -40,6 +50,10 @@ class RetentionConfig:
         advisory_lock_key = self.advisory_lock_key
 
         batch_size = self.batch_size
+
+        cache_retention: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.cache_retention, Unset):
+            cache_retention = self.cache_retention.to_dict()
 
         check_interval_seconds = self.check_interval_seconds
 
@@ -58,6 +72,8 @@ class RetentionConfig:
             field_dict["advisory_lock_key"] = advisory_lock_key
         if batch_size is not UNSET:
             field_dict["batch_size"] = batch_size
+        if cache_retention is not UNSET:
+            field_dict["cache_retention"] = cache_retention
         if check_interval_seconds is not UNSET:
             field_dict["check_interval_seconds"] = check_interval_seconds
         if dry_run is not UNSET:
@@ -70,13 +86,21 @@ class RetentionConfig:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.cache_retention_config import CacheRetentionConfig
         from ..models.retention_targets_config import RetentionTargetsConfig
 
         d = dict(src_dict)
         advisory_lock_key = d.pop("advisory_lock_key", UNSET)
 
         batch_size = d.pop("batch_size", UNSET)
+
+        _cache_retention = d.pop("cache_retention", UNSET)
+        cache_retention: CacheRetentionConfig | Unset
+        if isinstance(_cache_retention, Unset):
+            cache_retention = UNSET
+        else:
+            cache_retention = CacheRetentionConfig.from_dict(_cache_retention)
 
         check_interval_seconds = d.pop("check_interval_seconds", UNSET)
 
@@ -94,6 +118,7 @@ class RetentionConfig:
         retention_config = cls(
             advisory_lock_key=advisory_lock_key,
             batch_size=batch_size,
+            cache_retention=cache_retention,
             check_interval_seconds=check_interval_seconds,
             dry_run=dry_run,
             enabled=enabled,

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.dashboard_source_status import DashboardSourceStatus
 from ..types import UNSET, Unset
@@ -85,7 +86,7 @@ class DashboardSourceResult:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.dashboard_source_error import DashboardSourceError
         from ..models.dashboard_source_meta import DashboardSourceMeta
         from ..models.dashboard_source_result_data_type_0 import (

@@ -5,30 +5,54 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
-T = TypeVar("T", bound="EventResponsePayload")
+T = TypeVar("T", bound="AuthErrorDetail")
 
 
 @_attrs_define
-class EventResponsePayload:
-    """Event payload data"""
+class AuthErrorDetail:
+    """Error details returned when authentication fails before a route handler runs.
 
+    Attributes:
+        code (int):
+        message (str):
+    """
+
+    code: int
+    message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        code = self.code
+
+        message = self.message
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "code": code,
+                "message": message,
+            }
+        )
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        event_response_payload = cls()
+        code = d.pop("code")
 
-        event_response_payload.additional_properties = d
-        return event_response_payload
+        message = d.pop("message")
+
+        auth_error_detail = cls(
+            code=code,
+            message=message,
+        )
+
+        auth_error_detail.additional_properties = d
+        return auth_error_detail
 
     @property
     def additional_keys(self) -> list[str]:

@@ -5,12 +5,17 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.create_event_request_config import CreateEventRequestConfig
-    from ..models.create_event_request_payload import CreateEventRequestPayload
+    from ..models.create_event_request_config_type_0 import (
+        CreateEventRequestConfigType0,
+    )
+    from ..models.create_event_request_payload_type_0 import (
+        CreateEventRequestPayloadType0,
+    )
 
 
 T = TypeVar("T", bound="CreateEventRequest")
@@ -23,8 +28,8 @@ class CreateEventRequest:
     Attributes:
         trigger_ref (str): Trigger reference (e.g., "core.timer", "core.webhook")
             Also accepts "trigger_type" for compatibility with the sensor interface spec. Example: core.timer.
-        config (CreateEventRequestConfig | Unset): Event configuration
-        payload (CreateEventRequestPayload | Unset): Event payload data
+        config (CreateEventRequestConfigType0 | None | Unset): Event configuration
+        payload (CreateEventRequestPayloadType0 | None | Unset): Event payload data
         trace_tag (None | str | Unset): Optional source trace tag for this event.
             When omitted for execution-token callers, inherits from the parent execution. Example: core.timer.1234.
         trigger_instance_id (None | str | Unset): Trigger instance ID (for correlation, often rule_id) Example:
@@ -32,22 +37,37 @@ class CreateEventRequest:
     """
 
     trigger_ref: str
-    config: CreateEventRequestConfig | Unset = UNSET
-    payload: CreateEventRequestPayload | Unset = UNSET
+    config: CreateEventRequestConfigType0 | None | Unset = UNSET
+    payload: CreateEventRequestPayloadType0 | None | Unset = UNSET
     trace_tag: None | str | Unset = UNSET
     trigger_instance_id: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.create_event_request_config_type_0 import (
+            CreateEventRequestConfigType0,
+        )
+        from ..models.create_event_request_payload_type_0 import (
+            CreateEventRequestPayloadType0,
+        )
+
         trigger_ref = self.trigger_ref
 
-        config: dict[str, Any] | Unset = UNSET
-        if not isinstance(self.config, Unset):
+        config: dict[str, Any] | None | Unset
+        if isinstance(self.config, Unset):
+            config = UNSET
+        elif isinstance(self.config, CreateEventRequestConfigType0):
             config = self.config.to_dict()
+        else:
+            config = self.config
 
-        payload: dict[str, Any] | Unset = UNSET
-        if not isinstance(self.payload, Unset):
+        payload: dict[str, Any] | None | Unset
+        if isinstance(self.payload, Unset):
+            payload = UNSET
+        elif isinstance(self.payload, CreateEventRequestPayloadType0):
             payload = self.payload.to_dict()
+        else:
+            payload = self.payload
 
         trace_tag: None | str | Unset
         if isinstance(self.trace_tag, Unset):
@@ -80,26 +100,52 @@ class CreateEventRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.create_event_request_config import CreateEventRequestConfig
-        from ..models.create_event_request_payload import CreateEventRequestPayload
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.create_event_request_config_type_0 import (
+            CreateEventRequestConfigType0,
+        )
+        from ..models.create_event_request_payload_type_0 import (
+            CreateEventRequestPayloadType0,
+        )
 
         d = dict(src_dict)
         trigger_ref = d.pop("trigger_ref")
 
-        _config = d.pop("config", UNSET)
-        config: CreateEventRequestConfig | Unset
-        if isinstance(_config, Unset):
-            config = UNSET
-        else:
-            config = CreateEventRequestConfig.from_dict(_config)
+        def _parse_config(data: object) -> CreateEventRequestConfigType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                config_type_0 = CreateEventRequestConfigType0.from_dict(data)
 
-        _payload = d.pop("payload", UNSET)
-        payload: CreateEventRequestPayload | Unset
-        if isinstance(_payload, Unset):
-            payload = UNSET
-        else:
-            payload = CreateEventRequestPayload.from_dict(_payload)
+                return config_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(CreateEventRequestConfigType0 | None | Unset, data)
+
+        config = _parse_config(d.pop("config", UNSET))
+
+        def _parse_payload(
+            data: object,
+        ) -> CreateEventRequestPayloadType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                payload_type_0 = CreateEventRequestPayloadType0.from_dict(data)
+
+                return payload_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(CreateEventRequestPayloadType0 | None | Unset, data)
+
+        payload = _parse_payload(d.pop("payload", UNSET))
 
         def _parse_trace_tag(data: object) -> None | str | Unset:
             if data is None:

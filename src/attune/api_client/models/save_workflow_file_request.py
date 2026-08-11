@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
@@ -33,17 +34,17 @@ class SaveWorkflowFileRequest:
             on disk)
         label (str): Human-readable label Example: Deploy Application.
         name (str): Workflow name (becomes filename: {name}.workflow.yaml) Example: deploy_app.
-        out_schema (None | SaveWorkflowFileRequestOutSchemaType0): Output schema (flat format)
         pack_ref (str): Pack reference this workflow belongs to Example: core.
-        param_schema (None | SaveWorkflowFileRequestParamSchemaType0): Parameter schema (flat format with inline
-            required/secret)
         version (str): Workflow version (semantic versioning recommended) Example: 1.0.0.
         description (None | str | Unset): Workflow description Example: Deploys an application to the target
             environment.
         enabled (bool | None | Unset): Whether the companion workflow action is enabled. Omitted defaults to true.
             Default: True. Example: True.
-        reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to reference the companion workflow action
-            when visibility is restricted. Example: ['incident_response', 'deployments'].
+        out_schema (None | SaveWorkflowFileRequestOutSchemaType0 | Unset): Output schema (flat format)
+        param_schema (None | SaveWorkflowFileRequestParamSchemaType0 | Unset): Parameter schema (flat format with inline
+            required/secret)
+        reference_allowed_pack_refs (list[str] | None | Unset): Pack refs allowed to reference the companion workflow
+            action when visibility is restricted. Example: ['incident_response', 'deployments'].
         reference_visibility (ActionReferenceVisibility | None | Unset):  Default: ActionReferenceVisibility.PUBLIC.
         tags (list[str] | None | Unset): Tags for categorization Example: ['deployment', 'automation'].
     """
@@ -51,13 +52,13 @@ class SaveWorkflowFileRequest:
     definition: SaveWorkflowFileRequestDefinition
     label: str
     name: str
-    out_schema: None | SaveWorkflowFileRequestOutSchemaType0
     pack_ref: str
-    param_schema: None | SaveWorkflowFileRequestParamSchemaType0
     version: str
     description: None | str | Unset = UNSET
     enabled: bool | None | Unset = True
-    reference_allowed_pack_refs: list[str] | Unset = UNSET
+    out_schema: None | SaveWorkflowFileRequestOutSchemaType0 | Unset = UNSET
+    param_schema: None | SaveWorkflowFileRequestParamSchemaType0 | Unset = UNSET
+    reference_allowed_pack_refs: list[str] | None | Unset = UNSET
     reference_visibility: ActionReferenceVisibility | None | Unset = (
         ActionReferenceVisibility.PUBLIC
     )
@@ -78,19 +79,7 @@ class SaveWorkflowFileRequest:
 
         name = self.name
 
-        out_schema: dict[str, Any] | None
-        if isinstance(self.out_schema, SaveWorkflowFileRequestOutSchemaType0):
-            out_schema = self.out_schema.to_dict()
-        else:
-            out_schema = self.out_schema
-
         pack_ref = self.pack_ref
-
-        param_schema: dict[str, Any] | None
-        if isinstance(self.param_schema, SaveWorkflowFileRequestParamSchemaType0):
-            param_schema = self.param_schema.to_dict()
-        else:
-            param_schema = self.param_schema
 
         version = self.version
 
@@ -106,8 +95,29 @@ class SaveWorkflowFileRequest:
         else:
             enabled = self.enabled
 
-        reference_allowed_pack_refs: list[str] | Unset = UNSET
-        if not isinstance(self.reference_allowed_pack_refs, Unset):
+        out_schema: dict[str, Any] | None | Unset
+        if isinstance(self.out_schema, Unset):
+            out_schema = UNSET
+        elif isinstance(self.out_schema, SaveWorkflowFileRequestOutSchemaType0):
+            out_schema = self.out_schema.to_dict()
+        else:
+            out_schema = self.out_schema
+
+        param_schema: dict[str, Any] | None | Unset
+        if isinstance(self.param_schema, Unset):
+            param_schema = UNSET
+        elif isinstance(self.param_schema, SaveWorkflowFileRequestParamSchemaType0):
+            param_schema = self.param_schema.to_dict()
+        else:
+            param_schema = self.param_schema
+
+        reference_allowed_pack_refs: list[str] | None | Unset
+        if isinstance(self.reference_allowed_pack_refs, Unset):
+            reference_allowed_pack_refs = UNSET
+        elif isinstance(self.reference_allowed_pack_refs, list):
+            reference_allowed_pack_refs = self.reference_allowed_pack_refs
+
+        else:
             reference_allowed_pack_refs = self.reference_allowed_pack_refs
 
         reference_visibility: None | str | Unset
@@ -134,9 +144,7 @@ class SaveWorkflowFileRequest:
                 "definition": definition,
                 "label": label,
                 "name": name,
-                "out_schema": out_schema,
                 "pack_ref": pack_ref,
-                "param_schema": param_schema,
                 "version": version,
             }
         )
@@ -144,6 +152,10 @@ class SaveWorkflowFileRequest:
             field_dict["description"] = description
         if enabled is not UNSET:
             field_dict["enabled"] = enabled
+        if out_schema is not UNSET:
+            field_dict["out_schema"] = out_schema
+        if param_schema is not UNSET:
+            field_dict["param_schema"] = param_schema
         if reference_allowed_pack_refs is not UNSET:
             field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
         if reference_visibility is not UNSET:
@@ -154,7 +166,7 @@ class SaveWorkflowFileRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.save_workflow_file_request_definition import (
             SaveWorkflowFileRequestDefinition,
         )
@@ -172,45 +184,7 @@ class SaveWorkflowFileRequest:
 
         name = d.pop("name")
 
-        def _parse_out_schema(
-            data: object,
-        ) -> None | SaveWorkflowFileRequestOutSchemaType0:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                out_schema_type_0 = SaveWorkflowFileRequestOutSchemaType0.from_dict(
-                    data
-                )
-
-                return out_schema_type_0
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(None | SaveWorkflowFileRequestOutSchemaType0, data)
-
-        out_schema = _parse_out_schema(d.pop("out_schema"))
-
         pack_ref = d.pop("pack_ref")
-
-        def _parse_param_schema(
-            data: object,
-        ) -> None | SaveWorkflowFileRequestParamSchemaType0:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                param_schema_type_0 = SaveWorkflowFileRequestParamSchemaType0.from_dict(
-                    data
-                )
-
-                return param_schema_type_0
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(None | SaveWorkflowFileRequestParamSchemaType0, data)
-
-        param_schema = _parse_param_schema(d.pop("param_schema"))
 
         version = d.pop("version")
 
@@ -232,8 +206,67 @@ class SaveWorkflowFileRequest:
 
         enabled = _parse_enabled(d.pop("enabled", UNSET))
 
-        reference_allowed_pack_refs = cast(
-            list[str], d.pop("reference_allowed_pack_refs", UNSET)
+        def _parse_out_schema(
+            data: object,
+        ) -> None | SaveWorkflowFileRequestOutSchemaType0 | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                out_schema_type_0 = SaveWorkflowFileRequestOutSchemaType0.from_dict(
+                    data
+                )
+
+                return out_schema_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | SaveWorkflowFileRequestOutSchemaType0 | Unset, data)
+
+        out_schema = _parse_out_schema(d.pop("out_schema", UNSET))
+
+        def _parse_param_schema(
+            data: object,
+        ) -> None | SaveWorkflowFileRequestParamSchemaType0 | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                param_schema_type_0 = SaveWorkflowFileRequestParamSchemaType0.from_dict(
+                    data
+                )
+
+                return param_schema_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | SaveWorkflowFileRequestParamSchemaType0 | Unset, data)
+
+        param_schema = _parse_param_schema(d.pop("param_schema", UNSET))
+
+        def _parse_reference_allowed_pack_refs(
+            data: object,
+        ) -> list[str] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                reference_allowed_pack_refs_type_0 = cast(list[str], data)
+
+                return reference_allowed_pack_refs_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[str] | None | Unset, data)
+
+        reference_allowed_pack_refs = _parse_reference_allowed_pack_refs(
+            d.pop("reference_allowed_pack_refs", UNSET)
         )
 
         def _parse_reference_visibility(
@@ -278,12 +311,12 @@ class SaveWorkflowFileRequest:
             definition=definition,
             label=label,
             name=name,
-            out_schema=out_schema,
             pack_ref=pack_ref,
-            param_schema=param_schema,
             version=version,
             description=description,
             enabled=enabled,
+            out_schema=out_schema,
+            param_schema=param_schema,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
             reference_visibility=reference_visibility,
             tags=tags,

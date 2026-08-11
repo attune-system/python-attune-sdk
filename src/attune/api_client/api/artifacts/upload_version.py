@@ -6,6 +6,7 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.artifact_version_upload_form import ArtifactVersionUploadForm
 from ...models.upload_version_response_201 import UploadVersionResponse201
 from ...types import Response
 
@@ -13,7 +14,7 @@ from ...types import Response
 def _get_kwargs(
     id: int,
     *,
-    body: str,
+    body: ArtifactVersionUploadForm,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -23,6 +24,8 @@ def _get_kwargs(
             id=quote(str(id), safe=""),
         ),
     }
+
+    _kwargs["files"] = body.to_multipart()
 
     headers["Content-Type"] = "multipart/form-data; boundary=+++"
 
@@ -71,7 +74,7 @@ def sync_detailed(
     id: int,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionUploadForm,
 ) -> Response[Any | UploadVersionResponse201]:
     """Upload a binary file as a new version (multipart/form-data)
 
@@ -82,7 +85,7 @@ def sync_detailed(
 
     Args:
         id (int):
-        body (str):
+        body (ArtifactVersionUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,7 +111,7 @@ def sync(
     id: int,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionUploadForm,
 ) -> Any | UploadVersionResponse201 | None:
     """Upload a binary file as a new version (multipart/form-data)
 
@@ -119,7 +122,7 @@ def sync(
 
     Args:
         id (int):
-        body (str):
+        body (ArtifactVersionUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -140,7 +143,7 @@ async def asyncio_detailed(
     id: int,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionUploadForm,
 ) -> Response[Any | UploadVersionResponse201]:
     """Upload a binary file as a new version (multipart/form-data)
 
@@ -151,7 +154,7 @@ async def asyncio_detailed(
 
     Args:
         id (int):
-        body (str):
+        body (ArtifactVersionUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -175,7 +178,7 @@ async def asyncio(
     id: int,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionUploadForm,
 ) -> Any | UploadVersionResponse201 | None:
     """Upload a binary file as a new version (multipart/form-data)
 
@@ -186,7 +189,7 @@ async def asyncio(
 
     Args:
         id (int):
-        body (str):
+        body (ArtifactVersionUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

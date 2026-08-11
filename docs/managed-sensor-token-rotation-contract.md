@@ -1,31 +1,24 @@
-# Managed Sensor Token Rotation Contract (Python / JS / Java SDKs)
+# Managed Sensor Token Rotation (Python SDK)
 
-This contract defines how managed sensor auth token rotation works across Attune SDKs.
+This document describes Python SDK token consumption and the current managed
+sensor runtime process.
 
 ## 1) Security model (normative)
 
-- **Rotation is runtime/platform driven**.
+- **Rotation is runtime/platform driven**. The current managed sensor service
+  provisions a replacement token and performs a controlled process restart.
 - SDKs **must not** implement self-refresh flows that depend on using an expired token.
 - SDKs consume externally rotated state and reconnect/retry with the latest state.
 
 ## 2) Token state sources and precedence
 
-### Canonical source (all SDKs)
+### Python source precedence
 1. `ATTUNE_SENSOR_TOKEN_STATE_PATH` JSON file (runtime-managed, read on demand)
 2. Fallback token env (`ATTUNE_API_TOKEN` + optional expiry metadata)
 
-### SDK-specific extras
-- **JavaScript only** also accepts inline JSON from `ATTUNE_SENSOR_TOKEN_STATE`.
-
-### Effective precedence by SDK
-
-| SDK | Source order |
-|---|---|
-| Python | `ATTUNE_SENSOR_TOKEN_STATE_PATH` → `ATTUNE_API_TOKEN` (+ `ATTUNE_API_TOKEN_EXPIRES_AT` / `ATTUNE_SENSOR_TOKEN_EXPIRES_AT`) |
-| JavaScript | `ATTUNE_SENSOR_TOKEN_STATE_PATH` → `ATTUNE_SENSOR_TOKEN_STATE` → `ATTUNE_API_TOKEN` (+ `ATTUNE_API_TOKEN_EXPIRES_AT`) → last known valid state |
-| Java | `ATTUNE_SENSOR_TOKEN_STATE_PATH` → startup fallback (`ATTUNE_API_TOKEN` + optional `ATTUNE_API_TOKEN_EXPIRES_AT`) |
-
-> For cross-SDK portability, platform/runtime code should always provide the file source.
+The current managed service injects `ATTUNE_API_TOKEN` and does not inject a
+token-state path. `ATTUNE_SENSOR_TOKEN_STATE_PATH` is available for external
+runtimes that implement atomic file replacement.
 
 ## 3) Token state JSON shape
 
@@ -40,12 +33,8 @@ This contract defines how managed sensor auth token rotation works across Attune
 
 ### Compatibility aliases
 
-- Token aliases:
-  - All SDKs: `api_token`
-  - JavaScript also accepts: `access_token`
-- Expiry aliases:
-  - All SDKs: `token_expires_at`
-  - JavaScript also accepts: `expiresAt`, `tokenExpiresAt`, `exp`, `expiry`, `expires_in`, `expiresIn`
+- Token alias: `api_token`
+- Expiry alias: `token_expires_at`
 
 ## 4) Expiry metadata expectations
 
@@ -55,21 +44,20 @@ This contract defines how managed sensor auth token rotation works across Attune
 
 ## 5) Notifier reconnect behavior
 
-- All SDKs reconnect notifier WebSocket connections in a loop and re-resolve token state on new connects.
+- The Python SDK reconnects notifier WebSocket connections in a loop and
+  re-resolves token state on new connects.
 - If the notifier closes a connection due to expiry (for example close code `4401`), reconnect must use latest rotated token state.
 
-### Proactive reconnect differences
-
-- **Python**: reconnects when token changes or when token is expiring within `ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS` (default `30`).
-- **JavaScript**: reconnects before expiry using `ATTUNE_SENSOR_TOKEN_ROTATION_SKEW_SECONDS` (default `30`), then reconnects with latest token.
-- **Java**: no proactive expiry timer today; reconnect loop still re-reads current token state on each connection attempt.
+- Python reconnects when token state changes or when a file-provided token is
+  expiring within `ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS` (default `30`).
+- For the current managed service, token replacement is delivered by process
+  restart rather than an in-process reconnect.
 
 ## 6) Backward-compat and local-dev fallback
 
 - If no token-state file is configured, SDKs can run with `ATTUNE_API_TOKEN` for local development.
-- If token-state file reads fail:
-  - Python/Java: use fallback token when available, otherwise fail with a clear token-source error.
-  - JavaScript: falls back to inline/env/last-known state.
+- If token-state file reads fail, Python uses the fallback environment token
+  when available; otherwise it raises a clear token-source error.
 
 ## 7) Safe failure semantics
 
@@ -86,17 +74,6 @@ Runtime/platform code that rotates managed sensor tokens should:
 3. Use atomic file replacement semantics to avoid partial-read JSON corruption.
 4. Rotate before expiry with enough lead time for reconnect windows (~30s default across SDKs).
 
-## 9) Conformance test coverage (current)
+## 9) Conformance test coverage
 
-- **Python SDK**
-  - `tests/test_context.py`
-  - `tests/test_sensor.py`
-- **JavaScript SDK**
-  - `tests/context.test.ts`
-  - `tests/sensor.test.ts`
-  - `tests/sensor-notifier-token.test.ts`
-- **Java SDK**
-  - `src/test/java/io/attune/AttuneClientTest.java`
-  - `src/test/java/io/attune/SensorContextTest.java`
-  - `src/test/java/io/attune/FileSensorTokenProviderTest.java`
-  - `src/test/java/io/attune/SensorTest.java`
+Python coverage lives in `tests/test_context.py` and `tests/test_sensor.py`.

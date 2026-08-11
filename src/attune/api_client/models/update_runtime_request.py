@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
@@ -71,9 +72,9 @@ class UpdateRuntimeRequest:
         description: dict[str, Any] | None | Unset
         if isinstance(self.description, Unset):
             description = UNSET
-        elif isinstance(self.description, SetString):
-            description = self.description.to_dict()
-        elif isinstance(self.description, NullableStringPatchType1):
+        elif isinstance(self.description, SetString) or isinstance(
+            self.description, NullableStringPatchType1
+        ):
             description = self.description.to_dict()
         else:
             description = self.description
@@ -81,9 +82,9 @@ class UpdateRuntimeRequest:
         installation: dict[str, Any] | None | Unset
         if isinstance(self.installation, Unset):
             installation = UNSET
-        elif isinstance(self.installation, SetJson):
-            installation = self.installation.to_dict()
-        elif isinstance(self.installation, NullableJsonPatchType1):
+        elif isinstance(self.installation, SetJson) or isinstance(
+            self.installation, NullableJsonPatchType1
+        ):
             installation = self.installation.to_dict()
         else:
             installation = self.installation
@@ -112,7 +113,7 @@ class UpdateRuntimeRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.nullable_json_patch_type_1 import NullableJsonPatchType1
         from ..models.nullable_string_patch_type_1 import NullableStringPatchType1
         from ..models.set_json import SetJson

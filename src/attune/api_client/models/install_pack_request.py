@@ -5,6 +5,7 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
@@ -17,12 +18,16 @@ class InstallPackRequest:
 
     Attributes:
         source (str): Repository URL or source location Example: https://github.com/attune/pack-slack.git.
+        force (bool | Unset): Replace an existing pack with the same ref
+        no_registry (bool | Unset): Treat the source as explicit and do not resolve it through pack registries
         ref_spec (None | str | Unset): Git branch, tag, or commit reference Example: main.
         skip_deps (bool | Unset): Skip dependency validation (not recommended)
         skip_tests (bool | Unset): Skip running pack tests during installation
     """
 
     source: str
+    force: bool | Unset = UNSET
+    no_registry: bool | Unset = UNSET
     ref_spec: None | str | Unset = UNSET
     skip_deps: bool | Unset = UNSET
     skip_tests: bool | Unset = UNSET
@@ -30,6 +35,10 @@ class InstallPackRequest:
 
     def to_dict(self) -> dict[str, Any]:
         source = self.source
+
+        force = self.force
+
+        no_registry = self.no_registry
 
         ref_spec: None | str | Unset
         if isinstance(self.ref_spec, Unset):
@@ -48,6 +57,10 @@ class InstallPackRequest:
                 "source": source,
             }
         )
+        if force is not UNSET:
+            field_dict["force"] = force
+        if no_registry is not UNSET:
+            field_dict["no_registry"] = no_registry
         if ref_spec is not UNSET:
             field_dict["ref_spec"] = ref_spec
         if skip_deps is not UNSET:
@@ -58,9 +71,13 @@ class InstallPackRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
         source = d.pop("source")
+
+        force = d.pop("force", UNSET)
+
+        no_registry = d.pop("no_registry", UNSET)
 
         def _parse_ref_spec(data: object) -> None | str | Unset:
             if data is None:
@@ -77,6 +94,8 @@ class InstallPackRequest:
 
         install_pack_request = cls(
             source=source,
+            force=force,
+            no_registry=no_registry,
             ref_spec=ref_spec,
             skip_deps=skip_deps,
             skip_tests=skip_tests,

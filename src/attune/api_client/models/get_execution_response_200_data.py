@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.execution_status import ExecutionStatus
 from ..models.retention_policy_type import RetentionPolicyType
@@ -298,7 +299,7 @@ class GetExecutionResponse200Data:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.get_execution_response_200_data_config import (
             GetExecutionResponse200DataConfig,
         )

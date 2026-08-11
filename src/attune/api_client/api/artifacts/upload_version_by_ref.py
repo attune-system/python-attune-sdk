@@ -6,6 +6,7 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.artifact_version_by_ref_upload_form import ArtifactVersionByRefUploadForm
 from ...models.upload_version_by_ref_response_201 import UploadVersionByRefResponse201
 from ...types import Response
 
@@ -13,7 +14,7 @@ from ...types import Response
 def _get_kwargs(
     ref: str,
     *,
-    body: str,
+    body: ArtifactVersionByRefUploadForm,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -23,6 +24,8 @@ def _get_kwargs(
             ref=quote(str(ref), safe=""),
         ),
     }
+
+    _kwargs["files"] = body.to_multipart()
 
     headers["Content-Type"] = "multipart/form-data; boundary=+++"
 
@@ -67,7 +70,7 @@ def sync_detailed(
     ref: str,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionByRefUploadForm,
 ) -> Response[Any | UploadVersionByRefResponse201]:
     """Upload a file version to an artifact identified by ref, creating the artifact if it does not
     already exist.
@@ -98,7 +101,7 @@ def sync_detailed(
 
     Args:
         ref (str):
-        body (str):
+        body (ArtifactVersionByRefUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -124,7 +127,7 @@ def sync(
     ref: str,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionByRefUploadForm,
 ) -> Any | UploadVersionByRefResponse201 | None:
     """Upload a file version to an artifact identified by ref, creating the artifact if it does not
     already exist.
@@ -155,7 +158,7 @@ def sync(
 
     Args:
         ref (str):
-        body (str):
+        body (ArtifactVersionByRefUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -176,7 +179,7 @@ async def asyncio_detailed(
     ref: str,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionByRefUploadForm,
 ) -> Response[Any | UploadVersionByRefResponse201]:
     """Upload a file version to an artifact identified by ref, creating the artifact if it does not
     already exist.
@@ -207,7 +210,7 @@ async def asyncio_detailed(
 
     Args:
         ref (str):
-        body (str):
+        body (ArtifactVersionByRefUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -231,7 +234,7 @@ async def asyncio(
     ref: str,
     *,
     client: AuthenticatedClient,
-    body: str,
+    body: ArtifactVersionByRefUploadForm,
 ) -> Any | UploadVersionByRefResponse201 | None:
     """Upload a file version to an artifact identified by ref, creating the artifact if it does not
     already exist.
@@ -262,7 +265,7 @@ async def asyncio(
 
     Args:
         ref (str):
-        body (str):
+        body (ArtifactVersionByRefUploadForm):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

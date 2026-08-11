@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
@@ -63,9 +64,9 @@ class UpdateWorkQueueItemRequest:
         item_key: dict[str, Any] | None | Unset
         if isinstance(self.item_key, Unset):
             item_key = UNSET
-        elif isinstance(self.item_key, SetString):
-            item_key = self.item_key.to_dict()
-        elif isinstance(self.item_key, NullableStringPatchType1):
+        elif isinstance(self.item_key, SetString) or isinstance(
+            self.item_key, NullableStringPatchType1
+        ):
             item_key = self.item_key.to_dict()
         else:
             item_key = self.item_key
@@ -92,7 +93,7 @@ class UpdateWorkQueueItemRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.nullable_string_patch_type_1 import NullableStringPatchType1
         from ..models.set_string import SetString
         from ..models.update_work_queue_item_request_metadata_type_0 import (

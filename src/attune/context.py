@@ -17,12 +17,12 @@ Usage::
 
 from __future__ import annotations
 
-import os
 import json
-from datetime import datetime, timezone
+import os
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
     from attune.api_client import AuthenticatedClient
@@ -234,6 +234,7 @@ class SensorContext:
         api_url: The Attune API base URL.
         api_token: The sensor-scoped API token.
         notifier_ws_url: The notifier WebSocket URL for managed sensor lifecycle updates.
+        allow_insecure_notifier_ws: Whether non-loopback plaintext WebSockets are allowed.
         log_level: The configured log level.
         pack_ref: The pack reference derived from sensor_ref.
     """
@@ -243,6 +244,7 @@ class SensorContext:
     api_url: str
     api_token: str
     notifier_ws_url: str
+    allow_insecure_notifier_ws: bool
     log_level: str
     pack_ref: str
     token_provider: SensorTokenProvider = field(repr=False, compare=False)
@@ -250,10 +252,15 @@ class SensorContext:
 
     @property
     def config(self) -> dict[str, str]:
-        """Sensor-specific config from ATTUNE_SENSOR_CONFIG_* environment variables."""
+        """Caller-supplied ``ATTUNE_SENSOR_CONFIG_*`` values.
+
+        The managed sensor service does not inject persisted sensor ``config``
+        into child processes. Use per-rule ``trigger_params`` for managed rule
+        configuration.
+        """
         prefix = "ATTUNE_SENSOR_CONFIG_"
         return {
-            k[len(prefix):].lower(): v
+            k[len(prefix) :].lower(): v
             for k, v in os.environ.items()
             if k.startswith(prefix)
         }
@@ -317,11 +324,13 @@ def _build_action_context() -> ActionContext:
 def _build_sensor_context() -> SensorContext:
     """Build the sensor context from current environment variables."""
     initial_token = os.environ.get("ATTUNE_API_TOKEN", "")
-    initial_expires_at = os.environ.get("ATTUNE_API_TOKEN_EXPIRES_AT") or os.environ.get(
-        "ATTUNE_SENSOR_TOKEN_EXPIRES_AT"
-    )
+    initial_expires_at = os.environ.get(
+        "ATTUNE_API_TOKEN_EXPIRES_AT"
+    ) or os.environ.get("ATTUNE_SENSOR_TOKEN_EXPIRES_AT")
     initial_state = SensorTokenState(token=initial_token, expires_at=initial_expires_at)
-    token_provider: SensorTokenProvider = EnvSensorTokenProvider(initial_state=initial_state)
+    token_provider: SensorTokenProvider = EnvSensorTokenProvider(
+        initial_state=initial_state
+    )
     token_state_path = os.environ.get("ATTUNE_SENSOR_TOKEN_STATE_PATH")
     if token_state_path:
         token_provider = FileSensorTokenProvider(
@@ -340,12 +349,18 @@ def _build_sensor_context() -> SensorContext:
     sensor_ref = os.environ.get("ATTUNE_SENSOR_REF", "")
     parts = sensor_ref.split(".")
     pack_ref = parts[0] if len(parts) >= 2 else ""
+    allow_insecure_notifier_ws = os.environ.get(
+        "ATTUNE_ALLOW_INSECURE_NOTIFIER_WS", "false"
+    ).strip().lower() in {"1", "true", "yes", "on"}
     return SensorContext(
         sensor_ref=sensor_ref,
         sensor_id=os.environ.get("ATTUNE_SENSOR_ID", "0"),
         api_url=os.environ.get("ATTUNE_API_URL", "http://localhost:8080"),
         api_token=initial_token,
-        notifier_ws_url=os.environ.get("ATTUNE_NOTIFIER_WS_URL", "ws://localhost:8081/ws"),
+        notifier_ws_url=os.environ.get(
+            "ATTUNE_NOTIFIER_WS_URL", "ws://localhost:8081/ws"
+        ),
+        allow_insecure_notifier_ws=allow_insecure_notifier_ws,
         log_level=os.environ.get("ATTUNE_LOG_LEVEL", "info").upper(),
         pack_ref=pack_ref,
         token_provider=token_provider,
@@ -381,6 +396,11 @@ def _get_sensor_client(ctx: SensorContext) -> AuthenticatedClient:
     """Return (or create) the cached sensor client."""
     global _sensor_client
     token = ctx.current_api_token
+    if not token:
+        raise RuntimeError(
+            "Managed sensor API token is unavailable. Set ATTUNE_API_TOKEN or "
+            "provide a readable ATTUNE_SENSOR_TOKEN_STATE_PATH."
+        )
     if _sensor_client is None:
         from attune.api_client import AuthenticatedClient
 

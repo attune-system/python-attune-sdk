@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.artifact_type import ArtifactType
 from ..models.artifact_visibility import ArtifactVisibility
@@ -180,7 +181,7 @@ class AllocateFileVersionByRefRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.allocate_file_version_by_ref_request_meta_type_0 import (
             AllocateFileVersionByRefRequestMetaType0,
         )

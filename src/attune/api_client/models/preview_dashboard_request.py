@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from ..models.create_dashboard_request import CreateDashboardRequest
@@ -41,7 +42,7 @@ class PreviewDashboardRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.create_dashboard_request import CreateDashboardRequest
         from ..models.dashboard_data_request import DashboardDataRequest
 

@@ -5,6 +5,7 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 T = TypeVar("T", bound="HealthResponse")
 
@@ -16,7 +17,7 @@ class HealthResponse:
     Attributes:
         database (str): Database connectivity status Example: connected.
         status (str): Service status Example: ok.
-        version (str): Service version Example: 0.2.0.
+        version (str): Service version
     """
 
     database: str
@@ -44,7 +45,7 @@ class HealthResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
         database = d.pop("database")
 

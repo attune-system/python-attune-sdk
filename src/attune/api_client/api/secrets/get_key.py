@@ -7,18 +7,27 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.get_key_response_200 import GetKeyResponse200
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     ref: str,
+    *,
+    decrypt: bool | Unset = UNSET,
 ) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["decrypt"] = decrypt
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/keys/{ref}".format(
             ref=quote(str(ref), safe=""),
         ),
+        "params": params,
     }
 
     return _kwargs
@@ -57,11 +66,13 @@ def sync_detailed(
     ref: str,
     *,
     client: AuthenticatedClient,
+    decrypt: bool | Unset = UNSET,
 ) -> Response[Any | GetKeyResponse200]:
-    """Get a single key by reference (includes decrypted value)
+    """Get a single key by reference. Encrypted values are redacted unless explicitly requested.
 
     Args:
         ref (str):
+        decrypt (bool | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -73,6 +84,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         ref=ref,
+        decrypt=decrypt,
     )
 
     response = client.get_httpx_client().request(
@@ -86,11 +98,13 @@ def sync(
     ref: str,
     *,
     client: AuthenticatedClient,
+    decrypt: bool | Unset = UNSET,
 ) -> Any | GetKeyResponse200 | None:
-    """Get a single key by reference (includes decrypted value)
+    """Get a single key by reference. Encrypted values are redacted unless explicitly requested.
 
     Args:
         ref (str):
+        decrypt (bool | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -103,6 +117,7 @@ def sync(
     return sync_detailed(
         ref=ref,
         client=client,
+        decrypt=decrypt,
     ).parsed
 
 
@@ -110,11 +125,13 @@ async def asyncio_detailed(
     ref: str,
     *,
     client: AuthenticatedClient,
+    decrypt: bool | Unset = UNSET,
 ) -> Response[Any | GetKeyResponse200]:
-    """Get a single key by reference (includes decrypted value)
+    """Get a single key by reference. Encrypted values are redacted unless explicitly requested.
 
     Args:
         ref (str):
+        decrypt (bool | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -126,6 +143,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         ref=ref,
+        decrypt=decrypt,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -137,11 +155,13 @@ async def asyncio(
     ref: str,
     *,
     client: AuthenticatedClient,
+    decrypt: bool | Unset = UNSET,
 ) -> Any | GetKeyResponse200 | None:
-    """Get a single key by reference (includes decrypted value)
+    """Get a single key by reference. Encrypted values are redacted unless explicitly requested.
 
     Args:
         ref (str):
+        decrypt (bool | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -155,5 +175,6 @@ async def asyncio(
         await asyncio_detailed(
             ref=ref,
             client=client,
+            decrypt=decrypt,
         )
     ).parsed

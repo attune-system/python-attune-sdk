@@ -2,14 +2,13 @@
 
 import json
 import os
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 
 import pytest
 
 from attune.context import (
-    ActionContext,
     FileSensorTokenProvider,
-    SensorContext,
     SensorTokenState,
     _build_action_context,
     _build_sensor_context,
@@ -51,7 +50,7 @@ class TestActionContext:
     def test_frozen_immutable(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_ACTION", "test")
         ctx = _build_action_context()
-        with pytest.raises(Exception):  # FrozenInstanceError
+        with pytest.raises(FrozenInstanceError):
             ctx.action_ref = "changed"
 
 
@@ -77,6 +76,21 @@ class TestSensorContext:
         assert config["interval"] == "10"
         assert config["target_url"] == "http://example.com"
 
+    def test_allow_insecure_notifier_ws_is_explicit(self, monkeypatch):
+        monkeypatch.setenv("ATTUNE_ALLOW_INSECURE_NOTIFIER_WS", "true")
+
+        assert _build_sensor_context().allow_insecure_notifier_ws is True
+
+    def test_sensor_context_client_fails_without_managed_token(self, monkeypatch):
+        monkeypatch.delenv("ATTUNE_API_TOKEN", raising=False)
+        monkeypatch.delenv("ATTUNE_SENSOR_TOKEN_STATE_PATH", raising=False)
+        ctx = _build_sensor_context()
+
+        with pytest.raises(
+            RuntimeError, match="Managed sensor API token is unavailable"
+        ):
+            _ = ctx.client
+
     def test_current_api_token_reloads_from_env(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_API_TOKEN", "token-1")
         ctx = _build_sensor_context()
@@ -85,7 +99,9 @@ class TestSensorContext:
         monkeypatch.setenv("ATTUNE_API_TOKEN", "token-2")
         assert ctx.current_api_token == "token-2"
 
-    def test_current_token_state_defaults_to_env_when_no_rotation_source(self, monkeypatch):
+    def test_current_token_state_defaults_to_env_when_no_rotation_source(
+        self, monkeypatch
+    ):
         monkeypatch.delenv("ATTUNE_SENSOR_TOKEN_STATE_PATH", raising=False)
         monkeypatch.setenv("ATTUNE_API_TOKEN", "env-token")
         monkeypatch.setenv("ATTUNE_API_TOKEN_EXPIRES_AT", "2030-01-01T00:00:00Z")
@@ -123,8 +139,12 @@ class TestSensorContext:
 
     def test_file_token_provider_fallback_state(self):
         provider = FileSensorTokenProvider(
-            state_path=Path(os.path.join("/", "does-not-exist", "sensor-token-state.json")),
-            fallback_state=SensorTokenState(token="fallback", expires_at="2026-01-01T00:00:00Z"),
+            state_path=Path(
+                os.path.join("/", "does-not-exist", "sensor-token-state.json")
+            ),
+            fallback_state=SensorTokenState(
+                token="fallback", expires_at="2026-01-01T00:00:00Z"
+            ),
         )
         state = provider.current_token_state()
         assert state.token == "fallback"
@@ -132,7 +152,9 @@ class TestSensorContext:
 
     def test_file_token_provider_raises_without_fallback(self):
         provider = FileSensorTokenProvider(
-            state_path=Path(os.path.join("/", "does-not-exist", "sensor-token-state.json")),
+            state_path=Path(
+                os.path.join("/", "does-not-exist", "sensor-token-state.json")
+            ),
             fallback_state=None,
         )
         with pytest.raises(RuntimeError):

@@ -6,6 +6,7 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from typing_extensions import Self
 
 from ..models.owner_type import OwnerType
 from ..types import UNSET, Unset
@@ -25,7 +26,7 @@ class UpdateKeyResponse200Data:
         owner_type (OwnerType):
         ref (str): Unique reference identifier Example: github_token.
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
-        value (Any): The secret value (decrypted if encrypted). Can be a string, object, array, number, or boolean.
+        value (Any): The value. Encrypted values are null unless explicitly decrypted.
         owner (None | str | Unset): Owner identifier Example: github-integration.
         owner_action (int | None | Unset):
         owner_action_ref (None | str | Unset): Owner action reference Example: github.create_issue.
@@ -153,7 +154,7 @@ class UpdateKeyResponse200Data:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
         created = datetime.datetime.fromisoformat(d.pop("created"))
 
