@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
@@ -34,10 +34,7 @@ sensor = ["websocket-client>=1.8"]
 dev = ["pytest>=7.0", "pytest-asyncio>=0.24", "pytest-cov", "openapi-python-client==0.29.0"]
 
 [tool.hatch.version]
-source = "vcs"
-
-[tool.hatch.build.hooks.vcs]
-version-file = "src/attune/_version.py"
+path = "src/attune/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/attune"]

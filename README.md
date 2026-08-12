@@ -2,6 +2,8 @@
 
 A lightweight Python package providing boilerplate for writing [Attune](https://github.com/attune-system/attune) actions and sensors.
 
+SDK 0.3.0 is generated for and compatible with the Attune OpenAPI 0.3.0 contract.
+
 ## Installation
 
 ```bash
