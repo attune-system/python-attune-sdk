@@ -43,8 +43,15 @@ class CreatePackResponse201Data:
         tags (list[str]): Tags Example: ['messaging', 'collaboration'].
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
         version (str): Pack version Example: 1.0.0.
+        worker_affinity (Any):
+        worker_selector (Any):
+        worker_tolerations (Any):
+        action_count (int | None | Unset): Number of actions registered for this pack Example: 12.
         description (None | str | Unset): Pack description Example: Integration with Slack for messaging and
             notifications.
+        rule_count (int | None | Unset): Number of rules registered for this pack Example: 5.
+        sensor_count (int | None | Unset): Number of sensors registered for this pack Example: 2.
+        trigger_count (int | None | Unset): Number of triggers registered for this pack Example: 3.
     """
 
     conf_schema: CreatePackResponse201DataConfSchema
@@ -60,7 +67,14 @@ class CreatePackResponse201Data:
     tags: list[str]
     updated: datetime.datetime
     version: str
+    worker_affinity: Any
+    worker_selector: Any
+    worker_tolerations: Any
+    action_count: int | None | Unset = UNSET
     description: None | str | Unset = UNSET
+    rule_count: int | None | Unset = UNSET
+    sensor_count: int | None | Unset = UNSET
+    trigger_count: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -90,11 +104,41 @@ class CreatePackResponse201Data:
 
         version = self.version
 
+        worker_affinity = self.worker_affinity
+
+        worker_selector = self.worker_selector
+
+        worker_tolerations = self.worker_tolerations
+
+        action_count: int | None | Unset
+        if isinstance(self.action_count, Unset):
+            action_count = UNSET
+        else:
+            action_count = self.action_count
+
         description: None | str | Unset
         if isinstance(self.description, Unset):
             description = UNSET
         else:
             description = self.description
+
+        rule_count: int | None | Unset
+        if isinstance(self.rule_count, Unset):
+            rule_count = UNSET
+        else:
+            rule_count = self.rule_count
+
+        sensor_count: int | None | Unset
+        if isinstance(self.sensor_count, Unset):
+            sensor_count = UNSET
+        else:
+            sensor_count = self.sensor_count
+
+        trigger_count: int | None | Unset
+        if isinstance(self.trigger_count, Unset):
+            trigger_count = UNSET
+        else:
+            trigger_count = self.trigger_count
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -113,10 +157,21 @@ class CreatePackResponse201Data:
                 "tags": tags,
                 "updated": updated,
                 "version": version,
+                "worker_affinity": worker_affinity,
+                "worker_selector": worker_selector,
+                "worker_tolerations": worker_tolerations,
             }
         )
+        if action_count is not UNSET:
+            field_dict["action_count"] = action_count
         if description is not UNSET:
             field_dict["description"] = description
+        if rule_count is not UNSET:
+            field_dict["rule_count"] = rule_count
+        if sensor_count is not UNSET:
+            field_dict["sensor_count"] = sensor_count
+        if trigger_count is not UNSET:
+            field_dict["trigger_count"] = trigger_count
 
         return field_dict
 
@@ -161,6 +216,21 @@ class CreatePackResponse201Data:
 
         version = d.pop("version")
 
+        worker_affinity = d.pop("worker_affinity")
+
+        worker_selector = d.pop("worker_selector")
+
+        worker_tolerations = d.pop("worker_tolerations")
+
+        def _parse_action_count(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        action_count = _parse_action_count(d.pop("action_count", UNSET))
+
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -169,6 +239,33 @@ class CreatePackResponse201Data:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
+
+        def _parse_rule_count(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        rule_count = _parse_rule_count(d.pop("rule_count", UNSET))
+
+        def _parse_sensor_count(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        sensor_count = _parse_sensor_count(d.pop("sensor_count", UNSET))
+
+        def _parse_trigger_count(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        trigger_count = _parse_trigger_count(d.pop("trigger_count", UNSET))
 
         create_pack_response_201_data = cls(
             conf_schema=conf_schema,
@@ -184,7 +281,14 @@ class CreatePackResponse201Data:
             tags=tags,
             updated=updated,
             version=version,
+            worker_affinity=worker_affinity,
+            worker_selector=worker_selector,
+            worker_tolerations=worker_tolerations,
+            action_count=action_count,
             description=description,
+            rule_count=rule_count,
+            sensor_count=sensor_count,
+            trigger_count=trigger_count,
         )
 
         create_pack_response_201_data.additional_properties = d

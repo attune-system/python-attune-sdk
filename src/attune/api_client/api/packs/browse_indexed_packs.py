@@ -1,11 +1,13 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.auth_error_response import AuthErrorResponse
 from ...models.browse_indexed_packs_response_200 import BrowseIndexedPacksResponse200
+from ...models.error_response import ErrorResponse
 from ...types import UNSET, Response, Unset
 
 
@@ -37,18 +39,25 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | BrowseIndexedPacksResponse200 | None:
+) -> AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse | None:
     if response.status_code == 200:
         response_200 = BrowseIndexedPacksResponse200.from_dict(response.json())
 
         return response_200
 
+    if response.status_code == 400:
+        response_400 = ErrorResponse.from_dict(response.json())
+
+        return response_400
+
     if response.status_code == 401:
-        response_401 = cast(Any, None)
+        response_401 = AuthErrorResponse.from_dict(response.json())
+
         return response_401
 
     if response.status_code == 403:
-        response_403 = cast(Any, None)
+        response_403 = ErrorResponse.from_dict(response.json())
+
         return response_403
 
     if client.raise_on_unexpected_status:
@@ -59,7 +68,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | BrowseIndexedPacksResponse200]:
+) -> Response[AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -74,7 +83,7 @@ def sync_detailed(
     q: str | Unset = UNSET,
     registry_id: int | Unset = UNSET,
     include_disabled: bool | Unset = UNSET,
-) -> Response[Any | BrowseIndexedPacksResponse200]:
+) -> Response[AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse]:
     """
     Args:
         q (str | Unset):
@@ -86,7 +95,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | BrowseIndexedPacksResponse200]
+        Response[AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -108,7 +117,7 @@ def sync(
     q: str | Unset = UNSET,
     registry_id: int | Unset = UNSET,
     include_disabled: bool | Unset = UNSET,
-) -> Any | BrowseIndexedPacksResponse200 | None:
+) -> AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse | None:
     """
     Args:
         q (str | Unset):
@@ -120,7 +129,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | BrowseIndexedPacksResponse200
+        AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse
     """
 
     return sync_detailed(
@@ -137,7 +146,7 @@ async def asyncio_detailed(
     q: str | Unset = UNSET,
     registry_id: int | Unset = UNSET,
     include_disabled: bool | Unset = UNSET,
-) -> Response[Any | BrowseIndexedPacksResponse200]:
+) -> Response[AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse]:
     """
     Args:
         q (str | Unset):
@@ -149,7 +158,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | BrowseIndexedPacksResponse200]
+        Response[AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -169,7 +178,7 @@ async def asyncio(
     q: str | Unset = UNSET,
     registry_id: int | Unset = UNSET,
     include_disabled: bool | Unset = UNSET,
-) -> Any | BrowseIndexedPacksResponse200 | None:
+) -> AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse | None:
     """
     Args:
         q (str | Unset):
@@ -181,7 +190,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | BrowseIndexedPacksResponse200
+        AuthErrorResponse | BrowseIndexedPacksResponse200 | ErrorResponse
     """
 
     return (

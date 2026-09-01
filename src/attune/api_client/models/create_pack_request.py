@@ -37,6 +37,9 @@ class CreatePackRequest:
         runtime_deps (list[str] | Unset): Runtime dependencies (e.g., shell, python, nodejs) Example: ['shell',
             'python'].
         tags (list[str] | Unset): Tags for categorization Example: ['messaging', 'collaboration'].
+        worker_affinity (Any | Unset):
+        worker_selector (Any | Unset):
+        worker_tolerations (Any | Unset):
     """
 
     label: str
@@ -50,6 +53,9 @@ class CreatePackRequest:
     meta: CreatePackRequestMeta | Unset = UNSET
     runtime_deps: list[str] | Unset = UNSET
     tags: list[str] | Unset = UNSET
+    worker_affinity: Any | Unset = UNSET
+    worker_selector: Any | Unset = UNSET
+    worker_tolerations: Any | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -91,6 +97,12 @@ class CreatePackRequest:
         if not isinstance(self.tags, Unset):
             tags = self.tags
 
+        worker_affinity = self.worker_affinity
+
+        worker_selector = self.worker_selector
+
+        worker_tolerations = self.worker_tolerations
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -116,6 +128,12 @@ class CreatePackRequest:
             field_dict["runtime_deps"] = runtime_deps
         if tags is not UNSET:
             field_dict["tags"] = tags
+        if worker_affinity is not UNSET:
+            field_dict["worker_affinity"] = worker_affinity
+        if worker_selector is not UNSET:
+            field_dict["worker_selector"] = worker_selector
+        if worker_tolerations is not UNSET:
+            field_dict["worker_tolerations"] = worker_tolerations
 
         return field_dict
 
@@ -170,6 +188,12 @@ class CreatePackRequest:
 
         tags = cast(list[str], d.pop("tags", UNSET))
 
+        worker_affinity = d.pop("worker_affinity", UNSET)
+
+        worker_selector = d.pop("worker_selector", UNSET)
+
+        worker_tolerations = d.pop("worker_tolerations", UNSET)
+
         create_pack_request = cls(
             label=label,
             ref=ref,
@@ -182,6 +206,9 @@ class CreatePackRequest:
             meta=meta,
             runtime_deps=runtime_deps,
             tags=tags,
+            worker_affinity=worker_affinity,
+            worker_selector=worker_selector,
+            worker_tolerations=worker_tolerations,
         )
 
         create_pack_request.additional_properties = d

@@ -15,11 +15,11 @@ if TYPE_CHECKING:
     from ..models.pack_test_result import PackTestResult
 
 
-T = TypeVar("T", bound="ApiResponsePackInstallResponseData")
+T = TypeVar("T", bound="TestPackResponse202Data")
 
 
 @_attrs_define
-class ApiResponsePackInstallResponseData:
+class TestPackResponse202Data:
     """Response for pack install/register operations with test results
 
     Attributes:
@@ -158,7 +158,7 @@ class ApiResponsePackInstallResponseData:
 
         test_result = _parse_test_result(d.pop("test_result", UNSET))
 
-        api_response_pack_install_response_data = cls(
+        test_pack_response_202_data = cls(
             pack=pack,
             tests_skipped=tests_skipped,
             install_id=install_id,
@@ -167,8 +167,8 @@ class ApiResponsePackInstallResponseData:
             test_result=test_result,
         )
 
-        api_response_pack_install_response_data.additional_properties = d
-        return api_response_pack_install_response_data
+        test_pack_response_202_data.additional_properties = d
+        return test_pack_response_202_data
 
     @property
     def additional_keys(self) -> list[str]:

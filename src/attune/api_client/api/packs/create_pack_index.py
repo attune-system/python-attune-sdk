@@ -1,12 +1,14 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.auth_error_response import AuthErrorResponse
 from ...models.create_pack_index_response_201 import CreatePackIndexResponse201
 from ...models.create_pack_registry_index_request import CreatePackRegistryIndexRequest
+from ...models.error_response import ErrorResponse
 from ...types import Response
 
 
@@ -31,22 +33,25 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | CreatePackIndexResponse201 | None:
+) -> AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse | None:
     if response.status_code == 201:
         response_201 = CreatePackIndexResponse201.from_dict(response.json())
 
         return response_201
 
     if response.status_code == 400:
-        response_400 = cast(Any, None)
+        response_400 = ErrorResponse.from_dict(response.json())
+
         return response_400
 
     if response.status_code == 401:
-        response_401 = cast(Any, None)
+        response_401 = AuthErrorResponse.from_dict(response.json())
+
         return response_401
 
     if response.status_code == 403:
-        response_403 = cast(Any, None)
+        response_403 = ErrorResponse.from_dict(response.json())
+
         return response_403
 
     if client.raise_on_unexpected_status:
@@ -57,7 +62,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | CreatePackIndexResponse201]:
+) -> Response[AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,7 +75,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: CreatePackRegistryIndexRequest,
-) -> Response[Any | CreatePackIndexResponse201]:
+) -> Response[AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse]:
     """
     Args:
         body (CreatePackRegistryIndexRequest): Request to add a configured pack registry index.
@@ -80,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CreatePackIndexResponse201]
+        Response[AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -98,7 +103,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: CreatePackRegistryIndexRequest,
-) -> Any | CreatePackIndexResponse201 | None:
+) -> AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse | None:
     """
     Args:
         body (CreatePackRegistryIndexRequest): Request to add a configured pack registry index.
@@ -108,7 +113,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CreatePackIndexResponse201
+        AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse
     """
 
     return sync_detailed(
@@ -121,7 +126,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: CreatePackRegistryIndexRequest,
-) -> Response[Any | CreatePackIndexResponse201]:
+) -> Response[AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse]:
     """
     Args:
         body (CreatePackRegistryIndexRequest): Request to add a configured pack registry index.
@@ -131,7 +136,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | CreatePackIndexResponse201]
+        Response[AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse]
     """
 
     kwargs = _get_kwargs(
@@ -147,7 +152,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: CreatePackRegistryIndexRequest,
-) -> Any | CreatePackIndexResponse201 | None:
+) -> AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse | None:
     """
     Args:
         body (CreatePackRegistryIndexRequest): Request to add a configured pack registry index.
@@ -157,7 +162,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | CreatePackIndexResponse201
+        AuthErrorResponse | CreatePackIndexResponse201 | ErrorResponse
     """
 
     return (

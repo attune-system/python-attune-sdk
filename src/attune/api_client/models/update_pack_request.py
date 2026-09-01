@@ -38,6 +38,9 @@ class UpdatePackRequest:
             'python'].
         tags (list[str] | None | Unset): Tags for categorization Example: ['messaging', 'collaboration', 'webhooks'].
         version (None | str | Unset): Pack version Example: 2.0.0.
+        worker_affinity (Any | None | Unset):
+        worker_selector (Any | None | Unset):
+        worker_tolerations (Any | None | Unset):
     """
 
     conf_schema: None | UpdatePackRequestConfSchemaType0
@@ -52,6 +55,9 @@ class UpdatePackRequest:
     runtime_deps: list[str] | None | Unset = UNSET
     tags: list[str] | None | Unset = UNSET
     version: None | str | Unset = UNSET
+    worker_affinity: Any | None | Unset = UNSET
+    worker_selector: Any | None | Unset = UNSET
+    worker_tolerations: Any | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -138,6 +144,24 @@ class UpdatePackRequest:
         else:
             version = self.version
 
+        worker_affinity: Any | None | Unset
+        if isinstance(self.worker_affinity, Unset):
+            worker_affinity = UNSET
+        else:
+            worker_affinity = self.worker_affinity
+
+        worker_selector: Any | None | Unset
+        if isinstance(self.worker_selector, Unset):
+            worker_selector = UNSET
+        else:
+            worker_selector = self.worker_selector
+
+        worker_tolerations: Any | None | Unset
+        if isinstance(self.worker_tolerations, Unset):
+            worker_tolerations = UNSET
+        else:
+            worker_tolerations = self.worker_tolerations
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -161,6 +185,12 @@ class UpdatePackRequest:
             field_dict["tags"] = tags
         if version is not UNSET:
             field_dict["version"] = version
+        if worker_affinity is not UNSET:
+            field_dict["worker_affinity"] = worker_affinity
+        if worker_selector is not UNSET:
+            field_dict["worker_selector"] = worker_selector
+        if worker_tolerations is not UNSET:
+            field_dict["worker_tolerations"] = worker_tolerations
 
         return field_dict
 
@@ -335,6 +365,35 @@ class UpdatePackRequest:
 
         version = _parse_version(d.pop("version", UNSET))
 
+        def _parse_worker_affinity(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        worker_affinity = _parse_worker_affinity(d.pop("worker_affinity", UNSET))
+
+        def _parse_worker_selector(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        worker_selector = _parse_worker_selector(d.pop("worker_selector", UNSET))
+
+        def _parse_worker_tolerations(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        worker_tolerations = _parse_worker_tolerations(
+            d.pop("worker_tolerations", UNSET)
+        )
+
         update_pack_request = cls(
             conf_schema=conf_schema,
             config=config,
@@ -346,6 +405,9 @@ class UpdatePackRequest:
             runtime_deps=runtime_deps,
             tags=tags,
             version=version,
+            worker_affinity=worker_affinity,
+            worker_selector=worker_selector,
+            worker_tolerations=worker_tolerations,
         )
 
         update_pack_request.additional_properties = d

@@ -7,11 +7,11 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-T = TypeVar("T", bound="ApiResponseEventResponseDataPayloadType0")
+T = TypeVar("T", bound="ApiResponseEventResponseDataPayload")
 
 
 @_attrs_define
-class ApiResponseEventResponseDataPayloadType0:
+class ApiResponseEventResponseDataPayload:
     """Event payload data"""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -26,10 +26,10 @@ class ApiResponseEventResponseDataPayloadType0:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        api_response_event_response_data_payload_type_0 = cls()
+        api_response_event_response_data_payload = cls()
 
-        api_response_event_response_data_payload_type_0.additional_properties = d
-        return api_response_event_response_data_payload_type_0
+        api_response_event_response_data_payload.additional_properties = d
+        return api_response_event_response_data_payload
 
     @property
     def additional_keys(self) -> list[str]:

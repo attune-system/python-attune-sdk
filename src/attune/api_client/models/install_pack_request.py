@@ -19,8 +19,9 @@ class InstallPackRequest:
     Attributes:
         source (str): Repository URL or source location Example: https://github.com/attune/pack-slack.git.
         force (bool | Unset): Replace an existing pack with the same ref
-        no_registry (bool | Unset): Treat the source as explicit and do not resolve it through pack registries
+        no_registry (bool | Unset): Require an explicit URL or existing local path instead of registry lookup.
         ref_spec (None | str | Unset): Git branch, tag, or commit reference Example: main.
+        registry_id (int | None | Unset): Restrict registry-reference resolution to one managed index.
         skip_deps (bool | Unset): Skip dependency validation (not recommended)
         skip_tests (bool | Unset): Skip running pack tests during installation
     """
@@ -29,6 +30,7 @@ class InstallPackRequest:
     force: bool | Unset = UNSET
     no_registry: bool | Unset = UNSET
     ref_spec: None | str | Unset = UNSET
+    registry_id: int | None | Unset = UNSET
     skip_deps: bool | Unset = UNSET
     skip_tests: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -45,6 +47,12 @@ class InstallPackRequest:
             ref_spec = UNSET
         else:
             ref_spec = self.ref_spec
+
+        registry_id: int | None | Unset
+        if isinstance(self.registry_id, Unset):
+            registry_id = UNSET
+        else:
+            registry_id = self.registry_id
 
         skip_deps = self.skip_deps
 
@@ -63,6 +71,8 @@ class InstallPackRequest:
             field_dict["no_registry"] = no_registry
         if ref_spec is not UNSET:
             field_dict["ref_spec"] = ref_spec
+        if registry_id is not UNSET:
+            field_dict["registry_id"] = registry_id
         if skip_deps is not UNSET:
             field_dict["skip_deps"] = skip_deps
         if skip_tests is not UNSET:
@@ -88,6 +98,15 @@ class InstallPackRequest:
 
         ref_spec = _parse_ref_spec(d.pop("ref_spec", UNSET))
 
+        def _parse_registry_id(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        registry_id = _parse_registry_id(d.pop("registry_id", UNSET))
+
         skip_deps = d.pop("skip_deps", UNSET)
 
         skip_tests = d.pop("skip_tests", UNSET)
@@ -97,6 +116,7 @@ class InstallPackRequest:
             force=force,
             no_registry=no_registry,
             ref_spec=ref_spec,
+            registry_id=registry_id,
             skip_deps=skip_deps,
             skip_tests=skip_tests,
         )

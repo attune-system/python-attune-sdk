@@ -7,12 +7,12 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-T = TypeVar("T", bound="EventSummaryPayloadType0")
+T = TypeVar("T", bound="CreateEventRequestPayload")
 
 
 @_attrs_define
-class EventSummaryPayloadType0:
-    """Event payload data, when present"""
+class CreateEventRequestPayload:
+    """Event payload data"""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -26,10 +26,10 @@ class EventSummaryPayloadType0:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        event_summary_payload_type_0 = cls()
+        create_event_request_payload = cls()
 
-        event_summary_payload_type_0.additional_properties = d
-        return event_summary_payload_type_0
+        create_event_request_payload.additional_properties = d
+        return create_event_request_payload
 
     @property
     def additional_keys(self) -> list[str]:

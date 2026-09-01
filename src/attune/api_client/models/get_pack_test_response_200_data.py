@@ -2,58 +2,62 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-if TYPE_CHECKING:
-    from ..models.test_suite_result import TestSuiteResult
-
-
-T = TypeVar("T", bound="TestPackResponse200Data")
+T = TypeVar("T", bound="GetPackTestResponse200Data")
 
 
 @_attrs_define
-class TestPackResponse200Data:
-    """Pack test result structure (not from DB, used for test execution)
+class GetPackTestResponse200Data:
+    """Pack test execution record
 
     Attributes:
+        created (datetime.datetime):
         duration_ms (int):
         execution_time (datetime.datetime):
         failed (int):
-        pack_ref (str):
+        id (int):
+        pack_id (int):
         pack_version (str):
         pass_rate (float):
         passed (int):
+        result (Any):
         skipped (int):
-        status (str):
-        test_suites (list[TestSuiteResult]):
         total_tests (int):
+        trigger_reason (str):
     """
 
+    created: datetime.datetime
     duration_ms: int
     execution_time: datetime.datetime
     failed: int
-    pack_ref: str
+    id: int
+    pack_id: int
     pack_version: str
     pass_rate: float
     passed: int
+    result: Any
     skipped: int
-    status: str
-    test_suites: list[TestSuiteResult]
     total_tests: int
+    trigger_reason: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        created = self.created.isoformat()
+
         duration_ms = self.duration_ms
 
         execution_time = self.execution_time.isoformat()
 
         failed = self.failed
 
-        pack_ref = self.pack_ref
+        id = self.id
+
+        pack_id = self.pack_id
 
         pack_version = self.pack_version
 
@@ -61,32 +65,31 @@ class TestPackResponse200Data:
 
         passed = self.passed
 
+        result = self.result
+
         skipped = self.skipped
 
-        status = self.status
-
-        test_suites = []
-        for test_suites_item_data in self.test_suites:
-            test_suites_item = test_suites_item_data.to_dict()
-            test_suites.append(test_suites_item)
-
         total_tests = self.total_tests
+
+        trigger_reason = self.trigger_reason
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "created": created,
                 "durationMs": duration_ms,
                 "executionTime": execution_time,
                 "failed": failed,
-                "packRef": pack_ref,
+                "id": id,
+                "packId": pack_id,
                 "packVersion": pack_version,
                 "passRate": pass_rate,
                 "passed": passed,
+                "result": result,
                 "skipped": skipped,
-                "status": status,
-                "testSuites": test_suites,
                 "totalTests": total_tests,
+                "triggerReason": trigger_reason,
             }
         )
 
@@ -94,16 +97,18 @@ class TestPackResponse200Data:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
-        from ..models.test_suite_result import TestSuiteResult
-
         d = dict(src_dict)
+        created = datetime.datetime.fromisoformat(d.pop("created"))
+
         duration_ms = d.pop("durationMs")
 
         execution_time = datetime.datetime.fromisoformat(d.pop("executionTime"))
 
         failed = d.pop("failed")
 
-        pack_ref = d.pop("packRef")
+        id = d.pop("id")
+
+        pack_id = d.pop("packId")
 
         pack_version = d.pop("packVersion")
 
@@ -111,35 +116,32 @@ class TestPackResponse200Data:
 
         passed = d.pop("passed")
 
+        result = d.pop("result")
+
         skipped = d.pop("skipped")
-
-        status = d.pop("status")
-
-        test_suites = []
-        _test_suites = d.pop("testSuites")
-        for test_suites_item_data in _test_suites:
-            test_suites_item = TestSuiteResult.from_dict(test_suites_item_data)
-
-            test_suites.append(test_suites_item)
 
         total_tests = d.pop("totalTests")
 
-        test_pack_response_200_data = cls(
+        trigger_reason = d.pop("triggerReason")
+
+        get_pack_test_response_200_data = cls(
+            created=created,
             duration_ms=duration_ms,
             execution_time=execution_time,
             failed=failed,
-            pack_ref=pack_ref,
+            id=id,
+            pack_id=pack_id,
             pack_version=pack_version,
             pass_rate=pass_rate,
             passed=passed,
+            result=result,
             skipped=skipped,
-            status=status,
-            test_suites=test_suites,
             total_tests=total_tests,
+            trigger_reason=trigger_reason,
         )
 
-        test_pack_response_200_data.additional_properties = d
-        return test_pack_response_200_data
+        get_pack_test_response_200_data.additional_properties = d
+        return get_pack_test_response_200_data
 
     @property
     def additional_keys(self) -> list[str]:

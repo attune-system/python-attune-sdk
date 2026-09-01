@@ -6,18 +6,20 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.get_execution_response_200 import GetExecutionResponse200
+from ...models.api_response_pack_install_status_response import (
+    ApiResponsePackInstallStatusResponse,
+)
 from ...types import Response
 
 
 def _get_kwargs(
-    id: int,
+    ref: str,
 ) -> dict[str, Any]:
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/executions/{id}".format(
-            id=quote(str(id), safe=""),
+        "url": "/api/v1/packs/{ref}/install/latest".format(
+            ref=quote(str(ref), safe=""),
         ),
     }
 
@@ -26,11 +28,15 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | GetExecutionResponse200 | None:
+) -> Any | ApiResponsePackInstallStatusResponse | None:
     if response.status_code == 200:
-        response_200 = GetExecutionResponse200.from_dict(response.json())
+        response_200 = ApiResponsePackInstallStatusResponse.from_dict(response.json())
 
         return response_200
+
+    if response.status_code == 403:
+        response_403 = cast(Any, None)
+        return response_403
 
     if response.status_code == 404:
         response_404 = cast(Any, None)
@@ -44,7 +50,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | GetExecutionResponse200]:
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -54,25 +60,25 @@ def _build_response(
 
 
 def sync_detailed(
-    id: int,
+    ref: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | GetExecutionResponse200]:
-    """Get a single execution by ID
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
+    """Get the most recent install status for a pack (survives a rollback).
 
     Args:
-        id (int):
+        ref (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GetExecutionResponse200]
+        Response[Any | ApiResponsePackInstallStatusResponse]
     """
 
     kwargs = _get_kwargs(
-        id=id,
+        ref=ref,
     )
 
     response = client.get_httpx_client().request(
@@ -83,49 +89,49 @@ def sync_detailed(
 
 
 def sync(
-    id: int,
+    ref: str,
     *,
     client: AuthenticatedClient,
-) -> Any | GetExecutionResponse200 | None:
-    """Get a single execution by ID
+) -> Any | ApiResponsePackInstallStatusResponse | None:
+    """Get the most recent install status for a pack (survives a rollback).
 
     Args:
-        id (int):
+        ref (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GetExecutionResponse200
+        Any | ApiResponsePackInstallStatusResponse
     """
 
     return sync_detailed(
-        id=id,
+        ref=ref,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
-    id: int,
+    ref: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | GetExecutionResponse200]:
-    """Get a single execution by ID
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
+    """Get the most recent install status for a pack (survives a rollback).
 
     Args:
-        id (int):
+        ref (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GetExecutionResponse200]
+        Response[Any | ApiResponsePackInstallStatusResponse]
     """
 
     kwargs = _get_kwargs(
-        id=id,
+        ref=ref,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -134,26 +140,26 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    id: int,
+    ref: str,
     *,
     client: AuthenticatedClient,
-) -> Any | GetExecutionResponse200 | None:
-    """Get a single execution by ID
+) -> Any | ApiResponsePackInstallStatusResponse | None:
+    """Get the most recent install status for a pack (survives a rollback).
 
     Args:
-        id (int):
+        ref (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GetExecutionResponse200
+        Any | ApiResponsePackInstallStatusResponse
     """
 
     return (
         await asyncio_detailed(
-            id=id,
+            ref=ref,
             client=client,
         )
     ).parsed

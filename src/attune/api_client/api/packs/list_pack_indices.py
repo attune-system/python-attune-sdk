@@ -1,10 +1,12 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.auth_error_response import AuthErrorResponse
+from ...models.error_response import ErrorResponse
 from ...models.list_pack_indices_response_200 import ListPackIndicesResponse200
 from ...types import Response
 
@@ -21,18 +23,20 @@ def _get_kwargs() -> dict[str, Any]:
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | ListPackIndicesResponse200 | None:
+) -> AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200 | None:
     if response.status_code == 200:
         response_200 = ListPackIndicesResponse200.from_dict(response.json())
 
         return response_200
 
     if response.status_code == 401:
-        response_401 = cast(Any, None)
+        response_401 = AuthErrorResponse.from_dict(response.json())
+
         return response_401
 
     if response.status_code == 403:
-        response_403 = cast(Any, None)
+        response_403 = ErrorResponse.from_dict(response.json())
+
         return response_403
 
     if client.raise_on_unexpected_status:
@@ -43,7 +47,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | ListPackIndicesResponse200]:
+) -> Response[AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -55,14 +59,14 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[Any | ListPackIndicesResponse200]:
+) -> Response[AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200]:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ListPackIndicesResponse200]
+        Response[AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200]
     """
 
     kwargs = _get_kwargs()
@@ -77,14 +81,14 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-) -> Any | ListPackIndicesResponse200 | None:
+) -> AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200 | None:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ListPackIndicesResponse200
+        AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200
     """
 
     return sync_detailed(
@@ -95,14 +99,14 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[Any | ListPackIndicesResponse200]:
+) -> Response[AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200]:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ListPackIndicesResponse200]
+        Response[AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200]
     """
 
     kwargs = _get_kwargs()
@@ -115,14 +119,14 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-) -> Any | ListPackIndicesResponse200 | None:
+) -> AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200 | None:
     """
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ListPackIndicesResponse200
+        AuthErrorResponse | ErrorResponse | ListPackIndicesResponse200
     """
 
     return (

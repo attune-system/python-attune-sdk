@@ -6,7 +6,9 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.get_execution_response_200 import GetExecutionResponse200
+from ...models.api_response_pack_install_status_response import (
+    ApiResponsePackInstallStatusResponse,
+)
 from ...types import Response
 
 
@@ -16,7 +18,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/executions/{id}".format(
+        "url": "/api/v1/packs/install/{id}".format(
             id=quote(str(id), safe=""),
         ),
     }
@@ -26,11 +28,15 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | GetExecutionResponse200 | None:
+) -> Any | ApiResponsePackInstallStatusResponse | None:
     if response.status_code == 200:
-        response_200 = GetExecutionResponse200.from_dict(response.json())
+        response_200 = ApiResponsePackInstallStatusResponse.from_dict(response.json())
 
         return response_200
+
+    if response.status_code == 403:
+        response_403 = cast(Any, None)
+        return response_403
 
     if response.status_code == 404:
         response_404 = cast(Any, None)
@@ -44,7 +50,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | GetExecutionResponse200]:
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -57,8 +63,8 @@ def sync_detailed(
     id: int,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | GetExecutionResponse200]:
-    """Get a single execution by ID
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
+    """Get the status of a specific pack install record.
 
     Args:
         id (int):
@@ -68,7 +74,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GetExecutionResponse200]
+        Response[Any | ApiResponsePackInstallStatusResponse]
     """
 
     kwargs = _get_kwargs(
@@ -86,8 +92,8 @@ def sync(
     id: int,
     *,
     client: AuthenticatedClient,
-) -> Any | GetExecutionResponse200 | None:
-    """Get a single execution by ID
+) -> Any | ApiResponsePackInstallStatusResponse | None:
+    """Get the status of a specific pack install record.
 
     Args:
         id (int):
@@ -97,7 +103,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GetExecutionResponse200
+        Any | ApiResponsePackInstallStatusResponse
     """
 
     return sync_detailed(
@@ -110,8 +116,8 @@ async def asyncio_detailed(
     id: int,
     *,
     client: AuthenticatedClient,
-) -> Response[Any | GetExecutionResponse200]:
-    """Get a single execution by ID
+) -> Response[Any | ApiResponsePackInstallStatusResponse]:
+    """Get the status of a specific pack install record.
 
     Args:
         id (int):
@@ -121,7 +127,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | GetExecutionResponse200]
+        Response[Any | ApiResponsePackInstallStatusResponse]
     """
 
     kwargs = _get_kwargs(
@@ -137,8 +143,8 @@ async def asyncio(
     id: int,
     *,
     client: AuthenticatedClient,
-) -> Any | GetExecutionResponse200 | None:
-    """Get a single execution by ID
+) -> Any | ApiResponsePackInstallStatusResponse | None:
+    """Get the status of a specific pack install record.
 
     Args:
         id (int):
@@ -148,7 +154,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | GetExecutionResponse200
+        Any | ApiResponsePackInstallStatusResponse
     """
 
     return (

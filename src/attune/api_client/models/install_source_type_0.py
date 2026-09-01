@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..models.install_source_type_0_type import InstallSourceType0Type
-from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="InstallSourceType0")
 
@@ -19,41 +18,36 @@ class InstallSourceType0:
 
     Attributes:
         checksum (str): Checksum in format "algorithm:hash"
+        ref (str): Git ref (tag, branch, commit)
         type_ (InstallSourceType0Type):
         url (str): Git repository URL
-        ref (None | str | Unset): Git ref (tag, branch, commit)
     """
 
     checksum: str
+    ref: str
     type_: InstallSourceType0Type
     url: str
-    ref: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         checksum = self.checksum
 
+        ref = self.ref
+
         type_ = self.type_.value
 
         url = self.url
-
-        ref: None | str | Unset
-        if isinstance(self.ref, Unset):
-            ref = UNSET
-        else:
-            ref = self.ref
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "checksum": checksum,
+                "ref": ref,
                 "type": type_,
                 "url": url,
             }
         )
-        if ref is not UNSET:
-            field_dict["ref"] = ref
 
         return field_dict
 
@@ -62,24 +56,17 @@ class InstallSourceType0:
         d = dict(src_dict)
         checksum = d.pop("checksum")
 
+        ref = d.pop("ref")
+
         type_ = InstallSourceType0Type(d.pop("type"))
 
         url = d.pop("url")
 
-        def _parse_ref(data: object) -> None | str | Unset:
-            if data is None:
-                return data
-            if isinstance(data, Unset):
-                return data
-            return cast(None | str | Unset, data)
-
-        ref = _parse_ref(d.pop("ref", UNSET))
-
         install_source_type_0 = cls(
             checksum=checksum,
+            ref=ref,
             type_=type_,
             url=url,
-            ref=ref,
         )
 
         install_source_type_0.additional_properties = d

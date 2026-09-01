@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..types import UNSET, Unset
@@ -29,6 +28,7 @@ class PackIndexEntry:
         contents (PackContents): Pack contents summary
         description (str): Brief pack description
         install_sources (list[InstallSourceType0 | InstallSourceType1]): Available installation sources
+        keywords (list[str]): Searchable keywords/tags
         label (str): Human-readable pack name
         license_ (str): SPDX license identifier
         ref (str): Unique pack identifier (matches pack.yaml ref)
@@ -37,7 +37,6 @@ class PackIndexEntry:
         dependencies (None | PackDependencies | Unset):
         email (None | str | Unset): Contact email
         homepage (None | str | Unset): Pack homepage URL
-        keywords (list[str] | Unset): Searchable keywords/tags
         meta (None | PackMeta | Unset):
         repository (None | str | Unset): Source repository URL
         use_case (None | str | Unset): Brief use-case summary for browsing/install decisions
@@ -47,6 +46,7 @@ class PackIndexEntry:
     contents: PackContents
     description: str
     install_sources: list[InstallSourceType0 | InstallSourceType1]
+    keywords: list[str]
     label: str
     license_: str
     ref: str
@@ -55,11 +55,9 @@ class PackIndexEntry:
     dependencies: None | PackDependencies | Unset = UNSET
     email: None | str | Unset = UNSET
     homepage: None | str | Unset = UNSET
-    keywords: list[str] | Unset = UNSET
     meta: None | PackMeta | Unset = UNSET
     repository: None | str | Unset = UNSET
     use_case: None | str | Unset = UNSET
-    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.install_source_type_0 import InstallSourceType0
@@ -81,6 +79,8 @@ class PackIndexEntry:
                 install_sources_item = install_sources_item_data.to_dict()
 
             install_sources.append(install_sources_item)
+
+        keywords = self.keywords
 
         label = self.label
 
@@ -112,10 +112,6 @@ class PackIndexEntry:
         else:
             homepage = self.homepage
 
-        keywords: list[str] | Unset = UNSET
-        if not isinstance(self.keywords, Unset):
-            keywords = self.keywords
-
         meta: dict[str, Any] | None | Unset
         if isinstance(self.meta, Unset):
             meta = UNSET
@@ -137,13 +133,14 @@ class PackIndexEntry:
             use_case = self.use_case
 
         field_dict: dict[str, Any] = {}
-        field_dict.update(self.additional_properties)
+
         field_dict.update(
             {
                 "author": author,
                 "contents": contents,
                 "description": description,
                 "install_sources": install_sources,
+                "keywords": keywords,
                 "label": label,
                 "license": license_,
                 "ref": ref,
@@ -157,8 +154,6 @@ class PackIndexEntry:
             field_dict["email"] = email
         if homepage is not UNSET:
             field_dict["homepage"] = homepage
-        if keywords is not UNSET:
-            field_dict["keywords"] = keywords
         if meta is not UNSET:
             field_dict["meta"] = meta
         if repository is not UNSET:
@@ -214,6 +209,8 @@ class PackIndexEntry:
 
             install_sources.append(install_sources_item)
 
+        keywords = cast(list[str], d.pop("keywords"))
+
         label = d.pop("label")
 
         license_ = d.pop("license")
@@ -259,8 +256,6 @@ class PackIndexEntry:
 
         homepage = _parse_homepage(d.pop("homepage", UNSET))
 
-        keywords = cast(list[str], d.pop("keywords", UNSET))
-
         def _parse_meta(data: object) -> None | PackMeta | Unset:
             if data is None:
                 return data
@@ -301,6 +296,7 @@ class PackIndexEntry:
             contents=contents,
             description=description,
             install_sources=install_sources,
+            keywords=keywords,
             label=label,
             license_=license_,
             ref=ref,
@@ -309,27 +305,9 @@ class PackIndexEntry:
             dependencies=dependencies,
             email=email,
             homepage=homepage,
-            keywords=keywords,
             meta=meta,
             repository=repository,
             use_case=use_case,
         )
 
-        pack_index_entry.additional_properties = d
         return pack_index_entry
-
-    @property
-    def additional_keys(self) -> list[str]:
-        return list(self.additional_properties.keys())
-
-    def __getitem__(self, key: str) -> Any:
-        return self.additional_properties[key]
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.additional_properties[key] = value
-
-    def __delitem__(self, key: str) -> None:
-        del self.additional_properties[key]
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.additional_properties

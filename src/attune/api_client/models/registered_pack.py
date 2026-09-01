@@ -29,6 +29,8 @@ class RegisteredPack:
         pack_version (str): Pack version
         storage_path (str): Permanent storage path
         validation_results (ValidationResults): Validation results
+        install_id (int | None | Unset): Pack install tracking ID when tests were dispatched or failed to dispatch
+        install_status (None | str | Unset): Current pack install status
         test_result (None | TestResult | Unset):
     """
 
@@ -38,6 +40,8 @@ class RegisteredPack:
     pack_version: str
     storage_path: str
     validation_results: ValidationResults
+    install_id: int | None | Unset = UNSET
+    install_status: None | str | Unset = UNSET
     test_result: None | TestResult | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -55,6 +59,18 @@ class RegisteredPack:
         storage_path = self.storage_path
 
         validation_results = self.validation_results.to_dict()
+
+        install_id: int | None | Unset
+        if isinstance(self.install_id, Unset):
+            install_id = UNSET
+        else:
+            install_id = self.install_id
+
+        install_status: None | str | Unset
+        if isinstance(self.install_status, Unset):
+            install_status = UNSET
+        else:
+            install_status = self.install_status
 
         test_result: dict[str, Any] | None | Unset
         if isinstance(self.test_result, Unset):
@@ -76,6 +92,10 @@ class RegisteredPack:
                 "validation_results": validation_results,
             }
         )
+        if install_id is not UNSET:
+            field_dict["install_id"] = install_id
+        if install_status is not UNSET:
+            field_dict["install_status"] = install_status
         if test_result is not UNSET:
             field_dict["test_result"] = test_result
 
@@ -102,6 +122,24 @@ class RegisteredPack:
 
         validation_results = ValidationResults.from_dict(d.pop("validation_results"))
 
+        def _parse_install_id(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        install_id = _parse_install_id(d.pop("install_id", UNSET))
+
+        def _parse_install_status(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        install_status = _parse_install_status(d.pop("install_status", UNSET))
+
         def _parse_test_result(data: object) -> None | TestResult | Unset:
             if data is None:
                 return data
@@ -126,6 +164,8 @@ class RegisteredPack:
             pack_version=pack_version,
             storage_path=storage_path,
             validation_results=validation_results,
+            install_id=install_id,
+            install_status=install_status,
             test_result=test_result,
         )
 

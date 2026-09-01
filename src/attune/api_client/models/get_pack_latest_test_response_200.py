@@ -10,22 +10,24 @@ from typing_extensions import Self
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.test_pack_response_200_data import TestPackResponse200Data
+    from ..models.get_pack_latest_test_response_200_data import (
+        GetPackLatestTestResponse200Data,
+    )
 
 
-T = TypeVar("T", bound="TestPackResponse200")
+T = TypeVar("T", bound="GetPackLatestTestResponse200")
 
 
 @_attrs_define
-class TestPackResponse200:
+class GetPackLatestTestResponse200:
     """Standard API response wrapper
 
     Attributes:
-        data (TestPackResponse200Data): Pack test result structure (not from DB, used for test execution)
+        data (GetPackLatestTestResponse200Data): Pack test execution record
         message (None | str | Unset): Optional message
     """
 
-    data: TestPackResponse200Data
+    data: GetPackLatestTestResponse200Data
     message: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -52,10 +54,12 @@ class TestPackResponse200:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
-        from ..models.test_pack_response_200_data import TestPackResponse200Data
+        from ..models.get_pack_latest_test_response_200_data import (
+            GetPackLatestTestResponse200Data,
+        )
 
         d = dict(src_dict)
-        data = TestPackResponse200Data.from_dict(d.pop("data"))
+        data = GetPackLatestTestResponse200Data.from_dict(d.pop("data"))
 
         def _parse_message(data: object) -> None | str | Unset:
             if data is None:
@@ -66,13 +70,13 @@ class TestPackResponse200:
 
         message = _parse_message(d.pop("message", UNSET))
 
-        test_pack_response_200 = cls(
+        get_pack_latest_test_response_200 = cls(
             data=data,
             message=message,
         )
 
-        test_pack_response_200.additional_properties = d
-        return test_pack_response_200
+        get_pack_latest_test_response_200.additional_properties = d
+        return get_pack_latest_test_response_200
 
     @property
     def additional_keys(self) -> list[str]:

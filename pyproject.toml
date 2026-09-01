@@ -22,7 +22,12 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 authors = [{name = "David Culbreth", email = "david.culbreth.256@gmail.com"}]
-dependencies = ["python-json-logger>=3.0", "httpx>=0.27", "attrs>=21.3.0"]
+dependencies = [
+    "python-json-logger>=3.0",
+    "httpx>=0.27",
+    "attrs>=21.3.0",
+    "typing-extensions>=4.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/attune-system/python-attune-sdk"

@@ -7,11 +7,11 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-T = TypeVar("T", bound="CreateEventRequestConfigType0")
+T = TypeVar("T", bound="CreateEventRequestConfig")
 
 
 @_attrs_define
-class CreateEventRequestConfigType0:
+class CreateEventRequestConfig:
     """Event configuration"""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -26,10 +26,10 @@ class CreateEventRequestConfigType0:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        create_event_request_config_type_0 = cls()
+        create_event_request_config = cls()
 
-        create_event_request_config_type_0.additional_properties = d
-        return create_event_request_config_type_0
+        create_event_request_config.additional_properties = d
+        return create_event_request_config
 
     @property
     def additional_keys(self) -> list[str]:

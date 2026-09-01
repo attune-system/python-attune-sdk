@@ -2,7 +2,7 @@
 
 A lightweight Python package providing boilerplate for writing [Attune](https://github.com/attune-system/attune) actions and sensors.
 
-SDK 0.3.0 is generated for and compatible with the Attune OpenAPI 0.3.0 contract.
+SDK 0.4.0 is generated from the Attune OpenAPI 0.4.2 contract.
 
 ## Installation
 
@@ -127,6 +127,38 @@ client = AuthenticatedClient(base_url="http://localhost:8080", token="your-token
 
 All API modules live under `attune.api_client.api.<domain>` and all request/response
 models under `attune.api_client.models`.
+
+#### Create and Read a Key
+
+Create keys with a `local_ref` and a textual owner reference. The server returns
+the canonical `ref`; use that returned value for get, update, and delete calls.
+
+```python
+import attune
+from attune.api_client.api.secrets import create_key, get_key
+from attune.api_client.models.create_key_request import CreateKeyRequest
+from attune.api_client.models.owner_type import OwnerType
+
+created = create_key.sync(
+    client=attune.context.client,
+    body=CreateKeyRequest(
+        local_ref="github_token",
+        name="GitHub API Token",
+        owner_type=OwnerType.PACK,
+        owner_pack_ref="github",
+        value="replace-with-secret-value",
+        encrypted=True,
+    ),
+)
+if created is None:
+    raise RuntimeError("Unable to create key")
+
+canonical_ref = created.data.ref  # e.g. "pack.github.github_token"
+key = get_key.sync(canonical_ref, client=attune.context.client)
+```
+
+Do not reconstruct the canonical ref from `local_ref`, and do not pass a local
+ref to `get_key`, `update_key`, or `delete_key`.
 
 ### Common Action Tasks
 
