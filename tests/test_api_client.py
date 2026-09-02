@@ -10,6 +10,7 @@ import httpx
 import pytest
 
 from attune.api_client import AuthenticatedClient
+from attune.api_client.api.caches import list_namespaces
 from attune.api_client.api.events import create_event
 from attune.api_client.api.executions import list_workflow_cache_iterations
 from attune.api_client.api.queues import bulk_enqueue_queue_items
@@ -299,6 +300,28 @@ def test_cache_operations_are_present():
     assert generated == expected
     for operation in expected:
         importlib.import_module(f"attune.api_client.api.caches.{operation}")
+
+
+def test_list_namespaces_allows_owner_type_to_be_omitted():
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["query"] = request.url.query
+        return httpx.Response(418, request=request)
+
+    with httpx.Client(
+        base_url="https://attune.test", transport=httpx.MockTransport(handler)
+    ) as http_client:
+        client = AuthenticatedClient(
+            base_url="https://attune.test", token="test-token"
+        ).set_httpx_client(http_client)
+        list_namespaces.sync_detailed(client=client)
+
+    assert captured == {
+        "path": "/api/v1/cache/namespaces",
+        "query": b"",
+    }
 
 
 def test_list_workflow_cache_iterations_contract():

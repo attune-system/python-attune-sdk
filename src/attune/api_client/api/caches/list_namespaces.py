@@ -15,7 +15,7 @@ from ...types import UNSET, Response, Unset
 
 def _get_kwargs(
     *,
-    owner_type: OwnerType,
+    owner_type: None | OwnerType | Unset = UNSET,
     owner_ref: None | str | Unset = UNSET,
     namespace: None | str | Unset = UNSET,
     freshness: CacheNamespaceFreshness | None | Unset = UNSET,
@@ -25,7 +25,13 @@ def _get_kwargs(
 
     params: dict[str, Any] = {}
 
-    json_owner_type = owner_type.value
+    json_owner_type: None | str | Unset
+    if isinstance(owner_type, Unset):
+        json_owner_type = UNSET
+    elif isinstance(owner_type, OwnerType):
+        json_owner_type = owner_type.value
+    else:
+        json_owner_type = owner_type
     params["owner_type"] = json_owner_type
 
     json_owner_ref: None | str | Unset
@@ -144,17 +150,17 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    owner_type: OwnerType,
+    owner_type: None | OwnerType | Unset = UNSET,
     owner_ref: None | str | Unset = UNSET,
     namespace: None | str | Unset = UNSET,
     freshness: CacheNamespaceFreshness | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
     cursor: None | str | Unset = UNSET,
 ) -> Response[AuthErrorResponse | ErrorResponse | CacheNamespaceListApiResponse]:
-    """List cache namespaces for one owner scope.
+    """List cache namespaces visible to the caller, optionally within one owner scope.
 
     Args:
-        owner_type (OwnerType):
+        owner_type (None | OwnerType | Unset):
         owner_ref (None | str | Unset):
         namespace (None | str | Unset):
         freshness (CacheNamespaceFreshness | None | Unset):
@@ -188,17 +194,17 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    owner_type: OwnerType,
+    owner_type: None | OwnerType | Unset = UNSET,
     owner_ref: None | str | Unset = UNSET,
     namespace: None | str | Unset = UNSET,
     freshness: CacheNamespaceFreshness | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
     cursor: None | str | Unset = UNSET,
 ) -> AuthErrorResponse | ErrorResponse | CacheNamespaceListApiResponse | None:
-    """List cache namespaces for one owner scope.
+    """List cache namespaces visible to the caller, optionally within one owner scope.
 
     Args:
-        owner_type (OwnerType):
+        owner_type (None | OwnerType | Unset):
         owner_ref (None | str | Unset):
         namespace (None | str | Unset):
         freshness (CacheNamespaceFreshness | None | Unset):
@@ -227,17 +233,17 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    owner_type: OwnerType,
+    owner_type: None | OwnerType | Unset = UNSET,
     owner_ref: None | str | Unset = UNSET,
     namespace: None | str | Unset = UNSET,
     freshness: CacheNamespaceFreshness | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
     cursor: None | str | Unset = UNSET,
 ) -> Response[AuthErrorResponse | ErrorResponse | CacheNamespaceListApiResponse]:
-    """List cache namespaces for one owner scope.
+    """List cache namespaces visible to the caller, optionally within one owner scope.
 
     Args:
-        owner_type (OwnerType):
+        owner_type (None | OwnerType | Unset):
         owner_ref (None | str | Unset):
         namespace (None | str | Unset):
         freshness (CacheNamespaceFreshness | None | Unset):
@@ -269,17 +275,17 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    owner_type: OwnerType,
+    owner_type: None | OwnerType | Unset = UNSET,
     owner_ref: None | str | Unset = UNSET,
     namespace: None | str | Unset = UNSET,
     freshness: CacheNamespaceFreshness | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
     cursor: None | str | Unset = UNSET,
 ) -> AuthErrorResponse | ErrorResponse | CacheNamespaceListApiResponse | None:
-    """List cache namespaces for one owner scope.
+    """List cache namespaces visible to the caller, optionally within one owner scope.
 
     Args:
-        owner_type (OwnerType):
+        owner_type (None | OwnerType | Unset):
         owner_ref (None | str | Unset):
         namespace (None | str | Unset):
         freshness (CacheNamespaceFreshness | None | Unset):
