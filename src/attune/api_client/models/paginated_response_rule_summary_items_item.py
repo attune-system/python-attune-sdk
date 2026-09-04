@@ -14,6 +14,15 @@ if TYPE_CHECKING:
     from ..models.paginated_response_rule_summary_items_item_action_params import (
         PaginatedResponseRuleSummaryItemsItemActionParams,
     )
+    from ..models.paginated_response_rule_summary_items_item_sensor_worker_affinity import (
+        PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity,
+    )
+    from ..models.paginated_response_rule_summary_items_item_sensor_worker_selector import (
+        PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector,
+    )
+    from ..models.paginated_response_rule_summary_items_item_sensor_worker_tolerations_item import (
+        PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem,
+    )
     from ..models.paginated_response_rule_summary_items_item_trigger_params import (
         PaginatedResponseRuleSummaryItemsItemTriggerParams,
     )
@@ -36,6 +45,9 @@ class PaginatedResponseRuleSummaryItemsItem:
         label (str): Human-readable label Example: Notify on Error.
         pack_ref (str): Pack reference Example: slack.
         ref (str): Unique reference identifier Example: slack.notify_on_error.
+        sensor_worker_affinity (PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity):
+        sensor_worker_selector (PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector):
+        sensor_worker_tolerations (list[PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem]):
         trigger_params (PaginatedResponseRuleSummaryItemsItemTriggerParams): Parameters for trigger configuration and
             event filtering
         trigger_ref (str): Trigger reference Example: system.error_event.
@@ -56,6 +68,11 @@ class PaginatedResponseRuleSummaryItemsItem:
     label: str
     pack_ref: str
     ref: str
+    sensor_worker_affinity: PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity
+    sensor_worker_selector: PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector
+    sensor_worker_tolerations: list[
+        PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem
+    ]
     trigger_params: PaginatedResponseRuleSummaryItemsItemTriggerParams
     trigger_ref: str
     updated: datetime.datetime
@@ -80,6 +97,17 @@ class PaginatedResponseRuleSummaryItemsItem:
         pack_ref = self.pack_ref
 
         ref = self.ref
+
+        sensor_worker_affinity = self.sensor_worker_affinity.to_dict()
+
+        sensor_worker_selector = self.sensor_worker_selector.to_dict()
+
+        sensor_worker_tolerations = []
+        for sensor_worker_tolerations_item_data in self.sensor_worker_tolerations:
+            sensor_worker_tolerations_item = (
+                sensor_worker_tolerations_item_data.to_dict()
+            )
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = self.trigger_params.to_dict()
 
@@ -120,6 +148,9 @@ class PaginatedResponseRuleSummaryItemsItem:
                 "label": label,
                 "pack_ref": pack_ref,
                 "ref": ref,
+                "sensor_worker_affinity": sensor_worker_affinity,
+                "sensor_worker_selector": sensor_worker_selector,
+                "sensor_worker_tolerations": sensor_worker_tolerations,
                 "trigger_params": trigger_params,
                 "trigger_ref": trigger_ref,
                 "updated": updated,
@@ -138,6 +169,15 @@ class PaginatedResponseRuleSummaryItemsItem:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.paginated_response_rule_summary_items_item_action_params import (
             PaginatedResponseRuleSummaryItemsItemActionParams,
+        )
+        from ..models.paginated_response_rule_summary_items_item_sensor_worker_affinity import (
+            PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity,
+        )
+        from ..models.paginated_response_rule_summary_items_item_sensor_worker_selector import (
+            PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector,
+        )
+        from ..models.paginated_response_rule_summary_items_item_sensor_worker_tolerations_item import (
+            PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem,
         )
         from ..models.paginated_response_rule_summary_items_item_trigger_params import (
             PaginatedResponseRuleSummaryItemsItemTriggerParams,
@@ -161,6 +201,27 @@ class PaginatedResponseRuleSummaryItemsItem:
         pack_ref = d.pop("pack_ref")
 
         ref = d.pop("ref")
+
+        sensor_worker_affinity = (
+            PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity.from_dict(
+                d.pop("sensor_worker_affinity")
+            )
+        )
+
+        sensor_worker_selector = (
+            PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector.from_dict(
+                d.pop("sensor_worker_selector")
+            )
+        )
+
+        sensor_worker_tolerations = []
+        _sensor_worker_tolerations = d.pop("sensor_worker_tolerations")
+        for sensor_worker_tolerations_item_data in _sensor_worker_tolerations:
+            sensor_worker_tolerations_item = PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem.from_dict(
+                sensor_worker_tolerations_item_data
+            )
+
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = PaginatedResponseRuleSummaryItemsItemTriggerParams.from_dict(
             d.pop("trigger_params")
@@ -218,6 +279,9 @@ class PaginatedResponseRuleSummaryItemsItem:
             label=label,
             pack_ref=pack_ref,
             ref=ref,
+            sensor_worker_affinity=sensor_worker_affinity,
+            sensor_worker_selector=sensor_worker_selector,
+            sensor_worker_tolerations=sensor_worker_tolerations,
             trigger_params=trigger_params,
             trigger_ref=trigger_ref,
             updated=updated,

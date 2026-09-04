@@ -12,6 +12,15 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.rule_summary_action_params import RuleSummaryActionParams
+    from ..models.rule_summary_sensor_worker_affinity import (
+        RuleSummarySensorWorkerAffinity,
+    )
+    from ..models.rule_summary_sensor_worker_selector import (
+        RuleSummarySensorWorkerSelector,
+    )
+    from ..models.rule_summary_sensor_worker_tolerations_item import (
+        RuleSummarySensorWorkerTolerationsItem,
+    )
     from ..models.rule_summary_trigger_params import RuleSummaryTriggerParams
 
 
@@ -31,6 +40,9 @@ class RuleSummary:
         label (str): Human-readable label Example: Notify on Error.
         pack_ref (str): Pack reference Example: slack.
         ref (str): Unique reference identifier Example: slack.notify_on_error.
+        sensor_worker_affinity (RuleSummarySensorWorkerAffinity):
+        sensor_worker_selector (RuleSummarySensorWorkerSelector):
+        sensor_worker_tolerations (list[RuleSummarySensorWorkerTolerationsItem]):
         trigger_params (RuleSummaryTriggerParams): Parameters for trigger configuration and event filtering
         trigger_ref (str): Trigger reference Example: system.error_event.
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
@@ -50,6 +62,9 @@ class RuleSummary:
     label: str
     pack_ref: str
     ref: str
+    sensor_worker_affinity: RuleSummarySensorWorkerAffinity
+    sensor_worker_selector: RuleSummarySensorWorkerSelector
+    sensor_worker_tolerations: list[RuleSummarySensorWorkerTolerationsItem]
     trigger_params: RuleSummaryTriggerParams
     trigger_ref: str
     updated: datetime.datetime
@@ -74,6 +89,17 @@ class RuleSummary:
         pack_ref = self.pack_ref
 
         ref = self.ref
+
+        sensor_worker_affinity = self.sensor_worker_affinity.to_dict()
+
+        sensor_worker_selector = self.sensor_worker_selector.to_dict()
+
+        sensor_worker_tolerations = []
+        for sensor_worker_tolerations_item_data in self.sensor_worker_tolerations:
+            sensor_worker_tolerations_item = (
+                sensor_worker_tolerations_item_data.to_dict()
+            )
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = self.trigger_params.to_dict()
 
@@ -114,6 +140,9 @@ class RuleSummary:
                 "label": label,
                 "pack_ref": pack_ref,
                 "ref": ref,
+                "sensor_worker_affinity": sensor_worker_affinity,
+                "sensor_worker_selector": sensor_worker_selector,
+                "sensor_worker_tolerations": sensor_worker_tolerations,
                 "trigger_params": trigger_params,
                 "trigger_ref": trigger_ref,
                 "updated": updated,
@@ -131,6 +160,15 @@ class RuleSummary:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.rule_summary_action_params import RuleSummaryActionParams
+        from ..models.rule_summary_sensor_worker_affinity import (
+            RuleSummarySensorWorkerAffinity,
+        )
+        from ..models.rule_summary_sensor_worker_selector import (
+            RuleSummarySensorWorkerSelector,
+        )
+        from ..models.rule_summary_sensor_worker_tolerations_item import (
+            RuleSummarySensorWorkerTolerationsItem,
+        )
         from ..models.rule_summary_trigger_params import RuleSummaryTriggerParams
 
         d = dict(src_dict)
@@ -149,6 +187,25 @@ class RuleSummary:
         pack_ref = d.pop("pack_ref")
 
         ref = d.pop("ref")
+
+        sensor_worker_affinity = RuleSummarySensorWorkerAffinity.from_dict(
+            d.pop("sensor_worker_affinity")
+        )
+
+        sensor_worker_selector = RuleSummarySensorWorkerSelector.from_dict(
+            d.pop("sensor_worker_selector")
+        )
+
+        sensor_worker_tolerations = []
+        _sensor_worker_tolerations = d.pop("sensor_worker_tolerations")
+        for sensor_worker_tolerations_item_data in _sensor_worker_tolerations:
+            sensor_worker_tolerations_item = (
+                RuleSummarySensorWorkerTolerationsItem.from_dict(
+                    sensor_worker_tolerations_item_data
+                )
+            )
+
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = RuleSummaryTriggerParams.from_dict(d.pop("trigger_params"))
 
@@ -204,6 +261,9 @@ class RuleSummary:
             label=label,
             pack_ref=pack_ref,
             ref=ref,
+            sensor_worker_affinity=sensor_worker_affinity,
+            sensor_worker_selector=sensor_worker_selector,
+            sensor_worker_tolerations=sensor_worker_tolerations,
             trigger_params=trigger_params,
             trigger_ref=trigger_ref,
             updated=updated,
