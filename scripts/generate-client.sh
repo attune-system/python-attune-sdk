@@ -64,6 +64,12 @@ openapi-python-client generate \
     --overwrite \
     --meta none
 
+GENERATED_INVENTORY="$TEMP_DIR/openapi-operation-inventory.json"
+python3 "$PROJECT_DIR/scripts/update-operation-inventory.py" \
+    "$SPEC_PATH" \
+    "$GENERATED_DIR/api" \
+    "$GENERATED_INVENTORY"
+
 if [ -d "$OUTPUT_DIR" ]; then
     mv "$OUTPUT_DIR" "$BACKUP_DIR"
 fi
@@ -73,6 +79,7 @@ if ! mv "$GENERATED_DIR" "$OUTPUT_DIR"; then
     fi
     exit 1
 fi
+mv "$GENERATED_INVENTORY" "$PROJECT_DIR/tests/openapi-operation-inventory.json"
 rm -rf "$BACKUP_DIR"
 
 echo "Done. Generated client at $OUTPUT_DIR"

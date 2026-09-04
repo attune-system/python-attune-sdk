@@ -17,6 +17,15 @@ if TYPE_CHECKING:
     from ..models.api_response_rule_response_data_conditions import (
         ApiResponseRuleResponseDataConditions,
     )
+    from ..models.api_response_rule_response_data_sensor_worker_affinity import (
+        ApiResponseRuleResponseDataSensorWorkerAffinity,
+    )
+    from ..models.api_response_rule_response_data_sensor_worker_selector import (
+        ApiResponseRuleResponseDataSensorWorkerSelector,
+    )
+    from ..models.api_response_rule_response_data_sensor_worker_tolerations_item import (
+        ApiResponseRuleResponseDataSensorWorkerTolerationsItem,
+    )
     from ..models.api_response_rule_response_data_trigger_params import (
         ApiResponseRuleResponseDataTriggerParams,
     )
@@ -41,6 +50,9 @@ class ApiResponseRuleResponseData:
         pack (int): Pack ID Example: 1.
         pack_ref (str): Pack reference Example: slack.
         ref (str): Unique reference identifier Example: slack.notify_on_error.
+        sensor_worker_affinity (ApiResponseRuleResponseDataSensorWorkerAffinity):
+        sensor_worker_selector (ApiResponseRuleResponseDataSensorWorkerSelector):
+        sensor_worker_tolerations (list[ApiResponseRuleResponseDataSensorWorkerTolerationsItem]):
         trigger_params (ApiResponseRuleResponseDataTriggerParams): Parameters for trigger configuration and event
             filtering
         trigger_ref (str): Trigger reference Example: system.error_event.
@@ -68,6 +80,11 @@ class ApiResponseRuleResponseData:
     pack: int
     pack_ref: str
     ref: str
+    sensor_worker_affinity: ApiResponseRuleResponseDataSensorWorkerAffinity
+    sensor_worker_selector: ApiResponseRuleResponseDataSensorWorkerSelector
+    sensor_worker_tolerations: list[
+        ApiResponseRuleResponseDataSensorWorkerTolerationsItem
+    ]
     trigger_params: ApiResponseRuleResponseDataTriggerParams
     trigger_ref: str
     updated: datetime.datetime
@@ -101,6 +118,17 @@ class ApiResponseRuleResponseData:
         pack_ref = self.pack_ref
 
         ref = self.ref
+
+        sensor_worker_affinity = self.sensor_worker_affinity.to_dict()
+
+        sensor_worker_selector = self.sensor_worker_selector.to_dict()
+
+        sensor_worker_tolerations = []
+        for sensor_worker_tolerations_item_data in self.sensor_worker_tolerations:
+            sensor_worker_tolerations_item = (
+                sensor_worker_tolerations_item_data.to_dict()
+            )
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = self.trigger_params.to_dict()
 
@@ -162,6 +190,9 @@ class ApiResponseRuleResponseData:
                 "pack": pack,
                 "pack_ref": pack_ref,
                 "ref": ref,
+                "sensor_worker_affinity": sensor_worker_affinity,
+                "sensor_worker_selector": sensor_worker_selector,
+                "sensor_worker_tolerations": sensor_worker_tolerations,
                 "trigger_params": trigger_params,
                 "trigger_ref": trigger_ref,
                 "updated": updated,
@@ -189,6 +220,15 @@ class ApiResponseRuleResponseData:
         )
         from ..models.api_response_rule_response_data_conditions import (
             ApiResponseRuleResponseDataConditions,
+        )
+        from ..models.api_response_rule_response_data_sensor_worker_affinity import (
+            ApiResponseRuleResponseDataSensorWorkerAffinity,
+        )
+        from ..models.api_response_rule_response_data_sensor_worker_selector import (
+            ApiResponseRuleResponseDataSensorWorkerSelector,
+        )
+        from ..models.api_response_rule_response_data_sensor_worker_tolerations_item import (
+            ApiResponseRuleResponseDataSensorWorkerTolerationsItem,
         )
         from ..models.api_response_rule_response_data_trigger_params import (
             ApiResponseRuleResponseDataTriggerParams,
@@ -220,6 +260,29 @@ class ApiResponseRuleResponseData:
         pack_ref = d.pop("pack_ref")
 
         ref = d.pop("ref")
+
+        sensor_worker_affinity = (
+            ApiResponseRuleResponseDataSensorWorkerAffinity.from_dict(
+                d.pop("sensor_worker_affinity")
+            )
+        )
+
+        sensor_worker_selector = (
+            ApiResponseRuleResponseDataSensorWorkerSelector.from_dict(
+                d.pop("sensor_worker_selector")
+            )
+        )
+
+        sensor_worker_tolerations = []
+        _sensor_worker_tolerations = d.pop("sensor_worker_tolerations")
+        for sensor_worker_tolerations_item_data in _sensor_worker_tolerations:
+            sensor_worker_tolerations_item = (
+                ApiResponseRuleResponseDataSensorWorkerTolerationsItem.from_dict(
+                    sensor_worker_tolerations_item_data
+                )
+            )
+
+            sensor_worker_tolerations.append(sensor_worker_tolerations_item)
 
         trigger_params = ApiResponseRuleResponseDataTriggerParams.from_dict(
             d.pop("trigger_params")
@@ -307,6 +370,9 @@ class ApiResponseRuleResponseData:
             pack=pack,
             pack_ref=pack_ref,
             ref=ref,
+            sensor_worker_affinity=sensor_worker_affinity,
+            sensor_worker_selector=sensor_worker_selector,
+            sensor_worker_tolerations=sensor_worker_tolerations,
             trigger_params=trigger_params,
             trigger_ref=trigger_ref,
             updated=updated,
