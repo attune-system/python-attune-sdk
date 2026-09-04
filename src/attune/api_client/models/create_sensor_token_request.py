@@ -9,42 +9,32 @@ from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="CreateSensorTokenInternalResponse200Data")
+T = TypeVar("T", bound="CreateSensorTokenRequest")
 
 
 @_attrs_define
-class CreateSensorTokenInternalResponse200Data:
-    """Response for sensor token creation
+class CreateSensorTokenRequest:
+    """Request body for creating sensor tokens
 
     Attributes:
-        expires_at (str):
-        identity_id (int):
-        permission_set_refs (list[str]):
-        sensor_ref (str):
-        token (str):
-        trigger_types (list[str]):
-        pack_ref (None | str | Unset):
+        sensor_ref (str): Sensor reference (e.g., "core.timer")
+        trigger_types (list[str]): List of trigger types this sensor can create events for
+        pack_ref (None | str | Unset): Registered pack reference. Internal worker callers must provide it;
+            public callers may omit it and let the API resolve it.
+        permission_set_refs (list[str] | Unset): Explicit sensor cache permission-set refs. `standard` grants read-only
+            access to the registered sensor and pack cache scopes.
+        ttl_seconds (int | None | Unset): Optional TTL in seconds (default: 86400 = 24 hours, max: 259200 = 72 hours)
     """
 
-    expires_at: str
-    identity_id: int
-    permission_set_refs: list[str]
     sensor_ref: str
-    token: str
     trigger_types: list[str]
     pack_ref: None | str | Unset = UNSET
+    permission_set_refs: list[str] | Unset = UNSET
+    ttl_seconds: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        expires_at = self.expires_at
-
-        identity_id = self.identity_id
-
-        permission_set_refs = self.permission_set_refs
-
         sensor_ref = self.sensor_ref
-
-        token = self.token
 
         trigger_types = self.trigger_types
 
@@ -54,35 +44,37 @@ class CreateSensorTokenInternalResponse200Data:
         else:
             pack_ref = self.pack_ref
 
+        permission_set_refs: list[str] | Unset = UNSET
+        if not isinstance(self.permission_set_refs, Unset):
+            permission_set_refs = self.permission_set_refs
+
+        ttl_seconds: int | None | Unset
+        if isinstance(self.ttl_seconds, Unset):
+            ttl_seconds = UNSET
+        else:
+            ttl_seconds = self.ttl_seconds
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "expires_at": expires_at,
-                "identity_id": identity_id,
-                "permission_set_refs": permission_set_refs,
                 "sensor_ref": sensor_ref,
-                "token": token,
                 "trigger_types": trigger_types,
             }
         )
         if pack_ref is not UNSET:
             field_dict["pack_ref"] = pack_ref
+        if permission_set_refs is not UNSET:
+            field_dict["permission_set_refs"] = permission_set_refs
+        if ttl_seconds is not UNSET:
+            field_dict["ttl_seconds"] = ttl_seconds
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        expires_at = d.pop("expires_at")
-
-        identity_id = d.pop("identity_id")
-
-        permission_set_refs = cast(list[str], d.pop("permission_set_refs"))
-
         sensor_ref = d.pop("sensor_ref")
-
-        token = d.pop("token")
 
         trigger_types = cast(list[str], d.pop("trigger_types"))
 
@@ -95,18 +87,27 @@ class CreateSensorTokenInternalResponse200Data:
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
 
-        create_sensor_token_internal_response_200_data = cls(
-            expires_at=expires_at,
-            identity_id=identity_id,
-            permission_set_refs=permission_set_refs,
+        permission_set_refs = cast(list[str], d.pop("permission_set_refs", UNSET))
+
+        def _parse_ttl_seconds(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        ttl_seconds = _parse_ttl_seconds(d.pop("ttl_seconds", UNSET))
+
+        create_sensor_token_request = cls(
             sensor_ref=sensor_ref,
-            token=token,
             trigger_types=trigger_types,
             pack_ref=pack_ref,
+            permission_set_refs=permission_set_refs,
+            ttl_seconds=ttl_seconds,
         )
 
-        create_sensor_token_internal_response_200_data.additional_properties = d
-        return create_sensor_token_internal_response_200_data
+        create_sensor_token_request.additional_properties = d
+        return create_sensor_token_request
 
     @property
     def additional_keys(self) -> list[str]:

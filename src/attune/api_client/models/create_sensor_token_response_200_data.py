@@ -9,11 +9,11 @@ from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="CreateSensorTokenInternalResponse200Data")
+T = TypeVar("T", bound="CreateSensorTokenResponse200Data")
 
 
 @_attrs_define
-class CreateSensorTokenInternalResponse200Data:
+class CreateSensorTokenResponse200Data:
     """Response for sensor token creation
 
     Attributes:
@@ -95,7 +95,7 @@ class CreateSensorTokenInternalResponse200Data:
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
 
-        create_sensor_token_internal_response_200_data = cls(
+        create_sensor_token_response_200_data = cls(
             expires_at=expires_at,
             identity_id=identity_id,
             permission_set_refs=permission_set_refs,
@@ -105,8 +105,8 @@ class CreateSensorTokenInternalResponse200Data:
             pack_ref=pack_ref,
         )
 
-        create_sensor_token_internal_response_200_data.additional_properties = d
-        return create_sensor_token_internal_response_200_data
+        create_sensor_token_response_200_data.additional_properties = d
+        return create_sensor_token_response_200_data
 
     @property
     def additional_keys(self) -> list[str]:

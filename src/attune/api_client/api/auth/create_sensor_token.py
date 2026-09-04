@@ -5,20 +5,20 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.api_response_event_response import ApiResponseEventResponse
-from ...models.create_event_request import CreateEventRequest
+from ...models.create_sensor_token_request import CreateSensorTokenRequest
+from ...models.create_sensor_token_response_200 import CreateSensorTokenResponse200
 from ...types import Response
 
 
 def _get_kwargs(
     *,
-    body: CreateEventRequest,
+    body: CreateSensorTokenRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/events",
+        "url": "/auth/sensor-token",
     }
 
     _kwargs["json"] = body.to_dict()
@@ -31,11 +31,11 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | ApiResponseEventResponse | None:
-    if response.status_code == 201:
-        response_201 = ApiResponseEventResponse.from_dict(response.json())
+) -> Any | CreateSensorTokenResponse200 | None:
+    if response.status_code == 200:
+        response_200 = CreateSensorTokenResponse200.from_dict(response.json())
 
-        return response_201
+        return response_200
 
     if response.status_code == 400:
         response_400 = cast(Any, None)
@@ -45,13 +45,9 @@ def _parse_response(
         response_401 = cast(Any, None)
         return response_401
 
-    if response.status_code == 404:
-        response_404 = cast(Any, None)
-        return response_404
-
-    if response.status_code == 500:
-        response_500 = cast(Any, None)
-        return response_500
+    if response.status_code == 403:
+        response_403 = cast(Any, None)
+        return response_403
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -61,7 +57,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | ApiResponseEventResponse]:
+) -> Response[Any | CreateSensorTokenResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -73,19 +69,21 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    body: CreateEventRequest,
-) -> Response[Any | ApiResponseEventResponse]:
-    """Create a new event
+    body: CreateSensorTokenRequest,
+) -> Response[Any | CreateSensorTokenResponse200]:
+    """Create sensor token endpoint (internal use by sensor service)
+
+     POST /auth/sensor-token
 
     Args:
-        body (CreateEventRequest): Request body for creating an event
+        body (CreateSensorTokenRequest): Request body for creating sensor tokens
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiResponseEventResponse]
+        Response[Any | CreateSensorTokenResponse200]
     """
 
     kwargs = _get_kwargs(
@@ -102,19 +100,21 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    body: CreateEventRequest,
-) -> Any | ApiResponseEventResponse | None:
-    """Create a new event
+    body: CreateSensorTokenRequest,
+) -> Any | CreateSensorTokenResponse200 | None:
+    """Create sensor token endpoint (internal use by sensor service)
+
+     POST /auth/sensor-token
 
     Args:
-        body (CreateEventRequest): Request body for creating an event
+        body (CreateSensorTokenRequest): Request body for creating sensor tokens
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiResponseEventResponse
+        Any | CreateSensorTokenResponse200
     """
 
     return sync_detailed(
@@ -126,19 +126,21 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    body: CreateEventRequest,
-) -> Response[Any | ApiResponseEventResponse]:
-    """Create a new event
+    body: CreateSensorTokenRequest,
+) -> Response[Any | CreateSensorTokenResponse200]:
+    """Create sensor token endpoint (internal use by sensor service)
+
+     POST /auth/sensor-token
 
     Args:
-        body (CreateEventRequest): Request body for creating an event
+        body (CreateSensorTokenRequest): Request body for creating sensor tokens
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiResponseEventResponse]
+        Response[Any | CreateSensorTokenResponse200]
     """
 
     kwargs = _get_kwargs(
@@ -153,19 +155,21 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    body: CreateEventRequest,
-) -> Any | ApiResponseEventResponse | None:
-    """Create a new event
+    body: CreateSensorTokenRequest,
+) -> Any | CreateSensorTokenResponse200 | None:
+    """Create sensor token endpoint (internal use by sensor service)
+
+     POST /auth/sensor-token
 
     Args:
-        body (CreateEventRequest): Request body for creating an event
+        body (CreateSensorTokenRequest): Request body for creating sensor tokens
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiResponseEventResponse
+        Any | CreateSensorTokenResponse200
     """
 
     return (

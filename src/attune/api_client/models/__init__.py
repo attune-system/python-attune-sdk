@@ -193,15 +193,6 @@ from .api_response_rule_response_data_action_params import (
 from .api_response_rule_response_data_conditions import (
     ApiResponseRuleResponseDataConditions,
 )
-from .api_response_rule_response_data_sensor_worker_affinity import (
-    ApiResponseRuleResponseDataSensorWorkerAffinity,
-)
-from .api_response_rule_response_data_sensor_worker_selector import (
-    ApiResponseRuleResponseDataSensorWorkerSelector,
-)
-from .api_response_rule_response_data_sensor_worker_tolerations_item import (
-    ApiResponseRuleResponseDataSensorWorkerTolerationsItem,
-)
 from .api_response_rule_response_data_trigger_params import (
     ApiResponseRuleResponseDataTriggerParams,
 )
@@ -513,15 +504,6 @@ from .create_policy_request import CreatePolicyRequest
 from .create_rule_request import CreateRuleRequest
 from .create_rule_request_action_params import CreateRuleRequestActionParams
 from .create_rule_request_conditions import CreateRuleRequestConditions
-from .create_rule_request_sensor_worker_affinity import (
-    CreateRuleRequestSensorWorkerAffinity,
-)
-from .create_rule_request_sensor_worker_selector import (
-    CreateRuleRequestSensorWorkerSelector,
-)
-from .create_rule_request_sensor_worker_tolerations_item import (
-    CreateRuleRequestSensorWorkerTolerationsItem,
-)
 from .create_rule_request_trigger_params import CreateRuleRequestTriggerParams
 from .create_runtime_request import CreateRuntimeRequest
 from .create_runtime_request_distributions import CreateRuntimeRequestDistributions
@@ -541,9 +523,9 @@ from .create_sensor_token_internal_response_200 import (
 from .create_sensor_token_internal_response_200_data import (
     CreateSensorTokenInternalResponse200Data,
 )
-from .create_sensor_token_internal_response_200_data_workload_fence_type_0 import (
-    CreateSensorTokenInternalResponse200DataWorkloadFenceType0,
-)
+from .create_sensor_token_request import CreateSensorTokenRequest
+from .create_sensor_token_response_200 import CreateSensorTokenResponse200
+from .create_sensor_token_response_200_data import CreateSensorTokenResponse200Data
 from .create_trigger_request import CreateTriggerRequest
 from .create_trigger_request_out_schema_type_0 import CreateTriggerRequestOutSchemaType0
 from .create_trigger_request_param_schema_type_0 import (
@@ -966,15 +948,6 @@ from .paginated_response_rule_summary_items_item import (
 from .paginated_response_rule_summary_items_item_action_params import (
     PaginatedResponseRuleSummaryItemsItemActionParams,
 )
-from .paginated_response_rule_summary_items_item_sensor_worker_affinity import (
-    PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity,
-)
-from .paginated_response_rule_summary_items_item_sensor_worker_selector import (
-    PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector,
-)
-from .paginated_response_rule_summary_items_item_sensor_worker_tolerations_item import (
-    PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem,
-)
 from .paginated_response_rule_summary_items_item_trigger_params import (
     PaginatedResponseRuleSummaryItemsItemTriggerParams,
 )
@@ -1071,19 +1044,9 @@ from .revoke_integration_token_response_200_data import (
 from .rule_response import RuleResponse
 from .rule_response_action_params import RuleResponseActionParams
 from .rule_response_conditions import RuleResponseConditions
-from .rule_response_sensor_worker_affinity import RuleResponseSensorWorkerAffinity
-from .rule_response_sensor_worker_selector import RuleResponseSensorWorkerSelector
-from .rule_response_sensor_worker_tolerations_item import (
-    RuleResponseSensorWorkerTolerationsItem,
-)
 from .rule_response_trigger_params import RuleResponseTriggerParams
 from .rule_summary import RuleSummary
 from .rule_summary_action_params import RuleSummaryActionParams
-from .rule_summary_sensor_worker_affinity import RuleSummarySensorWorkerAffinity
-from .rule_summary_sensor_worker_selector import RuleSummarySensorWorkerSelector
-from .rule_summary_sensor_worker_tolerations_item import (
-    RuleSummarySensorWorkerTolerationsItem,
-)
 from .rule_summary_trigger_params import RuleSummaryTriggerParams
 from .runtime_requirements import RuntimeRequirements
 from .runtime_response import RuntimeResponse
@@ -1235,15 +1198,6 @@ from .update_policy_request import UpdatePolicyRequest
 from .update_rule_request import UpdateRuleRequest
 from .update_rule_request_action_params_type_0 import UpdateRuleRequestActionParamsType0
 from .update_rule_request_conditions_type_0 import UpdateRuleRequestConditionsType0
-from .update_rule_request_sensor_worker_affinity_type_0 import (
-    UpdateRuleRequestSensorWorkerAffinityType0,
-)
-from .update_rule_request_sensor_worker_selector_type_0 import (
-    UpdateRuleRequestSensorWorkerSelectorType0,
-)
-from .update_rule_request_sensor_worker_tolerations_type_0_item import (
-    UpdateRuleRequestSensorWorkerTolerationsType0Item,
-)
 from .update_rule_request_trigger_params_type_0 import (
     UpdateRuleRequestTriggerParamsType0,
 )
@@ -1470,9 +1424,6 @@ __all__ = (
     "ApiResponseRuleResponseData",
     "ApiResponseRuleResponseDataActionParams",
     "ApiResponseRuleResponseDataConditions",
-    "ApiResponseRuleResponseDataSensorWorkerAffinity",
-    "ApiResponseRuleResponseDataSensorWorkerSelector",
-    "ApiResponseRuleResponseDataSensorWorkerTolerationsItem",
     "ApiResponseRuleResponseDataTriggerParams",
     "ApiResponseRuntimeResponse",
     "ApiResponseRuntimeResponseData",
@@ -1672,9 +1623,6 @@ __all__ = (
     "CreateRuleRequest",
     "CreateRuleRequestActionParams",
     "CreateRuleRequestConditions",
-    "CreateRuleRequestSensorWorkerAffinity",
-    "CreateRuleRequestSensorWorkerSelector",
-    "CreateRuleRequestSensorWorkerTolerationsItem",
     "CreateRuleRequestTriggerParams",
     "CreateRuntimeRequest",
     "CreateRuntimeRequestDistributions",
@@ -1686,7 +1634,9 @@ __all__ = (
     "CreateSensorRequestWorkerSelector",
     "CreateSensorTokenInternalResponse200",
     "CreateSensorTokenInternalResponse200Data",
-    "CreateSensorTokenInternalResponse200DataWorkloadFenceType0",
+    "CreateSensorTokenRequest",
+    "CreateSensorTokenResponse200",
+    "CreateSensorTokenResponse200Data",
     "CreateTriggerRequest",
     "CreateTriggerRequestOutSchemaType0",
     "CreateTriggerRequestParamSchemaType0",
@@ -1969,9 +1919,6 @@ __all__ = (
     "PaginatedResponseRuleSummary",
     "PaginatedResponseRuleSummaryItemsItem",
     "PaginatedResponseRuleSummaryItemsItemActionParams",
-    "PaginatedResponseRuleSummaryItemsItemSensorWorkerAffinity",
-    "PaginatedResponseRuleSummaryItemsItemSensorWorkerSelector",
-    "PaginatedResponseRuleSummaryItemsItemSensorWorkerTolerationsItem",
     "PaginatedResponseRuleSummaryItemsItemTriggerParams",
     "PaginatedResponseRuntimeSummary",
     "PaginatedResponseRuntimeSummaryItemsItem",
@@ -2038,15 +1985,9 @@ __all__ = (
     "RuleResponse",
     "RuleResponseActionParams",
     "RuleResponseConditions",
-    "RuleResponseSensorWorkerAffinity",
-    "RuleResponseSensorWorkerSelector",
-    "RuleResponseSensorWorkerTolerationsItem",
     "RuleResponseTriggerParams",
     "RuleSummary",
     "RuleSummaryActionParams",
-    "RuleSummarySensorWorkerAffinity",
-    "RuleSummarySensorWorkerSelector",
-    "RuleSummarySensorWorkerTolerationsItem",
     "RuleSummaryTriggerParams",
     "RuntimeRequirements",
     "RuntimeResponse",
@@ -2164,9 +2105,6 @@ __all__ = (
     "UpdateRuleRequest",
     "UpdateRuleRequestActionParamsType0",
     "UpdateRuleRequestConditionsType0",
-    "UpdateRuleRequestSensorWorkerAffinityType0",
-    "UpdateRuleRequestSensorWorkerSelectorType0",
-    "UpdateRuleRequestSensorWorkerTolerationsType0Item",
     "UpdateRuleRequestTriggerParamsType0",
     "UpdateRuntimeRequest",
     "UpdateRuntimeRequestDistributionsType0",
