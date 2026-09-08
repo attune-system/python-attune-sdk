@@ -27,9 +27,9 @@ jobs:
     name: Validate release
     runs-on: ubuntu-latest
     outputs:
+      published: ${{ steps.release.outputs.published }}
       prerelease: ${{ steps.release.outputs.prerelease }}
       ref: ${{ steps.release.outputs.ref }}
-      skip: ${{ steps.release.outputs.skip }}
       version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -41,7 +41,6 @@ jobs:
         id: release
         env:
           EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
-          GH_TOKEN: ${{ github.token }}
           RELEASE_REF: ${{ inputs.release_ref }}
         shell: bash
         run: |
@@ -50,7 +49,6 @@ jobs:
           test "$actual" = "${EXPECTED_VERSION#v}"
 
           prerelease="${{ github.event.release.prerelease }}"
-          skip=false
           if [ "${{ github.event_name }}" = workflow_dispatch ]; then
             [[ "$RELEASE_REF" =~ ^[0-9a-f]{40}$ ]]
             test "$(git rev-parse HEAD)" = "$RELEASE_REF"
@@ -62,20 +60,29 @@ jobs:
             if [[ "$source_ref" == *-* ]]; then
               prerelease=true
             fi
-            if gh release view "v$actual" >/dev/null 2>&1; then
-              skip=true
-            fi
           fi
 
+          registry=https://pypi.org
+          if [ "$prerelease" = true ]; then
+            registry=https://test.pypi.org
+          fi
+          status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            "$registry/pypi/attune-sdk/$actual/json")"
+          case "$status" in
+            200) published=true ;;
+            404) published=false ;;
+            *) echo "Package registry returned HTTP $status" >&2; exit 1 ;;
+          esac
+
+          echo "published=$published" >> "$GITHUB_OUTPUT"
           echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
           echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "skip=$skip" >> "$GITHUB_OUTPUT"
           echo "version=$actual" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build distribution
     needs: prepare
-    if: needs.prepare.outputs.skip != 'true'
+    if: needs.prepare.outputs.published != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -155,7 +162,7 @@ jobs:
   release:
     name: Record GitHub release
     needs: [prepare, build, publish, test-publish]
-    if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.prepare.result == 'success' && needs.prepare.outputs.skip != 'true' && needs.build.result == 'success' && ((needs.prepare.outputs.prerelease == 'true' && needs.test-publish.result == 'success') || (needs.prepare.outputs.prerelease != 'true' && needs.publish.result == 'success')) }}
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.prepare.result == 'success' && (needs.prepare.outputs.published == 'true' || (needs.build.result == 'success' && ((needs.prepare.outputs.prerelease == 'true' && needs.test-publish.result == 'success') || (needs.prepare.outputs.prerelease != 'true' && needs.publish.result == 'success')))) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -170,6 +177,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            tag_sha="$(gh api "repos/$GH_REPO/git/ref/tags/v$VERSION" --jq .object.sha)"
+            test "$tag_sha" = "$MERGE_SHA"
+            if [ "$(gh release view "v$VERSION" --json isDraft --jq .isDraft)" = true ]; then
+              gh release edit "v$VERSION" --draft=false --target "$MERGE_SHA"
+            fi
+            exit 0
+          fi
           args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
           if [ "$PRERELEASE" = true ]; then
             args+=(--prerelease --latest=false)
