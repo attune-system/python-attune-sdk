@@ -287,38 +287,27 @@ jobs:
           git diff --exit-code
           pytest
 
-  publish:
+  dispatch-publish:
     needs: [sync, merge, verify-release]
     if: always() && needs.verify-release.result == 'success'
     permissions:
-      contents: read
-      id-token: write
-    uses: ./.github/workflows/publish.yml
-    with:
-      prerelease: ${{ needs.sync.outputs.prerelease == 'true' }}
-      ref: ${{ needs.merge.outputs.sha || needs.sync.outputs.resume-ref }}
-      version: ${{ needs.sync.outputs.version }}
-    secrets: inherit
-
-  release:
-    needs: [sync, merge, publish]
-    if: always() && needs.publish.result == 'success' && (needs.merge.outputs.sha != '' || needs.sync.outputs.resume == 'true')
+      actions: write
     runs-on: ubuntu-24.04
-    permissions:
-      contents: write
     steps:
-      - name: Record downstream release
+      - name: Dispatch trusted publishing workflow
         env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          MERGE_SHA: ${{ needs.merge.outputs.sha || needs.sync.outputs.resume-ref }}
-          PRERELEASE: ${{ needs.sync.outputs.prerelease }}
+          RELEASE_REF: ${{ needs.merge.outputs.sha || needs.sync.outputs.resume-ref }}
           VERSION: ${{ needs.sync.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
-          args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
-          if [ "$PRERELEASE" = true ]; then
-            args+=(--prerelease --latest=false)
-          fi
-          gh release create "${args[@]}"
+          jq -n \
+            --arg ref "$DEFAULT_BRANCH" \
+            --arg release_ref "$RELEASE_REF" \
+            --arg version "$VERSION" \
+            '{ref: $ref, inputs: {release_ref: $release_ref, version: $version}}' \
+            | gh api --method POST \
+                "repos/$GITHUB_REPOSITORY/actions/workflows/publish.yml/dispatches" \
+                --input -

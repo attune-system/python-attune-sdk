@@ -1,32 +1,87 @@
 name: Publish to PyPI
+run-name: Publish ${{ inputs.version || github.event.release.tag_name }}
 
 on:
   release:
     types: [published]
-  workflow_call:
+  workflow_dispatch:
     inputs:
-      prerelease:
-        required: true
-        type: boolean
-      ref:
+      release_ref:
+        description: Immutable commit containing the verified release
         required: true
         type: string
       version:
+        description: Version expected at the release commit
         required: true
         type: string
 
 permissions:
   contents: read
 
+concurrency:
+  group: publish-${{ inputs.version || github.event.release.tag_name }}
+  cancel-in-progress: false
+
 jobs:
+  prepare:
+    name: Validate release
+    runs-on: ubuntu-latest
+    outputs:
+      prerelease: ${{ steps.release.outputs.prerelease }}
+      ref: ${{ steps.release.outputs.ref }}
+      skip: ${{ steps.release.outputs.skip }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.release_ref || github.event.release.tag_name }}
+
+      - name: Validate release identity
+        id: release
+        env:
+          EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_REF: ${{ inputs.release_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(python -c 'from pathlib import Path; import re; print(re.search(r"__version__ = \"([^\"]+)\"", Path("src/attune/_version.py").read_text()).group(1))')"
+          test "$actual" = "${EXPECTED_VERSION#v}"
+
+          prerelease="${{ github.event.release.prerelease }}"
+          skip=false
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then
+            [[ "$RELEASE_REF" =~ ^[0-9a-f]{40}$ ]]
+            test "$(git rev-parse HEAD)" = "$RELEASE_REF"
+            git merge-base --is-ancestor "$RELEASE_REF" "origin/${{ github.event.repository.default_branch }}"
+            test "$(jq -r .version .attune-openapi-source.json)" = "$actual"
+            source_ref="$(jq -r .source_ref .attune-openapi-source.json)"
+            [[ "$source_ref" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]
+            prerelease=false
+            if [[ "$source_ref" == *-* ]]; then
+              prerelease=true
+            fi
+            if gh release view "v$actual" >/dev/null 2>&1; then
+              skip=true
+            fi
+          fi
+
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+          echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          echo "version=$actual" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build distribution
+    needs: prepare
+    if: needs.prepare.outputs.skip != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.ref || github.event.release.tag_name }}
+          ref: ${{ needs.prepare.outputs.ref }}
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
@@ -37,7 +92,7 @@ jobs:
 
       - name: Verify release version
         env:
-          EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
+          EXPECTED_VERSION: ${{ needs.prepare.outputs.version }}
         shell: bash
         run: |
           actual="$(python -c 'from pathlib import Path; import re; print(re.search(r"__version__ = \"([^\"]+)\"", Path("src/attune/_version.py").read_text()).group(1))')"
@@ -54,8 +109,8 @@ jobs:
 
   publish:
     name: Publish to PyPI
-    needs: build
-    if: ${{ (inputs.ref != '' && !inputs.prerelease) || (github.event_name == 'release' && !github.event.release.prerelease) }}
+    needs: [prepare, build]
+    if: needs.prepare.outputs.prerelease != 'true'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -71,12 +126,14 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          skip-existing: true
 
   test-publish:
     name: Publish to TestPyPI
-    needs: build
+    needs: [prepare, build]
     runs-on: ubuntu-latest
-    if: ${{ (inputs.ref != '' && inputs.prerelease) || (github.event_name == 'release' && github.event.release.prerelease) }}
+    if: needs.prepare.outputs.prerelease == 'true'
     permissions:
       id-token: write
     environment:
@@ -93,3 +150,28 @@ jobs:
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  release:
+    name: Record GitHub release
+    needs: [prepare, build, publish, test-publish]
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.prepare.result == 'success' && needs.prepare.outputs.skip != 'true' && needs.build.result == 'success' && ((needs.prepare.outputs.prerelease == 'true' && needs.test-publish.result == 'success') || (needs.prepare.outputs.prerelease != 'true' && needs.publish.result == 'success')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          MERGE_SHA: ${{ needs.prepare.outputs.ref }}
+          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
+          if [ "$PRERELEASE" = true ]; then
+            args+=(--prerelease --latest=false)
+          fi
+          gh release create "${args[@]}"
