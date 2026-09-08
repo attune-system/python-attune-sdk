@@ -186,7 +186,12 @@ jobs:
               exit 0
             fi
           fi
-          args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
+          if tag_sha="$(gh api "repos/$GH_REPO/git/ref/tags/v$VERSION" --jq .object.sha 2>/dev/null)"; then
+            test "$tag_sha" = "$MERGE_SHA"
+            args=("v$VERSION" --verify-tag --title "v$VERSION" --generate-notes)
+          else
+            args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
+          fi
           if [ "$PRERELEASE" = true ]; then
             args+=(--prerelease --latest=false)
           fi
