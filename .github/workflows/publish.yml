@@ -181,9 +181,10 @@ jobs:
             tag_sha="$(gh api "repos/$GH_REPO/git/ref/tags/v$VERSION" --jq .object.sha)"
             test "$tag_sha" = "$MERGE_SHA"
             if [ "$(gh release view "v$VERSION" --json isDraft --jq .isDraft)" = true ]; then
-              gh release edit "v$VERSION" --draft=false --target "$MERGE_SHA"
+              gh release delete "v$VERSION" --yes
+            else
+              exit 0
             fi
-            exit 0
           fi
           args=("v$VERSION" --target "$MERGE_SHA" --title "v$VERSION" --generate-notes)
           if [ "$PRERELEASE" = true ]; then
