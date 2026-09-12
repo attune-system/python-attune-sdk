@@ -72,9 +72,8 @@ def sync_detailed(
 ) -> Response[Any]:
     """Stream stdout/stderr for an execution as SSE.
 
-     This tails the worker's live log files directly from the shared artifacts
-    volume. The file may not exist yet when the worker has not emitted any
-    output, so the stream waits briefly for it to appear.
+     This tails the immutable segments committed by the worker. The stream may
+    not exist yet when the worker has not allocated its log artifacts.
 
     Args:
         id (int):
@@ -111,9 +110,8 @@ async def asyncio_detailed(
 ) -> Response[Any]:
     """Stream stdout/stderr for an execution as SSE.
 
-     This tails the worker's live log files directly from the shared artifacts
-    volume. The file may not exist yet when the worker has not emitted any
-    output, so the stream waits briefly for it to appear.
+     This tails the immutable segments committed by the worker. The stream may
+    not exist yet when the worker has not allocated its log artifacts.
 
     Args:
         id (int):
