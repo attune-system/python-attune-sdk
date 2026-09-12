@@ -312,6 +312,7 @@ from .apply_work_queue_items_request_payload_patch_type_0 import (
     ApplyWorkQueueItemsRequestPayloadPatchType0,
 )
 from .apply_work_queue_items_response import ApplyWorkQueueItemsResponse
+from .artifact_body_state import ArtifactBodyState
 from .artifact_classification import ArtifactClassification
 from .artifact_json_patch_type_0 import ArtifactJsonPatchType0
 from .artifact_json_patch_type_0_op import ArtifactJsonPatchType0Op
@@ -1527,6 +1528,7 @@ __all__ = (
     "ApplyWorkQueueItemsRequest",
     "ApplyWorkQueueItemsRequestPayloadPatchType0",
     "ApplyWorkQueueItemsResponse",
+    "ArtifactBodyState",
     "ArtifactClassification",
     "ArtifactJsonPatchType0",
     "ArtifactJsonPatchType0Op",
