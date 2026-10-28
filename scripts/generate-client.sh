@@ -60,6 +60,7 @@ echo "Generating client with openapi-python-client $GENERATOR_VERSION ..."
 
 openapi-python-client generate \
     --path "$SPEC_PATH" \
+    --config "$SCRIPT_DIR/generator.config.json" \
     --output-path "$GENERATED_DIR" \
     --overwrite \
     --meta none
