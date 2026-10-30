@@ -55,16 +55,14 @@ def _build_response(
 def sync_detailed(
     id: int,
     *,
-    client: AuthenticatedClient | Client,
+    client: AuthenticatedClient,
 ) -> Response[Any]:
     """Stream the latest file-backed artifact version as Server-Sent Events.
 
      The endpoint:
-    1. Waits (up to ~30 s) for the file to appear on disk if it has been
-       allocated but not yet written by the worker.
-    2. Once the file exists it sends the current content as an initial `content`
-       event, then tails the file every 500 ms, sending `append` events with new
-       bytes.
+    1. Streams committed immutable log segments when the version has an
+       object-segment log stream.
+    2. Otherwise, waits for the allocated file and tails appended bytes.
     3. When no new bytes have appeared for several consecutive checks **and** the
        linked execution (if any) has reached a terminal status, it sends a `done`
        event and the stream ends.
@@ -102,16 +100,14 @@ def sync_detailed(
 async def asyncio_detailed(
     id: int,
     *,
-    client: AuthenticatedClient | Client,
+    client: AuthenticatedClient,
 ) -> Response[Any]:
     """Stream the latest file-backed artifact version as Server-Sent Events.
 
      The endpoint:
-    1. Waits (up to ~30 s) for the file to appear on disk if it has been
-       allocated but not yet written by the worker.
-    2. Once the file exists it sends the current content as an initial `content`
-       event, then tails the file every 500 ms, sending `append` events with new
-       bytes.
+    1. Streams committed immutable log segments when the version has an
+       object-segment log stream.
+    2. Otherwise, waits for the allocated file and tails appended bytes.
     3. When no new bytes have appeared for several consecutive checks **and** the
        linked execution (if any) has reached a terminal status, it sends a `done`
        event and the stream ends.

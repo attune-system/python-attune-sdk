@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from ..models.concurrency_policy_request import ConcurrencyPolicyRequest
     from ..models.quota_policy_request import QuotaPolicyRequest
     from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+    from ..models.resource_concurrency import ResourceConcurrency
 
 
 T = TypeVar("T", bound="UpdatePolicyRequest")
@@ -29,6 +30,7 @@ class UpdatePolicyRequest:
         priority (int | None | Unset):  Example: 10.
         quotas (list[QuotaPolicyRequest] | None | Unset):
         rate_limit (None | RateLimitPolicyRequest | Unset):
+        resource_concurrency (None | ResourceConcurrency | Unset):
         tags (list[str] | None | Unset):
     """
 
@@ -39,12 +41,14 @@ class UpdatePolicyRequest:
     priority: int | None | Unset = UNSET
     quotas: list[QuotaPolicyRequest] | None | Unset = UNSET
     rate_limit: None | RateLimitPolicyRequest | Unset = UNSET
+    resource_concurrency: None | ResourceConcurrency | Unset = UNSET
     tags: list[str] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.concurrency_policy_request import ConcurrencyPolicyRequest
         from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+        from ..models.resource_concurrency import ResourceConcurrency
 
         concurrency: dict[str, Any] | None | Unset
         if isinstance(self.concurrency, Unset):
@@ -98,6 +102,14 @@ class UpdatePolicyRequest:
         else:
             rate_limit = self.rate_limit
 
+        resource_concurrency: dict[str, Any] | None | Unset
+        if isinstance(self.resource_concurrency, Unset):
+            resource_concurrency = UNSET
+        elif isinstance(self.resource_concurrency, ResourceConcurrency):
+            resource_concurrency = self.resource_concurrency.to_dict()
+        else:
+            resource_concurrency = self.resource_concurrency
+
         tags: list[str] | None | Unset
         if isinstance(self.tags, Unset):
             tags = UNSET
@@ -124,6 +136,8 @@ class UpdatePolicyRequest:
             field_dict["quotas"] = quotas
         if rate_limit is not UNSET:
             field_dict["rate_limit"] = rate_limit
+        if resource_concurrency is not UNSET:
+            field_dict["resource_concurrency"] = resource_concurrency
         if tags is not UNSET:
             field_dict["tags"] = tags
 
@@ -134,6 +148,7 @@ class UpdatePolicyRequest:
         from ..models.concurrency_policy_request import ConcurrencyPolicyRequest
         from ..models.quota_policy_request import QuotaPolicyRequest
         from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+        from ..models.resource_concurrency import ResourceConcurrency
 
         d = dict(src_dict)
 
@@ -231,6 +246,27 @@ class UpdatePolicyRequest:
 
         rate_limit = _parse_rate_limit(d.pop("rate_limit", UNSET))
 
+        def _parse_resource_concurrency(
+            data: object,
+        ) -> None | ResourceConcurrency | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                resource_concurrency_type_1 = ResourceConcurrency.from_dict(data)
+
+                return resource_concurrency_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ResourceConcurrency | Unset, data)
+
+        resource_concurrency = _parse_resource_concurrency(
+            d.pop("resource_concurrency", UNSET)
+        )
+
         def _parse_tags(data: object) -> list[str] | None | Unset:
             if data is None:
                 return data
@@ -256,6 +292,7 @@ class UpdatePolicyRequest:
             priority=priority,
             quotas=quotas,
             rate_limit=rate_limit,
+            resource_concurrency=resource_concurrency,
             tags=tags,
         )
 

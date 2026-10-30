@@ -12,7 +12,10 @@ T = TypeVar("T", bound="SaveWorkflowFileRequestDefinition")
 
 @_attrs_define
 class SaveWorkflowFileRequestDefinition:
-    """The full workflow definition as JSON (will be serialized to YAML on disk)"""
+    """The full workflow definition as JSON. Tasks with a templated action must
+    declare allowed_action_refs, an array of 1 to 256 literal action refs.
+
+    """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 

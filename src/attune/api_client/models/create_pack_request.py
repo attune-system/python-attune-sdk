@@ -34,6 +34,7 @@ class CreatePackRequest:
             notifications.
         is_standard (bool | Unset): Whether this is a standard/built-in pack
         meta (CreatePackRequestMeta | Unset): Pack metadata
+        owner_roles (list[str] | Unset): Ownership roles require this endpoint's matching Create and Install authority.
         runtime_deps (list[str] | Unset): Runtime dependencies (e.g., shell, python, nodejs) Example: ['shell',
             'python'].
         tags (list[str] | Unset): Tags for categorization Example: ['messaging', 'collaboration'].
@@ -51,6 +52,7 @@ class CreatePackRequest:
     description: None | str | Unset = UNSET
     is_standard: bool | Unset = UNSET
     meta: CreatePackRequestMeta | Unset = UNSET
+    owner_roles: list[str] | Unset = UNSET
     runtime_deps: list[str] | Unset = UNSET
     tags: list[str] | Unset = UNSET
     worker_affinity: Any | Unset = UNSET
@@ -89,6 +91,10 @@ class CreatePackRequest:
         if not isinstance(self.meta, Unset):
             meta = self.meta.to_dict()
 
+        owner_roles: list[str] | Unset = UNSET
+        if not isinstance(self.owner_roles, Unset):
+            owner_roles = self.owner_roles
+
         runtime_deps: list[str] | Unset = UNSET
         if not isinstance(self.runtime_deps, Unset):
             runtime_deps = self.runtime_deps
@@ -124,6 +130,8 @@ class CreatePackRequest:
             field_dict["is_standard"] = is_standard
         if meta is not UNSET:
             field_dict["meta"] = meta
+        if owner_roles is not UNSET:
+            field_dict["owner_roles"] = owner_roles
         if runtime_deps is not UNSET:
             field_dict["runtime_deps"] = runtime_deps
         if tags is not UNSET:
@@ -184,6 +192,8 @@ class CreatePackRequest:
         else:
             meta = CreatePackRequestMeta.from_dict(_meta)
 
+        owner_roles = cast(list[str], d.pop("owner_roles", UNSET))
+
         runtime_deps = cast(list[str], d.pop("runtime_deps", UNSET))
 
         tags = cast(list[str], d.pop("tags", UNSET))
@@ -204,6 +214,7 @@ class CreatePackRequest:
             description=description,
             is_standard=is_standard,
             meta=meta,
+            owner_roles=owner_roles,
             runtime_deps=runtime_deps,
             tags=tags,
             worker_affinity=worker_affinity,

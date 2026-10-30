@@ -14,6 +14,9 @@ if TYPE_CHECKING:
     from ..models.list_pack_indices_response_200_data_item_headers import (
         ListPackIndicesResponse200DataItemHeaders,
     )
+    from ..models.list_pack_indices_response_200_data_item_source_headers import (
+        ListPackIndicesResponse200DataItemSourceHeaders,
+    )
 
 
 T = TypeVar("T", bound="ListPackIndicesResponse200DataItem")
@@ -29,6 +32,8 @@ class ListPackIndicesResponse200DataItem:
         headers (ListPackIndicesResponse200DataItemHeaders):
         id (int):
         position (int):
+        source_headers (ListPackIndicesResponse200DataItemSourceHeaders): Exact source origins mapped to redacted
+            archive/Git request headers.
         updated (datetime.datetime):
         url (str):
         name (None | str | Unset):
@@ -39,6 +44,7 @@ class ListPackIndicesResponse200DataItem:
     headers: ListPackIndicesResponse200DataItemHeaders
     id: int
     position: int
+    source_headers: ListPackIndicesResponse200DataItemSourceHeaders
     updated: datetime.datetime
     url: str
     name: None | str | Unset = UNSET
@@ -54,6 +60,8 @@ class ListPackIndicesResponse200DataItem:
         id = self.id
 
         position = self.position
+
+        source_headers = self.source_headers.to_dict()
 
         updated = self.updated.isoformat()
 
@@ -74,6 +82,7 @@ class ListPackIndicesResponse200DataItem:
                 "headers": headers,
                 "id": id,
                 "position": position,
+                "source_headers": source_headers,
                 "updated": updated,
                 "url": url,
             }
@@ -88,6 +97,9 @@ class ListPackIndicesResponse200DataItem:
         from ..models.list_pack_indices_response_200_data_item_headers import (
             ListPackIndicesResponse200DataItemHeaders,
         )
+        from ..models.list_pack_indices_response_200_data_item_source_headers import (
+            ListPackIndicesResponse200DataItemSourceHeaders,
+        )
 
         d = dict(src_dict)
         created = datetime.datetime.fromisoformat(d.pop("created"))
@@ -99,6 +111,10 @@ class ListPackIndicesResponse200DataItem:
         id = d.pop("id")
 
         position = d.pop("position")
+
+        source_headers = ListPackIndicesResponse200DataItemSourceHeaders.from_dict(
+            d.pop("source_headers")
+        )
 
         updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
@@ -119,6 +135,7 @@ class ListPackIndicesResponse200DataItem:
             headers=headers,
             id=id,
             position=position,
+            source_headers=source_headers,
             updated=updated,
             url=url,
             name=name,

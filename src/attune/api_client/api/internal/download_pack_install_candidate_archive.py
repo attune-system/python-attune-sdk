@@ -1,12 +1,13 @@
 from http import HTTPStatus
-from typing import Any
+from io import BytesIO
+from typing import Any, cast
 from urllib.parse import quote
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...types import Response
+from ...types import File, Response
 
 
 def _get_kwargs(
@@ -30,12 +31,19 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | None:
+) -> Any | File | None:
+    if response.status_code == 200:
+        response_200 = File(payload=BytesIO(response.content))
+
+        return response_200
+
     if response.status_code == 401:
-        return None
+        response_401 = cast(Any, None)
+        return response_401
 
     if response.status_code == 404:
-        return None
+        response_404 = cast(Any, None)
+        return response_404
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -45,7 +53,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any]:
+) -> Response[Any | File]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -59,8 +67,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     x_attune_pack_candidate_token: str,
-) -> Response[Any]:
-    """Stream the staged candidate for a pending pack-install test.
+) -> Response[Any | File]:
+    """Stream the version-pinned candidate object for an assigned pack-install test.
 
     Args:
         pack_install_id (int):
@@ -71,7 +79,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[Any | File]
     """
 
     kwargs = _get_kwargs(
@@ -86,13 +94,13 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 
-async def asyncio_detailed(
+def sync(
     pack_install_id: int,
     *,
     client: AuthenticatedClient,
     x_attune_pack_candidate_token: str,
-) -> Response[Any]:
-    """Stream the staged candidate for a pending pack-install test.
+) -> Any | File | None:
+    """Stream the version-pinned candidate object for an assigned pack-install test.
 
     Args:
         pack_install_id (int):
@@ -103,7 +111,34 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Any | File
+    """
+
+    return sync_detailed(
+        pack_install_id=pack_install_id,
+        client=client,
+        x_attune_pack_candidate_token=x_attune_pack_candidate_token,
+    ).parsed
+
+
+async def asyncio_detailed(
+    pack_install_id: int,
+    *,
+    client: AuthenticatedClient,
+    x_attune_pack_candidate_token: str,
+) -> Response[Any | File]:
+    """Stream the version-pinned candidate object for an assigned pack-install test.
+
+    Args:
+        pack_install_id (int):
+        x_attune_pack_candidate_token (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Any | File]
     """
 
     kwargs = _get_kwargs(
@@ -114,3 +149,32 @@ async def asyncio_detailed(
     response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    pack_install_id: int,
+    *,
+    client: AuthenticatedClient,
+    x_attune_pack_candidate_token: str,
+) -> Any | File | None:
+    """Stream the version-pinned candidate object for an assigned pack-install test.
+
+    Args:
+        pack_install_id (int):
+        x_attune_pack_candidate_token (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Any | File
+    """
+
+    return (
+        await asyncio_detailed(
+            pack_install_id=pack_install_id,
+            client=client,
+            x_attune_pack_candidate_token=x_attune_pack_candidate_token,
+        )
+    ).parsed

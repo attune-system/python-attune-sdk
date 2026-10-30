@@ -8,6 +8,8 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
+from ..models.cache_mode import CacheMode
+from ..models.cache_refresh_concurrency import CacheRefreshConcurrency
 from ..models.owner_type import OwnerType
 
 T = TypeVar("T", bound="CacheNamespaceResponse")
@@ -32,11 +34,15 @@ class CacheNamespaceResponse:
         max_retained_bytes (int):
         max_retained_generations (int):
         max_staging_generations (int):
+        mode (CacheMode): Cache mutation contract, fixed when the namespace is created.
         namespace (str):
         owner (str): Canonical owner key (`system` or a numeric owner id as text).
         owner_ref (None | str): Owner reference for display, when known.
         owner_type (OwnerType):
         record_count (int | None): Active generation record count, when populated.
+        refresh_concurrency (CacheRefreshConcurrency): Admission behavior when a namespace has an unpublished refresh.
+        retired_at (datetime.datetime | None):
+        revision (int | None):
         size_bytes (int | None): Active generation size in bytes, when populated.
         source_revision (None | str): Active generation source revision, when populated.
         stale (bool): True when the active generation's age exceeds the freshness target.
@@ -58,11 +64,15 @@ class CacheNamespaceResponse:
     max_retained_bytes: int
     max_retained_generations: int
     max_staging_generations: int
+    mode: CacheMode
     namespace: str
     owner: str
     owner_ref: None | str
     owner_type: OwnerType
     record_count: int | None
+    refresh_concurrency: CacheRefreshConcurrency
+    retired_at: datetime.datetime | None
+    revision: int | None
     size_bytes: int | None
     source_revision: None | str
     stale: bool
@@ -106,6 +116,8 @@ class CacheNamespaceResponse:
 
         max_staging_generations = self.max_staging_generations
 
+        mode = self.mode.value
+
         namespace = self.namespace
 
         owner = self.owner
@@ -117,6 +129,17 @@ class CacheNamespaceResponse:
 
         record_count: int | None
         record_count = self.record_count
+
+        refresh_concurrency = self.refresh_concurrency.value
+
+        retired_at: None | str
+        if isinstance(self.retired_at, datetime.datetime):
+            retired_at = self.retired_at.isoformat()
+        else:
+            retired_at = self.retired_at
+
+        revision: int | None
+        revision = self.revision
 
         size_bytes: int | None
         size_bytes = self.size_bytes
@@ -148,11 +171,15 @@ class CacheNamespaceResponse:
                 "max_retained_bytes": max_retained_bytes,
                 "max_retained_generations": max_retained_generations,
                 "max_staging_generations": max_staging_generations,
+                "mode": mode,
                 "namespace": namespace,
                 "owner": owner,
                 "owner_ref": owner_ref,
                 "owner_type": owner_type,
                 "record_count": record_count,
+                "refresh_concurrency": refresh_concurrency,
+                "retired_at": retired_at,
+                "revision": revision,
                 "size_bytes": size_bytes,
                 "source_revision": source_revision,
                 "stale": stale,
@@ -223,6 +250,8 @@ class CacheNamespaceResponse:
 
         max_staging_generations = d.pop("max_staging_generations")
 
+        mode = CacheMode(d.pop("mode"))
+
         namespace = d.pop("namespace")
 
         owner = d.pop("owner")
@@ -242,6 +271,30 @@ class CacheNamespaceResponse:
             return cast(int | None, data)
 
         record_count = _parse_record_count(d.pop("record_count"))
+
+        refresh_concurrency = CacheRefreshConcurrency(d.pop("refresh_concurrency"))
+
+        def _parse_retired_at(data: object) -> datetime.datetime | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                retired_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return retired_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None, data)
+
+        retired_at = _parse_retired_at(d.pop("retired_at"))
+
+        def _parse_revision(data: object) -> int | None:
+            if data is None:
+                return data
+            return cast(int | None, data)
+
+        revision = _parse_revision(d.pop("revision"))
 
         def _parse_size_bytes(data: object) -> int | None:
             if data is None:
@@ -278,11 +331,15 @@ class CacheNamespaceResponse:
             max_retained_bytes=max_retained_bytes,
             max_retained_generations=max_retained_generations,
             max_staging_generations=max_staging_generations,
+            mode=mode,
             namespace=namespace,
             owner=owner,
             owner_ref=owner_ref,
             owner_type=owner_type,
             record_count=record_count,
+            refresh_concurrency=refresh_concurrency,
+            retired_at=retired_at,
+            revision=revision,
             size_bytes=size_bytes,
             source_revision=source_revision,
             stale=stale,

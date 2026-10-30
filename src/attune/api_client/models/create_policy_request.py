@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from ..models.policy_scope_request import PolicyScopeRequest
     from ..models.quota_policy_request import QuotaPolicyRequest
     from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+    from ..models.resource_concurrency import ResourceConcurrency
 
 
 T = TypeVar("T", bound="CreatePolicyRequest")
@@ -32,6 +33,7 @@ class CreatePolicyRequest:
         priority (int | Unset):  Default: 0. Example: 10.
         quotas (list[QuotaPolicyRequest] | Unset):
         rate_limit (None | RateLimitPolicyRequest | Unset):
+        resource_concurrency (None | ResourceConcurrency | Unset):
         tags (list[str] | Unset):  Example: ['production'].
     """
 
@@ -44,12 +46,14 @@ class CreatePolicyRequest:
     priority: int | Unset = 0
     quotas: list[QuotaPolicyRequest] | Unset = UNSET
     rate_limit: None | RateLimitPolicyRequest | Unset = UNSET
+    resource_concurrency: None | ResourceConcurrency | Unset = UNSET
     tags: list[str] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.concurrency_policy_request import ConcurrencyPolicyRequest
         from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+        from ..models.resource_concurrency import ResourceConcurrency
 
         name = self.name
 
@@ -90,6 +94,14 @@ class CreatePolicyRequest:
         else:
             rate_limit = self.rate_limit
 
+        resource_concurrency: dict[str, Any] | None | Unset
+        if isinstance(self.resource_concurrency, Unset):
+            resource_concurrency = UNSET
+        elif isinstance(self.resource_concurrency, ResourceConcurrency):
+            resource_concurrency = self.resource_concurrency.to_dict()
+        else:
+            resource_concurrency = self.resource_concurrency
+
         tags: list[str] | Unset = UNSET
         if not isinstance(self.tags, Unset):
             tags = self.tags
@@ -115,6 +127,8 @@ class CreatePolicyRequest:
             field_dict["quotas"] = quotas
         if rate_limit is not UNSET:
             field_dict["rate_limit"] = rate_limit
+        if resource_concurrency is not UNSET:
+            field_dict["resource_concurrency"] = resource_concurrency
         if tags is not UNSET:
             field_dict["tags"] = tags
 
@@ -126,6 +140,7 @@ class CreatePolicyRequest:
         from ..models.policy_scope_request import PolicyScopeRequest
         from ..models.quota_policy_request import QuotaPolicyRequest
         from ..models.rate_limit_policy_request import RateLimitPolicyRequest
+        from ..models.resource_concurrency import ResourceConcurrency
 
         d = dict(src_dict)
         name = d.pop("name")
@@ -190,6 +205,27 @@ class CreatePolicyRequest:
 
         rate_limit = _parse_rate_limit(d.pop("rate_limit", UNSET))
 
+        def _parse_resource_concurrency(
+            data: object,
+        ) -> None | ResourceConcurrency | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                resource_concurrency_type_1 = ResourceConcurrency.from_dict(data)
+
+                return resource_concurrency_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ResourceConcurrency | Unset, data)
+
+        resource_concurrency = _parse_resource_concurrency(
+            d.pop("resource_concurrency", UNSET)
+        )
+
         tags = cast(list[str], d.pop("tags", UNSET))
 
         create_policy_request = cls(
@@ -202,6 +238,7 @@ class CreatePolicyRequest:
             priority=priority,
             quotas=quotas,
             rate_limit=rate_limit,
+            resource_concurrency=resource_concurrency,
             tags=tags,
         )
 

@@ -25,6 +25,7 @@ class CacheGenerationResponse:
             client_refresh_id (str):
             created (datetime.datetime):
             created_by (int | None):
+            created_by_execution (int | None):
             expected_active_generation_id (int | None):
             expected_chunk_count (int):
             expected_record_count (int | None):
@@ -38,6 +39,7 @@ class CacheGenerationResponse:
             retired (datetime.datetime | None):
             sealed (datetime.datetime | None):
             size_bytes (int):
+            source_generation_id (int | None):
             source_revision (None | str):
             status (CacheGenerationState): Lifecycle state for an immutable cache generation.
     """
@@ -48,6 +50,7 @@ class CacheGenerationResponse:
     client_refresh_id: str
     created: datetime.datetime
     created_by: int | None
+    created_by_execution: int | None
     expected_active_generation_id: int | None
     expected_chunk_count: int
     expected_record_count: int | None
@@ -61,6 +64,7 @@ class CacheGenerationResponse:
     retired: datetime.datetime | None
     sealed: datetime.datetime | None
     size_bytes: int
+    source_generation_id: int | None
     source_revision: None | str
     status: CacheGenerationState
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -84,6 +88,9 @@ class CacheGenerationResponse:
 
         created_by: int | None
         created_by = self.created_by
+
+        created_by_execution: int | None
+        created_by_execution = self.created_by_execution
 
         expected_active_generation_id: int | None
         expected_active_generation_id = self.expected_active_generation_id
@@ -131,6 +138,9 @@ class CacheGenerationResponse:
 
         size_bytes = self.size_bytes
 
+        source_generation_id: int | None
+        source_generation_id = self.source_generation_id
+
         source_revision: None | str
         source_revision = self.source_revision
 
@@ -146,6 +156,7 @@ class CacheGenerationResponse:
                 "client_refresh_id": client_refresh_id,
                 "created": created,
                 "created_by": created_by,
+                "created_by_execution": created_by_execution,
                 "expected_active_generation_id": expected_active_generation_id,
                 "expected_chunk_count": expected_chunk_count,
                 "expected_record_count": expected_record_count,
@@ -159,6 +170,7 @@ class CacheGenerationResponse:
                 "retired": retired,
                 "sealed": sealed,
                 "size_bytes": size_bytes,
+                "source_generation_id": source_generation_id,
                 "source_revision": source_revision,
                 "status": status,
             }
@@ -209,6 +221,15 @@ class CacheGenerationResponse:
             return cast(int | None, data)
 
         created_by = _parse_created_by(d.pop("created_by"))
+
+        def _parse_created_by_execution(data: object) -> int | None:
+            if data is None:
+                return data
+            return cast(int | None, data)
+
+        created_by_execution = _parse_created_by_execution(
+            d.pop("created_by_execution")
+        )
 
         def _parse_expected_active_generation_id(data: object) -> int | None:
             if data is None:
@@ -312,6 +333,15 @@ class CacheGenerationResponse:
 
         size_bytes = d.pop("size_bytes")
 
+        def _parse_source_generation_id(data: object) -> int | None:
+            if data is None:
+                return data
+            return cast(int | None, data)
+
+        source_generation_id = _parse_source_generation_id(
+            d.pop("source_generation_id")
+        )
+
         def _parse_source_revision(data: object) -> None | str:
             if data is None:
                 return data
@@ -328,6 +358,7 @@ class CacheGenerationResponse:
             client_refresh_id=client_refresh_id,
             created=created,
             created_by=created_by,
+            created_by_execution=created_by_execution,
             expected_active_generation_id=expected_active_generation_id,
             expected_chunk_count=expected_chunk_count,
             expected_record_count=expected_record_count,
@@ -341,6 +372,7 @@ class CacheGenerationResponse:
             retired=retired,
             sealed=sealed,
             size_bytes=size_bytes,
+            source_generation_id=source_generation_id,
             source_revision=source_revision,
             status=status,
         )

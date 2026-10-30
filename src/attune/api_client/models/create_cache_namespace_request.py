@@ -7,6 +7,8 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
+from ..models.cache_mode import CacheMode
+from ..models.cache_refresh_concurrency import CacheRefreshConcurrency
 from ..models.owner_type import OwnerType
 from ..types import UNSET, Unset
 
@@ -28,6 +30,8 @@ class CreateCacheNamespaceRequest:
             required so
             readers can complete traversal of the prior snapshot after promotion. Example: 2.
         max_staging_generations (int | None | Unset):
+        refresh_concurrency (CacheRefreshConcurrency | None | Unset):
+        mode (CacheMode | Unset): Cache mutation contract, fixed when the namespace is created.
         owner_ref (None | str | Unset):
     """
 
@@ -39,6 +43,8 @@ class CreateCacheNamespaceRequest:
     max_retained_bytes: int | None | Unset = UNSET
     max_retained_generations: int | None | Unset = UNSET
     max_staging_generations: int | None | Unset = UNSET
+    refresh_concurrency: CacheRefreshConcurrency | None | Unset = UNSET
+    mode: CacheMode | Unset = UNSET
     owner_ref: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -83,6 +89,18 @@ class CreateCacheNamespaceRequest:
         else:
             max_staging_generations = self.max_staging_generations
 
+        refresh_concurrency: None | str | Unset
+        if isinstance(self.refresh_concurrency, Unset):
+            refresh_concurrency = UNSET
+        elif isinstance(self.refresh_concurrency, CacheRefreshConcurrency):
+            refresh_concurrency = self.refresh_concurrency.value
+        else:
+            refresh_concurrency = self.refresh_concurrency
+
+        mode: str | Unset = UNSET
+        if not isinstance(self.mode, Unset):
+            mode = self.mode.value
+
         owner_ref: None | str | Unset
         if isinstance(self.owner_ref, Unset):
             owner_ref = UNSET
@@ -109,6 +127,10 @@ class CreateCacheNamespaceRequest:
             field_dict["max_retained_generations"] = max_retained_generations
         if max_staging_generations is not UNSET:
             field_dict["max_staging_generations"] = max_staging_generations
+        if refresh_concurrency is not UNSET:
+            field_dict["refresh_concurrency"] = refresh_concurrency
+        if mode is not UNSET:
+            field_dict["mode"] = mode
         if owner_ref is not UNSET:
             field_dict["owner_ref"] = owner_ref
 
@@ -187,6 +209,34 @@ class CreateCacheNamespaceRequest:
             d.pop("max_staging_generations", UNSET)
         )
 
+        def _parse_refresh_concurrency(
+            data: object,
+        ) -> CacheRefreshConcurrency | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                refresh_concurrency_type_1 = CacheRefreshConcurrency(data)
+
+                return refresh_concurrency_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(CacheRefreshConcurrency | None | Unset, data)
+
+        refresh_concurrency = _parse_refresh_concurrency(
+            d.pop("refresh_concurrency", UNSET)
+        )
+
+        _mode = d.pop("mode", UNSET)
+        mode: CacheMode | Unset
+        if isinstance(_mode, Unset):
+            mode = UNSET
+        else:
+            mode = CacheMode(_mode)
+
         def _parse_owner_ref(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -205,6 +255,8 @@ class CreateCacheNamespaceRequest:
             max_retained_bytes=max_retained_bytes,
             max_retained_generations=max_retained_generations,
             max_staging_generations=max_staging_generations,
+            refresh_concurrency=refresh_concurrency,
+            mode=mode,
             owner_ref=owner_ref,
         )
 

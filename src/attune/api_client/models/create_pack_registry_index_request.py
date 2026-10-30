@@ -13,6 +13,9 @@ if TYPE_CHECKING:
     from ..models.create_pack_registry_index_request_headers import (
         CreatePackRegistryIndexRequestHeaders,
     )
+    from ..models.create_pack_registry_index_request_source_headers import (
+        CreatePackRegistryIndexRequestSourceHeaders,
+    )
 
 
 T = TypeVar("T", bound="CreatePackRegistryIndexRequest")
@@ -28,6 +31,8 @@ class CreatePackRegistryIndexRequest:
         headers (CreatePackRegistryIndexRequestHeaders | Unset):
         name (None | str | Unset):  Example: Attune Community.
         position (int | None | Unset): Optional explicit search order position. Omit to append to the end.
+        source_headers (CreatePackRegistryIndexRequestSourceHeaders | Unset): Exact HTTPS origins mapped to source-
+            specific archive/Git headers.
     """
 
     url: str
@@ -35,6 +40,7 @@ class CreatePackRegistryIndexRequest:
     headers: CreatePackRegistryIndexRequestHeaders | Unset = UNSET
     name: None | str | Unset = UNSET
     position: int | None | Unset = UNSET
+    source_headers: CreatePackRegistryIndexRequestSourceHeaders | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -58,6 +64,10 @@ class CreatePackRegistryIndexRequest:
         else:
             position = self.position
 
+        source_headers: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.source_headers, Unset):
+            source_headers = self.source_headers.to_dict()
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -73,6 +83,8 @@ class CreatePackRegistryIndexRequest:
             field_dict["name"] = name
         if position is not UNSET:
             field_dict["position"] = position
+        if source_headers is not UNSET:
+            field_dict["source_headers"] = source_headers
 
         return field_dict
 
@@ -80,6 +92,9 @@ class CreatePackRegistryIndexRequest:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.create_pack_registry_index_request_headers import (
             CreatePackRegistryIndexRequestHeaders,
+        )
+        from ..models.create_pack_registry_index_request_source_headers import (
+            CreatePackRegistryIndexRequestSourceHeaders,
         )
 
         d = dict(src_dict)
@@ -112,12 +127,22 @@ class CreatePackRegistryIndexRequest:
 
         position = _parse_position(d.pop("position", UNSET))
 
+        _source_headers = d.pop("source_headers", UNSET)
+        source_headers: CreatePackRegistryIndexRequestSourceHeaders | Unset
+        if isinstance(_source_headers, Unset):
+            source_headers = UNSET
+        else:
+            source_headers = CreatePackRegistryIndexRequestSourceHeaders.from_dict(
+                _source_headers
+            )
+
         create_pack_registry_index_request = cls(
             url=url,
             enabled=enabled,
             headers=headers,
             name=name,
             position=position,
+            source_headers=source_headers,
         )
 
         create_pack_registry_index_request.additional_properties = d

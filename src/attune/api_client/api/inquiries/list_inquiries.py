@@ -13,8 +13,10 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     status: InquiryStatus | None | Unset = UNSET,
-    execution: int | None | Unset = UNSET,
+    created_by_execution: int | None | Unset = UNSET,
     assigned_to: int | None | Unset = UNSET,
+    workflow_action_ref: None | str | Unset = UNSET,
+    workflow_pack_ref: None | str | Unset = UNSET,
     offset: int | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
 ) -> dict[str, Any]:
@@ -30,12 +32,12 @@ def _get_kwargs(
         json_status = status
     params["status"] = json_status
 
-    json_execution: int | None | Unset
-    if isinstance(execution, Unset):
-        json_execution = UNSET
+    json_created_by_execution: int | None | Unset
+    if isinstance(created_by_execution, Unset):
+        json_created_by_execution = UNSET
     else:
-        json_execution = execution
-    params["execution"] = json_execution
+        json_created_by_execution = created_by_execution
+    params["created_by_execution"] = json_created_by_execution
 
     json_assigned_to: int | None | Unset
     if isinstance(assigned_to, Unset):
@@ -43,6 +45,20 @@ def _get_kwargs(
     else:
         json_assigned_to = assigned_to
     params["assigned_to"] = json_assigned_to
+
+    json_workflow_action_ref: None | str | Unset
+    if isinstance(workflow_action_ref, Unset):
+        json_workflow_action_ref = UNSET
+    else:
+        json_workflow_action_ref = workflow_action_ref
+    params["workflow_action_ref"] = json_workflow_action_ref
+
+    json_workflow_pack_ref: None | str | Unset
+    if isinstance(workflow_pack_ref, Unset):
+        json_workflow_pack_ref = UNSET
+    else:
+        json_workflow_pack_ref = workflow_pack_ref
+    params["workflow_pack_ref"] = json_workflow_pack_ref
 
     json_offset: int | None | Unset
     if isinstance(offset, Unset):
@@ -106,8 +122,10 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     status: InquiryStatus | None | Unset = UNSET,
-    execution: int | None | Unset = UNSET,
+    created_by_execution: int | None | Unset = UNSET,
     assigned_to: int | None | Unset = UNSET,
+    workflow_action_ref: None | str | Unset = UNSET,
+    workflow_pack_ref: None | str | Unset = UNSET,
     offset: int | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseInquirySummary]:
@@ -115,8 +133,10 @@ def sync_detailed(
 
     Args:
         status (InquiryStatus | None | Unset):
-        execution (int | None | Unset):
+        created_by_execution (int | None | Unset):
         assigned_to (int | None | Unset):
+        workflow_action_ref (None | str | Unset):
+        workflow_pack_ref (None | str | Unset):
         offset (int | None | Unset):
         limit (int | None | Unset):
 
@@ -130,8 +150,10 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         status=status,
-        execution=execution,
+        created_by_execution=created_by_execution,
         assigned_to=assigned_to,
+        workflow_action_ref=workflow_action_ref,
+        workflow_pack_ref=workflow_pack_ref,
         offset=offset,
         limit=limit,
     )
@@ -147,8 +169,10 @@ def sync(
     *,
     client: AuthenticatedClient,
     status: InquiryStatus | None | Unset = UNSET,
-    execution: int | None | Unset = UNSET,
+    created_by_execution: int | None | Unset = UNSET,
     assigned_to: int | None | Unset = UNSET,
+    workflow_action_ref: None | str | Unset = UNSET,
+    workflow_pack_ref: None | str | Unset = UNSET,
     offset: int | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
 ) -> Any | PaginatedResponseInquirySummary | None:
@@ -156,8 +180,10 @@ def sync(
 
     Args:
         status (InquiryStatus | None | Unset):
-        execution (int | None | Unset):
+        created_by_execution (int | None | Unset):
         assigned_to (int | None | Unset):
+        workflow_action_ref (None | str | Unset):
+        workflow_pack_ref (None | str | Unset):
         offset (int | None | Unset):
         limit (int | None | Unset):
 
@@ -172,8 +198,10 @@ def sync(
     return sync_detailed(
         client=client,
         status=status,
-        execution=execution,
+        created_by_execution=created_by_execution,
         assigned_to=assigned_to,
+        workflow_action_ref=workflow_action_ref,
+        workflow_pack_ref=workflow_pack_ref,
         offset=offset,
         limit=limit,
     ).parsed
@@ -183,8 +211,10 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     status: InquiryStatus | None | Unset = UNSET,
-    execution: int | None | Unset = UNSET,
+    created_by_execution: int | None | Unset = UNSET,
     assigned_to: int | None | Unset = UNSET,
+    workflow_action_ref: None | str | Unset = UNSET,
+    workflow_pack_ref: None | str | Unset = UNSET,
     offset: int | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
 ) -> Response[Any | PaginatedResponseInquirySummary]:
@@ -192,8 +222,10 @@ async def asyncio_detailed(
 
     Args:
         status (InquiryStatus | None | Unset):
-        execution (int | None | Unset):
+        created_by_execution (int | None | Unset):
         assigned_to (int | None | Unset):
+        workflow_action_ref (None | str | Unset):
+        workflow_pack_ref (None | str | Unset):
         offset (int | None | Unset):
         limit (int | None | Unset):
 
@@ -207,8 +239,10 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         status=status,
-        execution=execution,
+        created_by_execution=created_by_execution,
         assigned_to=assigned_to,
+        workflow_action_ref=workflow_action_ref,
+        workflow_pack_ref=workflow_pack_ref,
         offset=offset,
         limit=limit,
     )
@@ -222,8 +256,10 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     status: InquiryStatus | None | Unset = UNSET,
-    execution: int | None | Unset = UNSET,
+    created_by_execution: int | None | Unset = UNSET,
     assigned_to: int | None | Unset = UNSET,
+    workflow_action_ref: None | str | Unset = UNSET,
+    workflow_pack_ref: None | str | Unset = UNSET,
     offset: int | None | Unset = UNSET,
     limit: int | None | Unset = UNSET,
 ) -> Any | PaginatedResponseInquirySummary | None:
@@ -231,8 +267,10 @@ async def asyncio(
 
     Args:
         status (InquiryStatus | None | Unset):
-        execution (int | None | Unset):
+        created_by_execution (int | None | Unset):
         assigned_to (int | None | Unset):
+        workflow_action_ref (None | str | Unset):
+        workflow_pack_ref (None | str | Unset):
         offset (int | None | Unset):
         limit (int | None | Unset):
 
@@ -248,8 +286,10 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             status=status,
-            execution=execution,
+            created_by_execution=created_by_execution,
             assigned_to=assigned_to,
+            workflow_action_ref=workflow_action_ref,
+            workflow_pack_ref=workflow_pack_ref,
             offset=offset,
             limit=limit,
         )

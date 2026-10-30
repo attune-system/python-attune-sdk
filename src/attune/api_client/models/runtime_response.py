@@ -15,9 +15,6 @@ if TYPE_CHECKING:
     from ..models.runtime_response_execution_config import (
         RuntimeResponseExecutionConfig,
     )
-    from ..models.runtime_response_installation_type_0 import (
-        RuntimeResponseInstallationType0,
-    )
 
 
 T = TypeVar("T", bound="RuntimeResponse")
@@ -32,33 +29,31 @@ class RuntimeResponse:
         distributions (RuntimeResponseDistributions):
         execution_config (RuntimeResponseExecutionConfig):
         id (int):  Example: 1.
-        installation (None | RuntimeResponseInstallationType0):
         name (str):  Example: Python.
         ref (str):  Example: core.python.
         updated (datetime.datetime):  Example: 2024-01-13T10:30:00Z.
         description (None | str | Unset):  Example: Python runtime with virtualenv support.
+        installation (Any | None | Unset):
         pack (int | None | Unset):  Example: 1.
         pack_ref (None | str | Unset):  Example: core.
+        retired_at (datetime.datetime | None | Unset):
     """
 
     created: datetime.datetime
     distributions: RuntimeResponseDistributions
     execution_config: RuntimeResponseExecutionConfig
     id: int
-    installation: None | RuntimeResponseInstallationType0
     name: str
     ref: str
     updated: datetime.datetime
     description: None | str | Unset = UNSET
+    installation: Any | None | Unset = UNSET
     pack: int | None | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
+    retired_at: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.runtime_response_installation_type_0 import (
-            RuntimeResponseInstallationType0,
-        )
-
         created = self.created.isoformat()
 
         distributions = self.distributions.to_dict()
@@ -66,12 +61,6 @@ class RuntimeResponse:
         execution_config = self.execution_config.to_dict()
 
         id = self.id
-
-        installation: dict[str, Any] | None
-        if isinstance(self.installation, RuntimeResponseInstallationType0):
-            installation = self.installation.to_dict()
-        else:
-            installation = self.installation
 
         name = self.name
 
@@ -85,6 +74,12 @@ class RuntimeResponse:
         else:
             description = self.description
 
+        installation: Any | None | Unset
+        if isinstance(self.installation, Unset):
+            installation = UNSET
+        else:
+            installation = self.installation
+
         pack: int | None | Unset
         if isinstance(self.pack, Unset):
             pack = UNSET
@@ -97,6 +92,14 @@ class RuntimeResponse:
         else:
             pack_ref = self.pack_ref
 
+        retired_at: None | str | Unset
+        if isinstance(self.retired_at, Unset):
+            retired_at = UNSET
+        elif isinstance(self.retired_at, datetime.datetime):
+            retired_at = self.retired_at.isoformat()
+        else:
+            retired_at = self.retired_at
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -105,7 +108,6 @@ class RuntimeResponse:
                 "distributions": distributions,
                 "execution_config": execution_config,
                 "id": id,
-                "installation": installation,
                 "name": name,
                 "ref": ref,
                 "updated": updated,
@@ -113,10 +115,14 @@ class RuntimeResponse:
         )
         if description is not UNSET:
             field_dict["description"] = description
+        if installation is not UNSET:
+            field_dict["installation"] = installation
         if pack is not UNSET:
             field_dict["pack"] = pack
         if pack_ref is not UNSET:
             field_dict["pack_ref"] = pack_ref
+        if retired_at is not UNSET:
+            field_dict["retired_at"] = retired_at
 
         return field_dict
 
@@ -125,9 +131,6 @@ class RuntimeResponse:
         from ..models.runtime_response_distributions import RuntimeResponseDistributions
         from ..models.runtime_response_execution_config import (
             RuntimeResponseExecutionConfig,
-        )
-        from ..models.runtime_response_installation_type_0 import (
-            RuntimeResponseInstallationType0,
         )
 
         d = dict(src_dict)
@@ -140,23 +143,6 @@ class RuntimeResponse:
         )
 
         id = d.pop("id")
-
-        def _parse_installation(
-            data: object,
-        ) -> None | RuntimeResponseInstallationType0:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                installation_type_0 = RuntimeResponseInstallationType0.from_dict(data)
-
-                return installation_type_0
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(None | RuntimeResponseInstallationType0, data)
-
-        installation = _parse_installation(d.pop("installation"))
 
         name = d.pop("name")
 
@@ -172,6 +158,15 @@ class RuntimeResponse:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
+
+        def _parse_installation(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        installation = _parse_installation(d.pop("installation", UNSET))
 
         def _parse_pack(data: object) -> int | None | Unset:
             if data is None:
@@ -191,18 +186,36 @@ class RuntimeResponse:
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
 
+        def _parse_retired_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                retired_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return retired_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        retired_at = _parse_retired_at(d.pop("retired_at", UNSET))
+
         runtime_response = cls(
             created=created,
             distributions=distributions,
             execution_config=execution_config,
             id=id,
-            installation=installation,
             name=name,
             ref=ref,
             updated=updated,
             description=description,
+            installation=installation,
             pack=pack,
             pack_ref=pack_ref,
+            retired_at=retired_at,
         )
 
         runtime_response.additional_properties = d
