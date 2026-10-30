@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
@@ -11,9 +10,10 @@ from typing_extensions import Self
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.create_inquiry_request_response_schema import (
-        CreateInquiryRequestResponseSchema,
+    from ..models.create_inquiry_request_response_schema_type_0 import (
+        CreateInquiryRequestResponseSchemaType0,
     )
+    from ..models.inquiry_response_option import InquiryResponseOption
 
 
 T = TypeVar("T", bound="CreateInquiryRequest")
@@ -24,28 +24,37 @@ class CreateInquiryRequest:
     """Request to create a new inquiry
 
     Attributes:
-        execution (int):
         prompt (str): Prompt text to display to the user Example: Approve deployment to production?.
-        response_schema (CreateInquiryRequestResponseSchema): Optional schema for the expected response format (flat
-            format with inline required/secret)
+        purpose (str): Stable purpose used to make creation idempotent within this workflow task attempt. Example:
+            approval.
+        response_options (list[InquiryResponseOption]): Fixed response choices rendered by provider actions.
         assigned_to (int | None | Unset):
-        timeout_at (datetime.datetime | None | Unset): Optional timeout timestamp (when inquiry expires) Example:
-            2024-01-13T11:30:00Z.
+        response_schema (CreateInquiryRequestResponseSchemaType0 | None | Unset): Optional schema for the expected
+            response format (flat format with inline required/secret)
+        timeout_seconds (int | None | Unset): Optional relative timeout in seconds. Example: 3600.
     """
 
-    execution: int
     prompt: str
-    response_schema: CreateInquiryRequestResponseSchema
+    purpose: str
+    response_options: list[InquiryResponseOption]
     assigned_to: int | None | Unset = UNSET
-    timeout_at: datetime.datetime | None | Unset = UNSET
+    response_schema: CreateInquiryRequestResponseSchemaType0 | None | Unset = UNSET
+    timeout_seconds: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        execution = self.execution
+        from ..models.create_inquiry_request_response_schema_type_0 import (
+            CreateInquiryRequestResponseSchemaType0,
+        )
 
         prompt = self.prompt
 
-        response_schema = self.response_schema.to_dict()
+        purpose = self.purpose
+
+        response_options = []
+        for response_options_item_data in self.response_options:
+            response_options_item = response_options_item_data.to_dict()
+            response_options.append(response_options_item)
 
         assigned_to: int | None | Unset
         if isinstance(self.assigned_to, Unset):
@@ -53,44 +62,58 @@ class CreateInquiryRequest:
         else:
             assigned_to = self.assigned_to
 
-        timeout_at: None | str | Unset
-        if isinstance(self.timeout_at, Unset):
-            timeout_at = UNSET
-        elif isinstance(self.timeout_at, datetime.datetime):
-            timeout_at = self.timeout_at.isoformat()
+        response_schema: dict[str, Any] | None | Unset
+        if isinstance(self.response_schema, Unset):
+            response_schema = UNSET
+        elif isinstance(self.response_schema, CreateInquiryRequestResponseSchemaType0):
+            response_schema = self.response_schema.to_dict()
         else:
-            timeout_at = self.timeout_at
+            response_schema = self.response_schema
+
+        timeout_seconds: int | None | Unset
+        if isinstance(self.timeout_seconds, Unset):
+            timeout_seconds = UNSET
+        else:
+            timeout_seconds = self.timeout_seconds
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "execution": execution,
                 "prompt": prompt,
-                "response_schema": response_schema,
+                "purpose": purpose,
+                "response_options": response_options,
             }
         )
         if assigned_to is not UNSET:
             field_dict["assigned_to"] = assigned_to
-        if timeout_at is not UNSET:
-            field_dict["timeout_at"] = timeout_at
+        if response_schema is not UNSET:
+            field_dict["response_schema"] = response_schema
+        if timeout_seconds is not UNSET:
+            field_dict["timeout_seconds"] = timeout_seconds
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
-        from ..models.create_inquiry_request_response_schema import (
-            CreateInquiryRequestResponseSchema,
+        from ..models.create_inquiry_request_response_schema_type_0 import (
+            CreateInquiryRequestResponseSchemaType0,
         )
+        from ..models.inquiry_response_option import InquiryResponseOption
 
         d = dict(src_dict)
-        execution = d.pop("execution")
-
         prompt = d.pop("prompt")
 
-        response_schema = CreateInquiryRequestResponseSchema.from_dict(
-            d.pop("response_schema")
-        )
+        purpose = d.pop("purpose")
+
+        response_options = []
+        _response_options = d.pop("response_options")
+        for response_options_item_data in _response_options:
+            response_options_item = InquiryResponseOption.from_dict(
+                response_options_item_data
+            )
+
+            response_options.append(response_options_item)
 
         def _parse_assigned_to(data: object) -> int | None | Unset:
             if data is None:
@@ -101,29 +124,43 @@ class CreateInquiryRequest:
 
         assigned_to = _parse_assigned_to(d.pop("assigned_to", UNSET))
 
-        def _parse_timeout_at(data: object) -> datetime.datetime | None | Unset:
+        def _parse_response_schema(
+            data: object,
+        ) -> CreateInquiryRequestResponseSchemaType0 | None | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             try:
-                if not isinstance(data, str):
+                if not isinstance(data, dict):
                     raise TypeError()
-                timeout_at_type_0 = datetime.datetime.fromisoformat(data)
+                response_schema_type_0 = (
+                    CreateInquiryRequestResponseSchemaType0.from_dict(data)
+                )
 
-                return timeout_at_type_0
+                return response_schema_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(datetime.datetime | None | Unset, data)
+            return cast(CreateInquiryRequestResponseSchemaType0 | None | Unset, data)
 
-        timeout_at = _parse_timeout_at(d.pop("timeout_at", UNSET))
+        response_schema = _parse_response_schema(d.pop("response_schema", UNSET))
+
+        def _parse_timeout_seconds(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        timeout_seconds = _parse_timeout_seconds(d.pop("timeout_seconds", UNSET))
 
         create_inquiry_request = cls(
-            execution=execution,
             prompt=prompt,
-            response_schema=response_schema,
+            purpose=purpose,
+            response_options=response_options,
             assigned_to=assigned_to,
-            timeout_at=timeout_at,
+            response_schema=response_schema,
+            timeout_seconds=timeout_seconds,
         )
 
         create_inquiry_request.additional_properties = d

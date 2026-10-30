@@ -12,6 +12,9 @@ from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.api_response_trigger_response_data_event_config_schema_type_0 import (
+        ApiResponseTriggerResponseDataEventConfigSchemaType0,
+    )
     from ..models.api_response_trigger_response_data_out_schema_type_0 import (
         ApiResponseTriggerResponseDataOutSchemaType0,
     )
@@ -30,6 +33,8 @@ class ApiResponseTriggerResponseData:
     Attributes:
         created (datetime.datetime): Creation timestamp Example: 2024-01-13T10:30:00Z.
         enabled (bool): Whether the trigger is enabled Example: True.
+        event_config_schema (ApiResponseTriggerResponseDataEventConfigSchemaType0 | None): Flat schema for sensor-
+            supplied event configuration.
         id (int): Trigger ID Example: 1.
         is_adhoc (bool): Whether this is an ad-hoc trigger (not from pack installation)
         label (str): Human-readable label Example: Webhook Trigger.
@@ -45,6 +50,7 @@ class ApiResponseTriggerResponseData:
         pack_ref (None | str | Unset): Pack reference (optional) Example: core.
         reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to subscribe to this trigger when visibility
             is restricted. Example: ['incident_response', 'deployments'].
+        retired_at (datetime.datetime | None | Unset):
         sensor (int | None | Unset): Sensor ID (optional — webhook triggers have no sensor) Example: 1.
         sensor_ref (None | str | Unset): Sensor reference (optional) Example: core.timer_sensor.
         webhook_key (None | str | Unset): Webhook key (only present if webhooks are enabled) Example:
@@ -53,6 +59,7 @@ class ApiResponseTriggerResponseData:
 
     created: datetime.datetime
     enabled: bool
+    event_config_schema: ApiResponseTriggerResponseDataEventConfigSchemaType0 | None
     id: int
     is_adhoc: bool
     label: str
@@ -66,12 +73,16 @@ class ApiResponseTriggerResponseData:
     pack: int | None | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
     reference_allowed_pack_refs: list[str] | Unset = UNSET
+    retired_at: datetime.datetime | None | Unset = UNSET
     sensor: int | None | Unset = UNSET
     sensor_ref: None | str | Unset = UNSET
     webhook_key: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.api_response_trigger_response_data_event_config_schema_type_0 import (
+            ApiResponseTriggerResponseDataEventConfigSchemaType0,
+        )
         from ..models.api_response_trigger_response_data_out_schema_type_0 import (
             ApiResponseTriggerResponseDataOutSchemaType0,
         )
@@ -82,6 +93,15 @@ class ApiResponseTriggerResponseData:
         created = self.created.isoformat()
 
         enabled = self.enabled
+
+        event_config_schema: dict[str, Any] | None
+        if isinstance(
+            self.event_config_schema,
+            ApiResponseTriggerResponseDataEventConfigSchemaType0,
+        ):
+            event_config_schema = self.event_config_schema.to_dict()
+        else:
+            event_config_schema = self.event_config_schema
 
         id = self.id
 
@@ -133,6 +153,14 @@ class ApiResponseTriggerResponseData:
         if not isinstance(self.reference_allowed_pack_refs, Unset):
             reference_allowed_pack_refs = self.reference_allowed_pack_refs
 
+        retired_at: None | str | Unset
+        if isinstance(self.retired_at, Unset):
+            retired_at = UNSET
+        elif isinstance(self.retired_at, datetime.datetime):
+            retired_at = self.retired_at.isoformat()
+        else:
+            retired_at = self.retired_at
+
         sensor: int | None | Unset
         if isinstance(self.sensor, Unset):
             sensor = UNSET
@@ -157,6 +185,7 @@ class ApiResponseTriggerResponseData:
             {
                 "created": created,
                 "enabled": enabled,
+                "event_config_schema": event_config_schema,
                 "id": id,
                 "is_adhoc": is_adhoc,
                 "label": label,
@@ -176,6 +205,8 @@ class ApiResponseTriggerResponseData:
             field_dict["pack_ref"] = pack_ref
         if reference_allowed_pack_refs is not UNSET:
             field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
+        if retired_at is not UNSET:
+            field_dict["retired_at"] = retired_at
         if sensor is not UNSET:
             field_dict["sensor"] = sensor
         if sensor_ref is not UNSET:
@@ -187,6 +218,9 @@ class ApiResponseTriggerResponseData:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.api_response_trigger_response_data_event_config_schema_type_0 import (
+            ApiResponseTriggerResponseDataEventConfigSchemaType0,
+        )
         from ..models.api_response_trigger_response_data_out_schema_type_0 import (
             ApiResponseTriggerResponseDataOutSchemaType0,
         )
@@ -198,6 +232,27 @@ class ApiResponseTriggerResponseData:
         created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
+
+        def _parse_event_config_schema(
+            data: object,
+        ) -> ApiResponseTriggerResponseDataEventConfigSchemaType0 | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                event_config_schema_type_0 = (
+                    ApiResponseTriggerResponseDataEventConfigSchemaType0.from_dict(data)
+                )
+
+                return event_config_schema_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                ApiResponseTriggerResponseDataEventConfigSchemaType0 | None, data
+            )
+
+        event_config_schema = _parse_event_config_schema(d.pop("event_config_schema"))
 
         id = d.pop("id")
 
@@ -282,6 +337,23 @@ class ApiResponseTriggerResponseData:
             list[str], d.pop("reference_allowed_pack_refs", UNSET)
         )
 
+        def _parse_retired_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                retired_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return retired_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        retired_at = _parse_retired_at(d.pop("retired_at", UNSET))
+
         def _parse_sensor(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -312,6 +384,7 @@ class ApiResponseTriggerResponseData:
         api_response_trigger_response_data = cls(
             created=created,
             enabled=enabled,
+            event_config_schema=event_config_schema,
             id=id,
             is_adhoc=is_adhoc,
             label=label,
@@ -325,6 +398,7 @@ class ApiResponseTriggerResponseData:
             pack=pack,
             pack_ref=pack_ref,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
+            retired_at=retired_at,
             sensor=sensor,
             sensor_ref=sensor_ref,
             webhook_key=webhook_key,

@@ -12,7 +12,7 @@ T = TypeVar("T", bound="UpdatePackRequestConfigType0")
 
 @_attrs_define
 class UpdatePackRequestConfigType0:
-    """Pack configuration values"""
+    """Persistent overrides, replacing each supplied top-level field completely."""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 

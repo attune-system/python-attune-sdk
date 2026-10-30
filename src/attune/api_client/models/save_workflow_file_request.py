@@ -30,8 +30,9 @@ class SaveWorkflowFileRequest:
     """Request DTO for saving a workflow file to disk and syncing to DB
 
     Attributes:
-        definition (SaveWorkflowFileRequestDefinition): The full workflow definition as JSON (will be serialized to YAML
-            on disk)
+        definition (SaveWorkflowFileRequestDefinition): The full workflow definition as JSON. Tasks with a templated
+            action must
+            declare allowed_action_refs, an array of 1 to 256 literal action refs.
         label (str): Human-readable label Example: Deploy Application.
         name (str): Workflow name (becomes filename: {name}.workflow.yaml) Example: deploy_app.
         out_schema (None | SaveWorkflowFileRequestOutSchemaType0): Output schema (flat format)

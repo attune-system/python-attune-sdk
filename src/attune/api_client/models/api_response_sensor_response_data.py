@@ -47,12 +47,17 @@ class ApiResponseSensorResponseData:
         artifact_retention_limit (int | None | Unset): Per-sensor retention limit override for non-log artifacts created
             by sensor-owned executions. Example: 10.
         artifact_retention_policy (None | RetentionPolicyType | Unset):
+        config (Any | None | Unset):
+        config_schema_binding (Any | None | Unset):
         description (None | str | Unset): Sensor description Example: Monitors CPU usage and generates events.
         log_retention_limit (int | None | Unset): Per-sensor retention limit override for registered stdout/stderr log
             artifacts. Example: 4.
         log_retention_policy (None | RetentionPolicyType | Unset):
+        managed_metadata_revision (int | None | Unset): Current immutable executable/purpose admission over pinned code
+            bytes.
         pack (int | None | Unset): Pack ID (optional) Example: 1.
         pack_ref (None | str | Unset): Pack reference (optional) Example: monitoring.
+        retired_at (datetime.datetime | None | Unset):
     """
 
     created: datetime.datetime
@@ -70,11 +75,15 @@ class ApiResponseSensorResponseData:
     worker_tolerations: list[WorkerToleration]
     artifact_retention_limit: int | None | Unset = UNSET
     artifact_retention_policy: None | RetentionPolicyType | Unset = UNSET
+    config: Any | None | Unset = UNSET
+    config_schema_binding: Any | None | Unset = UNSET
     description: None | str | Unset = UNSET
     log_retention_limit: int | None | Unset = UNSET
     log_retention_policy: None | RetentionPolicyType | Unset = UNSET
+    managed_metadata_revision: int | None | Unset = UNSET
     pack: int | None | Unset = UNSET
     pack_ref: None | str | Unset = UNSET
+    retired_at: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -129,6 +138,18 @@ class ApiResponseSensorResponseData:
         else:
             artifact_retention_policy = self.artifact_retention_policy
 
+        config: Any | None | Unset
+        if isinstance(self.config, Unset):
+            config = UNSET
+        else:
+            config = self.config
+
+        config_schema_binding: Any | None | Unset
+        if isinstance(self.config_schema_binding, Unset):
+            config_schema_binding = UNSET
+        else:
+            config_schema_binding = self.config_schema_binding
+
         description: None | str | Unset
         if isinstance(self.description, Unset):
             description = UNSET
@@ -149,6 +170,12 @@ class ApiResponseSensorResponseData:
         else:
             log_retention_policy = self.log_retention_policy
 
+        managed_metadata_revision: int | None | Unset
+        if isinstance(self.managed_metadata_revision, Unset):
+            managed_metadata_revision = UNSET
+        else:
+            managed_metadata_revision = self.managed_metadata_revision
+
         pack: int | None | Unset
         if isinstance(self.pack, Unset):
             pack = UNSET
@@ -160,6 +187,14 @@ class ApiResponseSensorResponseData:
             pack_ref = UNSET
         else:
             pack_ref = self.pack_ref
+
+        retired_at: None | str | Unset
+        if isinstance(self.retired_at, Unset):
+            retired_at = UNSET
+        elif isinstance(self.retired_at, datetime.datetime):
+            retired_at = self.retired_at.isoformat()
+        else:
+            retired_at = self.retired_at
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -184,16 +219,24 @@ class ApiResponseSensorResponseData:
             field_dict["artifact_retention_limit"] = artifact_retention_limit
         if artifact_retention_policy is not UNSET:
             field_dict["artifact_retention_policy"] = artifact_retention_policy
+        if config is not UNSET:
+            field_dict["config"] = config
+        if config_schema_binding is not UNSET:
+            field_dict["config_schema_binding"] = config_schema_binding
         if description is not UNSET:
             field_dict["description"] = description
         if log_retention_limit is not UNSET:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
             field_dict["log_retention_policy"] = log_retention_policy
+        if managed_metadata_revision is not UNSET:
+            field_dict["managed_metadata_revision"] = managed_metadata_revision
         if pack is not UNSET:
             field_dict["pack"] = pack
         if pack_ref is not UNSET:
             field_dict["pack_ref"] = pack_ref
+        if retired_at is not UNSET:
+            field_dict["retired_at"] = retired_at
 
         return field_dict
 
@@ -293,6 +336,26 @@ class ApiResponseSensorResponseData:
             d.pop("artifact_retention_policy", UNSET)
         )
 
+        def _parse_config(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        config = _parse_config(d.pop("config", UNSET))
+
+        def _parse_config_schema_binding(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        config_schema_binding = _parse_config_schema_binding(
+            d.pop("config_schema_binding", UNSET)
+        )
+
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -334,6 +397,17 @@ class ApiResponseSensorResponseData:
             d.pop("log_retention_policy", UNSET)
         )
 
+        def _parse_managed_metadata_revision(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        managed_metadata_revision = _parse_managed_metadata_revision(
+            d.pop("managed_metadata_revision", UNSET)
+        )
+
         def _parse_pack(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -352,6 +426,23 @@ class ApiResponseSensorResponseData:
 
         pack_ref = _parse_pack_ref(d.pop("pack_ref", UNSET))
 
+        def _parse_retired_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                retired_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return retired_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        retired_at = _parse_retired_at(d.pop("retired_at", UNSET))
+
         api_response_sensor_response_data = cls(
             created=created,
             enabled=enabled,
@@ -368,11 +459,15 @@ class ApiResponseSensorResponseData:
             worker_tolerations=worker_tolerations,
             artifact_retention_limit=artifact_retention_limit,
             artifact_retention_policy=artifact_retention_policy,
+            config=config,
+            config_schema_binding=config_schema_binding,
             description=description,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
+            managed_metadata_revision=managed_metadata_revision,
             pack=pack,
             pack_ref=pack_ref,
+            retired_at=retired_at,
         )
 
         api_response_sensor_response_data.additional_properties = d

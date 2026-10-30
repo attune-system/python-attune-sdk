@@ -29,7 +29,10 @@ class UpdateWorkflowRequest:
     """Request DTO for updating a workflow
 
     Attributes:
-        definition (None | UpdateWorkflowRequestDefinitionType0): Workflow definition
+        definition (None | UpdateWorkflowRequestDefinitionType0): Workflow definition. A task with a templated action
+            requires a finite
+            literal allowed_action_refs array. Rendered permissions only reduce its
+            admitted per-target ceiling.
         out_schema (None | UpdateWorkflowRequestOutSchemaType0): Output schema
         param_schema (None | UpdateWorkflowRequestParamSchemaType0): Parameter schema (StackStorm-style with inline
             required/secret)

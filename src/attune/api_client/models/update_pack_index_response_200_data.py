@@ -14,6 +14,9 @@ if TYPE_CHECKING:
     from ..models.update_pack_index_response_200_data_headers import (
         UpdatePackIndexResponse200DataHeaders,
     )
+    from ..models.update_pack_index_response_200_data_source_headers import (
+        UpdatePackIndexResponse200DataSourceHeaders,
+    )
 
 
 T = TypeVar("T", bound="UpdatePackIndexResponse200Data")
@@ -29,6 +32,8 @@ class UpdatePackIndexResponse200Data:
         headers (UpdatePackIndexResponse200DataHeaders):
         id (int):
         position (int):
+        source_headers (UpdatePackIndexResponse200DataSourceHeaders): Exact source origins mapped to redacted
+            archive/Git request headers.
         updated (datetime.datetime):
         url (str):
         name (None | str | Unset):
@@ -39,6 +44,7 @@ class UpdatePackIndexResponse200Data:
     headers: UpdatePackIndexResponse200DataHeaders
     id: int
     position: int
+    source_headers: UpdatePackIndexResponse200DataSourceHeaders
     updated: datetime.datetime
     url: str
     name: None | str | Unset = UNSET
@@ -54,6 +60,8 @@ class UpdatePackIndexResponse200Data:
         id = self.id
 
         position = self.position
+
+        source_headers = self.source_headers.to_dict()
 
         updated = self.updated.isoformat()
 
@@ -74,6 +82,7 @@ class UpdatePackIndexResponse200Data:
                 "headers": headers,
                 "id": id,
                 "position": position,
+                "source_headers": source_headers,
                 "updated": updated,
                 "url": url,
             }
@@ -88,6 +97,9 @@ class UpdatePackIndexResponse200Data:
         from ..models.update_pack_index_response_200_data_headers import (
             UpdatePackIndexResponse200DataHeaders,
         )
+        from ..models.update_pack_index_response_200_data_source_headers import (
+            UpdatePackIndexResponse200DataSourceHeaders,
+        )
 
         d = dict(src_dict)
         created = datetime.datetime.fromisoformat(d.pop("created"))
@@ -99,6 +111,10 @@ class UpdatePackIndexResponse200Data:
         id = d.pop("id")
 
         position = d.pop("position")
+
+        source_headers = UpdatePackIndexResponse200DataSourceHeaders.from_dict(
+            d.pop("source_headers")
+        )
 
         updated = datetime.datetime.fromisoformat(d.pop("updated"))
 
@@ -119,6 +135,7 @@ class UpdatePackIndexResponse200Data:
             headers=headers,
             id=id,
             position=position,
+            source_headers=source_headers,
             updated=updated,
             url=url,
             name=name,

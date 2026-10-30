@@ -32,6 +32,7 @@ class PackResponse:
         is_standard (bool): Is standard pack
         label (str): Human-readable label Example: Slack Integration.
         meta (PackResponseMeta): Pack metadata
+        owner_roles (list[str]):
         ref (str): Unique reference identifier Example: slack.
         runtime_deps (list[str]): Runtime dependencies (e.g., shell, python, nodejs) Example: ['shell', 'python'].
         tags (list[str]): Tags Example: ['messaging', 'collaboration'].
@@ -41,6 +42,7 @@ class PackResponse:
         worker_selector (Any):
         worker_tolerations (Any):
         action_count (int | None | Unset): Number of actions registered for this pack Example: 12.
+        config_schema_binding (Any | None | Unset):
         description (None | str | Unset): Pack description Example: Integration with Slack for messaging and
             notifications.
         rule_count (int | None | Unset): Number of rules registered for this pack Example: 5.
@@ -56,6 +58,7 @@ class PackResponse:
     is_standard: bool
     label: str
     meta: PackResponseMeta
+    owner_roles: list[str]
     ref: str
     runtime_deps: list[str]
     tags: list[str]
@@ -65,6 +68,7 @@ class PackResponse:
     worker_selector: Any
     worker_tolerations: Any
     action_count: int | None | Unset = UNSET
+    config_schema_binding: Any | None | Unset = UNSET
     description: None | str | Unset = UNSET
     rule_count: int | None | Unset = UNSET
     sensor_count: int | None | Unset = UNSET
@@ -88,6 +92,8 @@ class PackResponse:
 
         meta = self.meta.to_dict()
 
+        owner_roles = self.owner_roles
+
         ref = self.ref
 
         runtime_deps = self.runtime_deps
@@ -109,6 +115,12 @@ class PackResponse:
             action_count = UNSET
         else:
             action_count = self.action_count
+
+        config_schema_binding: Any | None | Unset
+        if isinstance(self.config_schema_binding, Unset):
+            config_schema_binding = UNSET
+        else:
+            config_schema_binding = self.config_schema_binding
 
         description: None | str | Unset
         if isinstance(self.description, Unset):
@@ -146,6 +158,7 @@ class PackResponse:
                 "is_standard": is_standard,
                 "label": label,
                 "meta": meta,
+                "owner_roles": owner_roles,
                 "ref": ref,
                 "runtime_deps": runtime_deps,
                 "tags": tags,
@@ -158,6 +171,8 @@ class PackResponse:
         )
         if action_count is not UNSET:
             field_dict["action_count"] = action_count
+        if config_schema_binding is not UNSET:
+            field_dict["config_schema_binding"] = config_schema_binding
         if description is not UNSET:
             field_dict["description"] = description
         if rule_count is not UNSET:
@@ -192,6 +207,8 @@ class PackResponse:
 
         meta = PackResponseMeta.from_dict(d.pop("meta"))
 
+        owner_roles = cast(list[str], d.pop("owner_roles"))
+
         ref = d.pop("ref")
 
         runtime_deps = cast(list[str], d.pop("runtime_deps"))
@@ -216,6 +233,17 @@ class PackResponse:
             return cast(int | None | Unset, data)
 
         action_count = _parse_action_count(d.pop("action_count", UNSET))
+
+        def _parse_config_schema_binding(data: object) -> Any | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Any | None | Unset, data)
+
+        config_schema_binding = _parse_config_schema_binding(
+            d.pop("config_schema_binding", UNSET)
+        )
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -262,6 +290,7 @@ class PackResponse:
             is_standard=is_standard,
             label=label,
             meta=meta,
+            owner_roles=owner_roles,
             ref=ref,
             runtime_deps=runtime_deps,
             tags=tags,
@@ -271,6 +300,7 @@ class PackResponse:
             worker_selector=worker_selector,
             worker_tolerations=worker_tolerations,
             action_count=action_count,
+            config_schema_binding=config_schema_binding,
             description=description,
             rule_count=rule_count,
             sensor_count=sensor_count,

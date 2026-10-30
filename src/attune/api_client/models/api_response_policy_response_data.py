@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from ..models.policy_scope_response import PolicyScopeResponse
     from ..models.quota_policy_response import QuotaPolicyResponse
     from ..models.rate_limit_policy_response import RateLimitPolicyResponse
+    from ..models.resource_concurrency import ResourceConcurrency
 
 
 T = TypeVar("T", bound="ApiResponsePolicyResponseData")
@@ -37,6 +38,8 @@ class ApiResponsePolicyResponseData:
         concurrency (ConcurrencyPolicyResponse | None | Unset):
         description (None | str | Unset):
         rate_limit (None | RateLimitPolicyResponse | Unset):
+        resource_concurrency (None | ResourceConcurrency | Unset):
+        retired_at (datetime.datetime | None | Unset):
     """
 
     created: datetime.datetime
@@ -52,11 +55,14 @@ class ApiResponsePolicyResponseData:
     concurrency: ConcurrencyPolicyResponse | None | Unset = UNSET
     description: None | str | Unset = UNSET
     rate_limit: None | RateLimitPolicyResponse | Unset = UNSET
+    resource_concurrency: None | ResourceConcurrency | Unset = UNSET
+    retired_at: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.concurrency_policy_response import ConcurrencyPolicyResponse
         from ..models.rate_limit_policy_response import RateLimitPolicyResponse
+        from ..models.resource_concurrency import ResourceConcurrency
 
         created = self.created.isoformat()
 
@@ -103,6 +109,22 @@ class ApiResponsePolicyResponseData:
         else:
             rate_limit = self.rate_limit
 
+        resource_concurrency: dict[str, Any] | None | Unset
+        if isinstance(self.resource_concurrency, Unset):
+            resource_concurrency = UNSET
+        elif isinstance(self.resource_concurrency, ResourceConcurrency):
+            resource_concurrency = self.resource_concurrency.to_dict()
+        else:
+            resource_concurrency = self.resource_concurrency
+
+        retired_at: None | str | Unset
+        if isinstance(self.retired_at, Unset):
+            retired_at = UNSET
+        elif isinstance(self.retired_at, datetime.datetime):
+            retired_at = self.retired_at.isoformat()
+        else:
+            retired_at = self.retired_at
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -125,6 +147,10 @@ class ApiResponsePolicyResponseData:
             field_dict["description"] = description
         if rate_limit is not UNSET:
             field_dict["rate_limit"] = rate_limit
+        if resource_concurrency is not UNSET:
+            field_dict["resource_concurrency"] = resource_concurrency
+        if retired_at is not UNSET:
+            field_dict["retired_at"] = retired_at
 
         return field_dict
 
@@ -134,6 +160,7 @@ class ApiResponsePolicyResponseData:
         from ..models.policy_scope_response import PolicyScopeResponse
         from ..models.quota_policy_response import QuotaPolicyResponse
         from ..models.rate_limit_policy_response import RateLimitPolicyResponse
+        from ..models.resource_concurrency import ResourceConcurrency
 
         d = dict(src_dict)
         created = datetime.datetime.fromisoformat(d.pop("created"))
@@ -206,6 +233,44 @@ class ApiResponsePolicyResponseData:
 
         rate_limit = _parse_rate_limit(d.pop("rate_limit", UNSET))
 
+        def _parse_resource_concurrency(
+            data: object,
+        ) -> None | ResourceConcurrency | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                resource_concurrency_type_1 = ResourceConcurrency.from_dict(data)
+
+                return resource_concurrency_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ResourceConcurrency | Unset, data)
+
+        resource_concurrency = _parse_resource_concurrency(
+            d.pop("resource_concurrency", UNSET)
+        )
+
+        def _parse_retired_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                retired_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return retired_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        retired_at = _parse_retired_at(d.pop("retired_at", UNSET))
+
         api_response_policy_response_data = cls(
             created=created,
             enabled=enabled,
@@ -220,6 +285,8 @@ class ApiResponsePolicyResponseData:
             concurrency=concurrency,
             description=description,
             rate_limit=rate_limit,
+            resource_concurrency=resource_concurrency,
+            retired_at=retired_at,
         )
 
         api_response_policy_response_data.additional_properties = d

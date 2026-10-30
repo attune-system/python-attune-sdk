@@ -22,6 +22,7 @@ class PackSummary:
         id (int): Pack ID Example: 1.
         is_standard (bool): Is standard pack
         label (str): Human-readable label Example: Slack Integration.
+        owner_roles (list[str]):
         ref (str): Unique reference identifier Example: slack.
         tags (list[str]): Tags Example: ['messaging', 'collaboration'].
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
@@ -34,6 +35,7 @@ class PackSummary:
     id: int
     is_standard: bool
     label: str
+    owner_roles: list[str]
     ref: str
     tags: list[str]
     updated: datetime.datetime
@@ -49,6 +51,8 @@ class PackSummary:
         is_standard = self.is_standard
 
         label = self.label
+
+        owner_roles = self.owner_roles
 
         ref = self.ref
 
@@ -72,6 +76,7 @@ class PackSummary:
                 "id": id,
                 "is_standard": is_standard,
                 "label": label,
+                "owner_roles": owner_roles,
                 "ref": ref,
                 "tags": tags,
                 "updated": updated,
@@ -93,6 +98,8 @@ class PackSummary:
         is_standard = d.pop("is_standard")
 
         label = d.pop("label")
+
+        owner_roles = cast(list[str], d.pop("owner_roles"))
 
         ref = d.pop("ref")
 
@@ -116,6 +123,7 @@ class PackSummary:
             id=id,
             is_standard=is_standard,
             label=label,
+            owner_roles=owner_roles,
             ref=ref,
             tags=tags,
             updated=updated,

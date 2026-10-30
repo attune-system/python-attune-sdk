@@ -12,7 +12,11 @@ T = TypeVar("T", bound="UpdateWorkflowRequestDefinitionType0")
 
 @_attrs_define
 class UpdateWorkflowRequestDefinitionType0:
-    """Workflow definition"""
+    """Workflow definition. A task with a templated action requires a finite
+    literal allowed_action_refs array. Rendered permissions only reduce its
+    admitted per-target ceiling.
+
+    """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 

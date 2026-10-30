@@ -8,6 +8,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
+from ..models.absent_metadata_policy import AbsentMetadataPolicy
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="ApiResponsePackInstallStatusResponseData")
@@ -18,24 +19,29 @@ class ApiResponsePackInstallStatusResponseData:
     """Response describing a tracked pack installation attempt.
 
     Attributes:
+        absent_metadata_policy (AbsentMetadataPolicy): How an installation handles pack-managed metadata omitted by the
+            new release.
         install_id (int): Pack install record id
         pack_ref (str): Pack reference this install attempt belongs to
         pack_version (str): Pack version being installed
         started_at (datetime.datetime): When installation activities started
         status (str): pending, running, activating, succeeded, failed, or rolled_back
         trigger_reason (str): Why the install was triggered (install, update, manual, validation)
+        diagnostic_details (Any | Unset):
         error_message (None | str | Unset): Failure detail, when the install failed
         finished_at (datetime.datetime | None | Unset): When the install reached a terminal state
         test_execution_id (int | None | Unset): ID of the pack_test_execution row produced by the run, when available
         test_result (Any | Unset): Snapshot of the PackTestResult, when available
     """
 
+    absent_metadata_policy: AbsentMetadataPolicy
     install_id: int
     pack_ref: str
     pack_version: str
     started_at: datetime.datetime
     status: str
     trigger_reason: str
+    diagnostic_details: Any | Unset = UNSET
     error_message: None | str | Unset = UNSET
     finished_at: datetime.datetime | None | Unset = UNSET
     test_execution_id: int | None | Unset = UNSET
@@ -43,6 +49,8 @@ class ApiResponsePackInstallStatusResponseData:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        absent_metadata_policy = self.absent_metadata_policy.value
+
         install_id = self.install_id
 
         pack_ref = self.pack_ref
@@ -54,6 +62,8 @@ class ApiResponsePackInstallStatusResponseData:
         status = self.status
 
         trigger_reason = self.trigger_reason
+
+        diagnostic_details = self.diagnostic_details
 
         error_message: None | str | Unset
         if isinstance(self.error_message, Unset):
@@ -81,6 +91,7 @@ class ApiResponsePackInstallStatusResponseData:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "absent_metadata_policy": absent_metadata_policy,
                 "install_id": install_id,
                 "pack_ref": pack_ref,
                 "pack_version": pack_version,
@@ -89,6 +100,8 @@ class ApiResponsePackInstallStatusResponseData:
                 "trigger_reason": trigger_reason,
             }
         )
+        if diagnostic_details is not UNSET:
+            field_dict["diagnostic_details"] = diagnostic_details
         if error_message is not UNSET:
             field_dict["error_message"] = error_message
         if finished_at is not UNSET:
@@ -103,6 +116,8 @@ class ApiResponsePackInstallStatusResponseData:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
+        absent_metadata_policy = AbsentMetadataPolicy(d.pop("absent_metadata_policy"))
+
         install_id = d.pop("install_id")
 
         pack_ref = d.pop("pack_ref")
@@ -114,6 +129,8 @@ class ApiResponsePackInstallStatusResponseData:
         status = d.pop("status")
 
         trigger_reason = d.pop("trigger_reason")
+
+        diagnostic_details = d.pop("diagnostic_details", UNSET)
 
         def _parse_error_message(data: object) -> None | str | Unset:
             if data is None:
@@ -153,12 +170,14 @@ class ApiResponsePackInstallStatusResponseData:
         test_result = d.pop("test_result", UNSET)
 
         api_response_pack_install_status_response_data = cls(
+            absent_metadata_policy=absent_metadata_policy,
             install_id=install_id,
             pack_ref=pack_ref,
             pack_version=pack_version,
             started_at=started_at,
             status=status,
             trigger_reason=trigger_reason,
+            diagnostic_details=diagnostic_details,
             error_message=error_message,
             finished_at=finished_at,
             test_execution_id=test_execution_id,

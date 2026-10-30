@@ -7,6 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
+from ..models.permission_scope import PermissionScope
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="UpdatePermissionSetRequest")
@@ -19,11 +20,13 @@ class UpdatePermissionSetRequest:
         grants (Any):
         description (None | str | Unset):
         label (None | str | Unset):
+        scope (None | PermissionScope | Unset):
     """
 
     grants: Any
     description: None | str | Unset = UNSET
     label: None | str | Unset = UNSET
+    scope: None | PermissionScope | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -41,6 +44,14 @@ class UpdatePermissionSetRequest:
         else:
             label = self.label
 
+        scope: None | str | Unset
+        if isinstance(self.scope, Unset):
+            scope = UNSET
+        elif isinstance(self.scope, PermissionScope):
+            scope = self.scope.value
+        else:
+            scope = self.scope
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -52,6 +63,8 @@ class UpdatePermissionSetRequest:
             field_dict["description"] = description
         if label is not UNSET:
             field_dict["label"] = label
+        if scope is not UNSET:
+            field_dict["scope"] = scope
 
         return field_dict
 
@@ -78,10 +91,28 @@ class UpdatePermissionSetRequest:
 
         label = _parse_label(d.pop("label", UNSET))
 
+        def _parse_scope(data: object) -> None | PermissionScope | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                scope_type_1 = PermissionScope(data)
+
+                return scope_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | PermissionScope | Unset, data)
+
+        scope = _parse_scope(d.pop("scope", UNSET))
+
         update_permission_set_request = cls(
             grants=grants,
             description=description,
             label=label,
+            scope=scope,
         )
 
         update_permission_set_request.additional_properties = d
