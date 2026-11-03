@@ -380,6 +380,16 @@ from .approval_purpose_type_1 import ApprovalPurposeType1
 from .approval_purpose_type_1_kind import ApprovalPurposeType1Kind
 from .artifact_body_state import ArtifactBodyState
 from .artifact_classification import ArtifactClassification
+from .artifact_cursor_page_artifact_summary import ArtifactCursorPageArtifactSummary
+from .artifact_cursor_page_artifact_summary_items_item import (
+    ArtifactCursorPageArtifactSummaryItemsItem,
+)
+from .artifact_cursor_page_artifact_version_summary import (
+    ArtifactCursorPageArtifactVersionSummary,
+)
+from .artifact_cursor_page_artifact_version_summary_items_item import (
+    ArtifactCursorPageArtifactVersionSummaryItemsItem,
+)
 from .artifact_json_patch_type_0 import ArtifactJsonPatchType0
 from .artifact_json_patch_type_0_op import ArtifactJsonPatchType0Op
 from .artifact_json_patch_type_1 import ArtifactJsonPatchType1
@@ -1074,16 +1084,6 @@ from .paginated_response_action_summary_items_item_required_worker_runtimes impo
 )
 from .paginated_response_action_summary_items_item_worker_selector import (
     PaginatedResponseActionSummaryItemsItemWorkerSelector,
-)
-from .paginated_response_artifact_summary import PaginatedResponseArtifactSummary
-from .paginated_response_artifact_summary_items_item import (
-    PaginatedResponseArtifactSummaryItemsItem,
-)
-from .paginated_response_artifact_version_summary import (
-    PaginatedResponseArtifactVersionSummary,
-)
-from .paginated_response_artifact_version_summary_items_item import (
-    PaginatedResponseArtifactVersionSummaryItemsItem,
 )
 from .paginated_response_audit_event_summary import PaginatedResponseAuditEventSummary
 from .paginated_response_audit_event_summary_items_item import (
@@ -1820,6 +1820,10 @@ __all__ = (
     "ApprovalPurposeType1Kind",
     "ArtifactBodyState",
     "ArtifactClassification",
+    "ArtifactCursorPageArtifactSummary",
+    "ArtifactCursorPageArtifactSummaryItemsItem",
+    "ArtifactCursorPageArtifactVersionSummary",
+    "ArtifactCursorPageArtifactVersionSummaryItemsItem",
     "ArtifactJsonPatchType0",
     "ArtifactJsonPatchType0Op",
     "ArtifactJsonPatchType1",
@@ -2301,10 +2305,6 @@ __all__ = (
     "PaginatedResponseActionSummaryItemsItem",
     "PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes",
     "PaginatedResponseActionSummaryItemsItemWorkerSelector",
-    "PaginatedResponseArtifactSummary",
-    "PaginatedResponseArtifactSummaryItemsItem",
-    "PaginatedResponseArtifactVersionSummary",
-    "PaginatedResponseArtifactVersionSummaryItemsItem",
     "PaginatedResponseAuditEventSummary",
     "PaginatedResponseAuditEventSummaryItemsItem",
     "PaginatedResponseDeclaredInputApprovalTarget",
