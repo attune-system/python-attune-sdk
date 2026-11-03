@@ -20,11 +20,13 @@ class MaintenanceScheduleStatus:
     Attributes:
         job (MaintenanceJob):
         next_due (datetime.datetime):
+        deferred_since (datetime.datetime | None | Unset):
         last_success (datetime.datetime | None | Unset):
     """
 
     job: MaintenanceJob
     next_due: datetime.datetime
+    deferred_since: datetime.datetime | None | Unset = UNSET
     last_success: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -32,6 +34,14 @@ class MaintenanceScheduleStatus:
         job = self.job.value
 
         next_due = self.next_due.isoformat()
+
+        deferred_since: None | str | Unset
+        if isinstance(self.deferred_since, Unset):
+            deferred_since = UNSET
+        elif isinstance(self.deferred_since, datetime.datetime):
+            deferred_since = self.deferred_since.isoformat()
+        else:
+            deferred_since = self.deferred_since
 
         last_success: None | str | Unset
         if isinstance(self.last_success, Unset):
@@ -49,6 +59,8 @@ class MaintenanceScheduleStatus:
                 "next_due": next_due,
             }
         )
+        if deferred_since is not UNSET:
+            field_dict["deferred_since"] = deferred_since
         if last_success is not UNSET:
             field_dict["last_success"] = last_success
 
@@ -60,6 +72,23 @@ class MaintenanceScheduleStatus:
         job = MaintenanceJob(d.pop("job"))
 
         next_due = datetime.datetime.fromisoformat(d.pop("next_due"))
+
+        def _parse_deferred_since(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                deferred_since_type_0 = datetime.datetime.fromisoformat(data)
+
+                return deferred_since_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        deferred_since = _parse_deferred_since(d.pop("deferred_since", UNSET))
 
         def _parse_last_success(data: object) -> datetime.datetime | None | Unset:
             if data is None:
@@ -81,6 +110,7 @@ class MaintenanceScheduleStatus:
         maintenance_schedule_status = cls(
             job=job,
             next_due=next_due,
+            deferred_since=deferred_since,
             last_success=last_success,
         )
 

@@ -2,7 +2,7 @@
 
 A lightweight Python package providing boilerplate for writing [Attune](https://github.com/attune-system/attune) actions and sensors.
 
-SDK 0.5.5 is generated from the Attune OpenAPI 0.10.1 contract.
+SDK 0.5.6 is generated from the Attune OpenAPI 0.10.2 contract.
 
 ## Installation
 
