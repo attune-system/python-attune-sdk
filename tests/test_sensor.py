@@ -1,6 +1,7 @@
 """Tests for attune.sensor module."""
 
 import sys
+from io import BytesIO
 import threading
 import time
 import types
@@ -38,20 +39,19 @@ class TestSensorBase:
         sensor.shutdown()
         assert sensor.is_shutting_down is True
 
-    def test_bootstrap_rules_from_env(self, monkeypatch):
-        monkeypatch.setenv(
-            "ATTUNE_SENSOR_TRIGGERS",
-            '[{"id": 1, "ref": "mypack.rule1", "trigger_ref": "mypack.trig", "config": {"interval": "3"}}]',
-        )
+    def test_bootstrap_rules_from_stdin(self):
         sensor = Sensor()
+        sensor.context = _build_sensor_context(BytesIO(
+            b'{"config": {}, "triggers": [{"id": 1, "ref": "mypack.rule1", "trigger_ref": "mypack.trig", "config": {"interval": 3}}]}'
+        ))
         sensor._bootstrap_rules()
         assert 1 in sensor.rules
         assert sensor.rules[1].rule_ref == "mypack.rule1"
-        assert sensor.rules[1].trigger_params == {"interval": "3"}
+        assert sensor.rules[1].trigger_params == {"interval": 3}
 
-    def test_bootstrap_empty_env(self, monkeypatch):
-        monkeypatch.delenv("ATTUNE_SENSOR_TRIGGERS", raising=False)
+    def test_bootstrap_empty_stdin_sections(self):
         sensor = Sensor()
+        sensor.context = _build_sensor_context(BytesIO(b'{"config": {}, "triggers": []}'))
         sensor._bootstrap_rules()
         assert len(sensor.rules) == 0
 
@@ -319,6 +319,7 @@ class TestPollingSensor:
                     self.shutdown()
 
         sensor = TestSensor()
+        sensor.context = _build_sensor_context(BytesIO(b'{"config": {}, "triggers": []}'))
         sensor._handle_rule_message(
             {
                 "event_type": "rule.created",
@@ -466,6 +467,7 @@ class TestAsyncPollingSensor:
                     self.shutdown()
 
         sensor = TestSensor()
+        sensor.context = _build_sensor_context(BytesIO(b'{"config": {}, "triggers": []}'))
         sensor._handle_rule_message(
             {
                 "event_type": "rule.created",
@@ -494,6 +496,7 @@ class TestAsyncPollingSensor:
                 events.append("cleanup")
 
         sensor = TestSensor()
+        sensor.context = _build_sensor_context(BytesIO(b'{"config": {}, "triggers": []}'))
         sensor._handle_rule_message(
             {
                 "event_type": "rule.created",

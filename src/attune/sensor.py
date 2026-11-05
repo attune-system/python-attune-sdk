@@ -5,10 +5,9 @@ signal handling, and polling helpers (synchronous and asynchronous).
 Architecture
 ~~~~~~~~~~~~
 
-Attune sensors are long-running processes. The platform delivers **rule
-lifecycle events** via the authenticated notifier WebSocket (or
-``ATTUNE_SENSOR_TRIGGERS`` env on startup) so the sensor knows which rules
-are active and what parameters they carry.
+Attune sensors are long-running processes. Initial configuration and active
+rules arrive through bounded stdin JSON. Later rule lifecycle events arrive
+through the authenticated notifier WebSocket.
 
 Class hierarchy::
 
@@ -126,7 +125,7 @@ class Sensor:
       disabled, deleted, or have their parameters updated.
     - **Event emission** via the Attune API.
     - **Structured JSON logging** to stderr.
-    - **Bootstrap** from ``ATTUNE_SENSOR_TRIGGERS`` environment variable
+    - **Bootstrap** from stdin JSON
       (delivers initial active rules at process start).
 
     Subclasses should override :meth:`run` for custom event loops, or use
@@ -231,8 +230,8 @@ class Sensor:
         self._http_client_token = self.context.current_api_token
 
     @property
-    def config(self) -> dict[str, str]:
-        """Sensor-level configuration from environment variables."""
+    def config(self) -> dict[str, Any]:
+        """Sensor-level configuration from the stdin bootstrap."""
         return self.context.config
 
     @property
@@ -405,15 +404,8 @@ class Sensor:
                 self.on_rule_created(rule)
 
     def _bootstrap_rules(self) -> None:
-        """Load initial active rules from ATTUNE_SENSOR_TRIGGERS env var."""
-        raw = os.environ.get("ATTUNE_SENSOR_TRIGGERS", "[]")
-        try:
-            triggers = json.loads(raw)
-        except json.JSONDecodeError:
-            triggers = []
-
-        if not isinstance(triggers, list):
-            triggers = []
+        """Load initial active rules from the same stdin frame as sensor settings."""
+        triggers = self.context.bootstrap_state.get().triggers
 
         for item in triggers:
             if not isinstance(item, dict):

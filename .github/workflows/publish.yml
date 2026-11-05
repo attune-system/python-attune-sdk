@@ -108,6 +108,19 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Verify installed wheel sensor startup
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheels=(dist/*.whl)
+          test "${#wheels[@]}" -eq 1
+          python -m pip install pytest "${wheels[0]}[sensor]"
+          # Exercise the installed distribution outside the source checkout.
+          cd "$RUNNER_TEMP"
+          PYTHONPATH= python -I -m pytest \
+            "$GITHUB_WORKSPACE/tests/test_sensor_startup_contract.py" \
+            --import-mode=importlib -q
+
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

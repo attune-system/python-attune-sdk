@@ -19,10 +19,13 @@ from __future__ import annotations
 
 import json
 import os
+from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, BinaryIO, Protocol
+
+from attune.sensor_bootstrap import SensorBootstrapState
 
 if TYPE_CHECKING:
     from attune.api_client import AuthenticatedClient
@@ -249,21 +252,12 @@ class SensorContext:
     pack_ref: str
     token_provider: SensorTokenProvider = field(repr=False, compare=False)
     token_reconnect_window_seconds: float = 30.0
+    bootstrap_state: SensorBootstrapState = field(default_factory=SensorBootstrapState, repr=False, compare=False)
 
     @property
-    def config(self) -> dict[str, str]:
-        """Caller-supplied ``ATTUNE_SENSOR_CONFIG_*`` values.
-
-        The managed sensor service does not inject persisted sensor ``config``
-        into child processes. Use per-rule ``trigger_params`` for managed rule
-        configuration.
-        """
-        prefix = "ATTUNE_SENSOR_CONFIG_"
-        return {
-            k[len(prefix) :].lower(): v
-            for k, v in os.environ.items()
-            if k.startswith(prefix)
-        }
+    def config(self) -> dict[str, Any]:
+        """Typed sensor configuration delivered through stdin JSON."""
+        return deepcopy(self.bootstrap_state.get().config)
 
     @property
     def client(self) -> AuthenticatedClient:
@@ -321,7 +315,7 @@ def _build_action_context() -> ActionContext:
     )
 
 
-def _build_sensor_context() -> SensorContext:
+def _build_sensor_context(bootstrap_reader: BinaryIO | None = None) -> SensorContext:
     """Build the sensor context from current environment variables."""
     initial_token = os.environ.get("ATTUNE_API_TOKEN", "")
     initial_expires_at = os.environ.get(
@@ -365,6 +359,7 @@ def _build_sensor_context() -> SensorContext:
         pack_ref=pack_ref,
         token_provider=token_provider,
         token_reconnect_window_seconds=token_reconnect_window_seconds,
+        bootstrap_state=SensorBootstrapState(bootstrap_reader),
     )
 
 

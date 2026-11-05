@@ -2,6 +2,7 @@
 
 import json
 import os
+from io import BytesIO
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 
@@ -66,15 +67,16 @@ class TestSensorContext:
         assert ctx.pack_ref == "mypack"
         assert ctx.notifier_ws_url == "ws://notifier:8081/ws"
 
-    def test_config_from_env(self, monkeypatch):
+    def test_config_from_stdin(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_SENSOR_REF", "test.sensor")
         monkeypatch.setenv("ATTUNE_SENSOR_CONFIG_INTERVAL", "10")
         monkeypatch.setenv("ATTUNE_SENSOR_CONFIG_TARGET_URL", "http://example.com")
 
-        ctx = _build_sensor_context()
+        ctx = _build_sensor_context(BytesIO(b'{"config": {"interval": 10, "enabled": false, "target_url": "https://example.com"}, "triggers": []}'))
         config = ctx.config
-        assert config["interval"] == "10"
-        assert config["target_url"] == "http://example.com"
+        assert config["interval"] == 10
+        assert config["enabled"] is False
+        assert config["target_url"] == "https://example.com"
 
     def test_allow_insecure_notifier_ws_is_explicit(self, monkeypatch):
         monkeypatch.setenv("ATTUNE_ALLOW_INSECURE_NOTIFIER_WS", "true")

@@ -2,7 +2,7 @@
 
 A lightweight Python package providing boilerplate for writing [Attune](https://github.com/attune-system/attune) actions and sensors.
 
-SDK 0.5.6 is generated from the Attune OpenAPI 0.10.2 contract.
+SDK 0.5.7 is generated from the Attune OpenAPI 0.10.2 contract.
 
 ## Installation
 
@@ -296,7 +296,7 @@ import attune
 # attune.sensor_context is available at import time
 print(attune.sensor_context.sensor_ref)
 print(attune.sensor_context.api_url)
-print(attune.sensor_context.config)  # caller-supplied ATTUNE_SENSOR_CONFIG_* vars
+settings = attune.sensor_context.config  # typed values from stdin; do not log secrets
 ```
 
 The current managed sensor service rotates credentials with a controlled
@@ -305,10 +305,15 @@ process. The SDK also supports an externally managed token-state file for
 nonstandard runtimes; see
 [docs/managed-sensor-token-rotation-contract.md](docs/managed-sensor-token-rotation-contract.md).
 
-Persisted sensor `config` is not injected into managed child processes.
-Use each rule's `trigger_params` for managed configuration, or retrieve other
-configuration from an explicitly authorized source. `sensor_context.config`
-only exposes `ATTUNE_SENSOR_CONFIG_*` variables supplied by the caller.
+Managed sensors read one stdin JSON object with `config` and `triggers` sections.
+`config` is the flat sensor settings map. `triggers` contains the initial active
+rule bindings. Close stdin after writing the object. Values retain their JSON
+types. Imports alone do not consume stdin, so action input remains untouched.
+The old configuration environment variables are not read.
+
+For the environment-based SDK 0.5.6 → Attune 0.10.2 upgrade, follow the
+[sensor startup migration guide](docs/sensor-startup-migration.md), including
+rebuilding existing pack runtime environments with the stdin-capable SDK.
 
 ### Synchronous Polling (`PollingSensor`)
 
@@ -384,7 +389,7 @@ attune.run_sensor(FileTailSensor)
 
 All sensor classes support rule lifecycle hooks that fire when the platform
 creates, enables, disables, deletes, or updates a rule. Managed sensors
-bootstrap from `ATTUNE_SENSOR_TRIGGERS` and then receive live lifecycle deltas
+bootstrap from stdin JSON and then receive live lifecycle deltas
 from the notifier WebSocket using `Authorization: Bearer <ATTUNE_API_TOKEN>`
 and `trigger_ref:<ref>` subscriptions:
 
@@ -468,13 +473,11 @@ For Python token-source and failure behavior, see:
 | `ATTUNE_SENSOR_TOKEN_RECONNECT_WINDOW_SECONDS` | Optional pre-expiry reconnect window (default `30`) |
 | `ATTUNE_NOTIFIER_WS_URL` | Notifier WebSocket URL; remote endpoints require `wss://` by default |
 | `ATTUNE_ALLOW_INSECURE_NOTIFIER_WS` | Allow non-loopback `ws://` only on an explicitly trusted development network |
-| `ATTUNE_SENSOR_TRIGGERS` | Bootstrap JSON array of managed rule bindings |
 | `ATTUNE_SENSOR_TRIGGER_TYPES` | JSON array (or comma-separated fallback) of all trigger refs to subscribe to |
 | `ATTUNE_LOG_LEVEL` | Log verbosity |
 | `ATTUNE_LOG_FORMAT` | Managed runtime log format |
-| `ATTUNE_SENSOR_CONFIG_*` | Caller-supplied values exposed by `sensor_context.config`; persisted sensor config is not injected |
 
-`ATTUNE_SENSOR_TRIGGERS` is a startup snapshot. Ordinary rule changes arrive
+The stdin `triggers` section is a startup snapshot. Ordinary rule changes arrive
 in-process through notifier lifecycle envelopes and do not restart the sensor.
 If `ATTUNE_SENSOR_TRIGGER_TYPES` is absent, the SDK derives subscriptions from
 the bootstrap snapshot.
