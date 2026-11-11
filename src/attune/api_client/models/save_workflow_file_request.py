@@ -11,6 +11,7 @@ from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.output_policy import OutputPolicy
     from ..models.save_workflow_file_request_definition import (
         SaveWorkflowFileRequestDefinition,
     )
@@ -44,6 +45,8 @@ class SaveWorkflowFileRequest:
             environment.
         enabled (bool | None | Unset): Whether the companion workflow action is enabled. Omitted defaults to true.
             Default: True. Example: True.
+        output_policy (OutputPolicy | Unset): Optional authoring choices. Resolve against the stored output contract
+            once.
         reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to reference the companion workflow action
             when visibility is restricted. Example: ['incident_response', 'deployments'].
         reference_visibility (ActionReferenceVisibility | None | Unset):  Default: ActionReferenceVisibility.PUBLIC.
@@ -59,6 +62,7 @@ class SaveWorkflowFileRequest:
     version: str
     description: None | str | Unset = UNSET
     enabled: bool | None | Unset = True
+    output_policy: OutputPolicy | Unset = UNSET
     reference_allowed_pack_refs: list[str] | Unset = UNSET
     reference_visibility: ActionReferenceVisibility | None | Unset = (
         ActionReferenceVisibility.PUBLIC
@@ -108,6 +112,10 @@ class SaveWorkflowFileRequest:
         else:
             enabled = self.enabled
 
+        output_policy: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.output_policy, Unset):
+            output_policy = self.output_policy.to_dict()
+
         reference_allowed_pack_refs: list[str] | Unset = UNSET
         if not isinstance(self.reference_allowed_pack_refs, Unset):
             reference_allowed_pack_refs = self.reference_allowed_pack_refs
@@ -146,6 +154,8 @@ class SaveWorkflowFileRequest:
             field_dict["description"] = description
         if enabled is not UNSET:
             field_dict["enabled"] = enabled
+        if output_policy is not UNSET:
+            field_dict["output_policy"] = output_policy
         if reference_allowed_pack_refs is not UNSET:
             field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
         if reference_visibility is not UNSET:
@@ -157,6 +167,7 @@ class SaveWorkflowFileRequest:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.output_policy import OutputPolicy
         from ..models.save_workflow_file_request_definition import (
             SaveWorkflowFileRequestDefinition,
         )
@@ -234,6 +245,13 @@ class SaveWorkflowFileRequest:
 
         enabled = _parse_enabled(d.pop("enabled", UNSET))
 
+        _output_policy = d.pop("output_policy", UNSET)
+        output_policy: OutputPolicy | Unset
+        if isinstance(_output_policy, Unset):
+            output_policy = UNSET
+        else:
+            output_policy = OutputPolicy.from_dict(_output_policy)
+
         reference_allowed_pack_refs = cast(
             list[str], d.pop("reference_allowed_pack_refs", UNSET)
         )
@@ -286,6 +304,7 @@ class SaveWorkflowFileRequest:
             version=version,
             description=description,
             enabled=enabled,
+            output_policy=output_policy,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
             reference_visibility=reference_visibility,
             tags=tags,

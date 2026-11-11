@@ -10,6 +10,7 @@ from typing_extensions import Self
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.output_policy import OutputPolicy
     from ..models.update_workflow_request_definition_type_0 import (
         UpdateWorkflowRequestDefinitionType0,
     )
@@ -39,6 +40,7 @@ class UpdateWorkflowRequest:
         description (None | str | Unset): Workflow description Example: Enhanced incident response workflow with
             additional automation.
         label (None | str | Unset): Human-readable label Example: Incident Response Workflow (Updated).
+        output_policy (None | OutputPolicy | Unset):
         tags (list[str] | None | Unset): Tags Example: ['incident', 'slack', 'approval', 'automation'].
         version (None | str | Unset): Workflow version Example: 1.1.0.
     """
@@ -48,11 +50,13 @@ class UpdateWorkflowRequest:
     param_schema: None | UpdateWorkflowRequestParamSchemaType0
     description: None | str | Unset = UNSET
     label: None | str | Unset = UNSET
+    output_policy: None | OutputPolicy | Unset = UNSET
     tags: list[str] | None | Unset = UNSET
     version: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.output_policy import OutputPolicy
         from ..models.update_workflow_request_definition_type_0 import (
             UpdateWorkflowRequestDefinitionType0,
         )
@@ -93,6 +97,14 @@ class UpdateWorkflowRequest:
         else:
             label = self.label
 
+        output_policy: dict[str, Any] | None | Unset
+        if isinstance(self.output_policy, Unset):
+            output_policy = UNSET
+        elif isinstance(self.output_policy, OutputPolicy):
+            output_policy = self.output_policy.to_dict()
+        else:
+            output_policy = self.output_policy
+
         tags: list[str] | None | Unset
         if isinstance(self.tags, Unset):
             tags = UNSET
@@ -121,6 +133,8 @@ class UpdateWorkflowRequest:
             field_dict["description"] = description
         if label is not UNSET:
             field_dict["label"] = label
+        if output_policy is not UNSET:
+            field_dict["output_policy"] = output_policy
         if tags is not UNSET:
             field_dict["tags"] = tags
         if version is not UNSET:
@@ -130,6 +144,7 @@ class UpdateWorkflowRequest:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.output_policy import OutputPolicy
         from ..models.update_workflow_request_definition_type_0 import (
             UpdateWorkflowRequestDefinitionType0,
         )
@@ -213,6 +228,23 @@ class UpdateWorkflowRequest:
 
         label = _parse_label(d.pop("label", UNSET))
 
+        def _parse_output_policy(data: object) -> None | OutputPolicy | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                output_policy_type_1 = OutputPolicy.from_dict(data)
+
+                return output_policy_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | OutputPolicy | Unset, data)
+
+        output_policy = _parse_output_policy(d.pop("output_policy", UNSET))
+
         def _parse_tags(data: object) -> list[str] | None | Unset:
             if data is None:
                 return data
@@ -245,6 +277,7 @@ class UpdateWorkflowRequest:
             param_schema=param_schema,
             description=description,
             label=label,
+            output_policy=output_policy,
             tags=tags,
             version=version,
         )

@@ -9,10 +9,12 @@ from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
+from ..models.output_format import OutputFormat
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.output_policy import OutputPolicy
     from ..models.update_action_response_200_data_out_schema_type_0 import (
         UpdateActionResponse200DataOutSchemaType0,
     )
@@ -46,6 +48,8 @@ class UpdateActionResponse200Data:
         is_adhoc (bool): Whether this is an ad-hoc action (not from pack installation)
         label (str): Human-readable label Example: Post Message to Slack.
         out_schema (None | UpdateActionResponse200DataOutSchemaType0): Output schema
+        output_format (OutputFormat): Format for action output parsing
+        output_policy (OutputPolicy): Optional authoring choices. Resolve against the stored output contract once.
         pack (int): Pack ID Example: 1.
         pack_ref (str): Pack reference Example: slack.
         param_schema (None | UpdateActionResponse200DataParamSchemaType0): Parameter schema (StackStorm-style with
@@ -87,6 +91,8 @@ class UpdateActionResponse200Data:
     is_adhoc: bool
     label: str
     out_schema: None | UpdateActionResponse200DataOutSchemaType0
+    output_format: OutputFormat
+    output_policy: OutputPolicy
     pack: int
     pack_ref: str
     param_schema: None | UpdateActionResponse200DataParamSchemaType0
@@ -142,6 +148,10 @@ class UpdateActionResponse200Data:
             out_schema = self.out_schema.to_dict()
         else:
             out_schema = self.out_schema
+
+        output_format = self.output_format.value
+
+        output_policy = self.output_policy.to_dict()
 
         pack = self.pack
 
@@ -272,6 +282,8 @@ class UpdateActionResponse200Data:
                 "is_adhoc": is_adhoc,
                 "label": label,
                 "out_schema": out_schema,
+                "output_format": output_format,
+                "output_policy": output_policy,
                 "pack": pack,
                 "pack_ref": pack_ref,
                 "param_schema": param_schema,
@@ -321,6 +333,7 @@ class UpdateActionResponse200Data:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.output_policy import OutputPolicy
         from ..models.update_action_response_200_data_out_schema_type_0 import (
             UpdateActionResponse200DataOutSchemaType0,
         )
@@ -369,6 +382,10 @@ class UpdateActionResponse200Data:
             return cast(None | UpdateActionResponse200DataOutSchemaType0, data)
 
         out_schema = _parse_out_schema(d.pop("out_schema"))
+
+        output_format = OutputFormat(d.pop("output_format"))
+
+        output_policy = OutputPolicy.from_dict(d.pop("output_policy"))
 
         pack = d.pop("pack")
 
@@ -593,6 +610,8 @@ class UpdateActionResponse200Data:
             is_adhoc=is_adhoc,
             label=label,
             out_schema=out_schema,
+            output_format=output_format,
+            output_policy=output_policy,
             pack=pack,
             pack_ref=pack_ref,
             param_schema=param_schema,
