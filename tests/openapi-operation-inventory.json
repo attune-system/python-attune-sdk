@@ -1,6 +1,6 @@
 {
   "source": "attune/web/openapi.json",
-  "openapi_info_version": "0.10.3",
+  "openapi_info_version": "0.10.4",
   "operation_count": 277,
   "sha256": "aae3165ee287886652e5170ecc0f05fa4243ed2cb5a9fbe420e9f103950b1063"
 }

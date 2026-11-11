@@ -133,6 +133,9 @@ from .api_response_execution_response_data_config import (
 from .api_response_execution_response_data_result import (
     ApiResponseExecutionResponseDataResult,
 )
+from .api_response_execution_response_data_revealed_output_channels_type_0 import (
+    ApiResponseExecutionResponseDataRevealedOutputChannelsType0,
+)
 from .api_response_execution_response_data_worker_affinity_type_0 import (
     ApiResponseExecutionResponseDataWorkerAffinityType0,
 )
@@ -467,6 +470,9 @@ from .cancel_execution_response_200_data_config import (
 from .cancel_execution_response_200_data_result import (
     CancelExecutionResponse200DataResult,
 )
+from .cancel_execution_response_200_data_revealed_output_channels_type_0 import (
+    CancelExecutionResponse200DataRevealedOutputChannelsType0,
+)
 from .cancel_execution_response_200_data_worker_affinity_type_0 import (
     CancelExecutionResponse200DataWorkerAffinityType0,
 )
@@ -772,6 +778,9 @@ from .execution_reschedule_response import ExecutionRescheduleResponse
 from .execution_response import ExecutionResponse
 from .execution_response_config import ExecutionResponseConfig
 from .execution_response_result import ExecutionResponseResult
+from .execution_response_revealed_output_channels_type_0 import (
+    ExecutionResponseRevealedOutputChannelsType0,
+)
 from .execution_response_worker_affinity_type_0 import (
     ExecutionResponseWorkerAffinityType0,
 )
@@ -833,6 +842,9 @@ from .get_execution_response_200 import GetExecutionResponse200
 from .get_execution_response_200_data import GetExecutionResponse200Data
 from .get_execution_response_200_data_config import GetExecutionResponse200DataConfig
 from .get_execution_response_200_data_result import GetExecutionResponse200DataResult
+from .get_execution_response_200_data_revealed_output_channels_type_0 import (
+    GetExecutionResponse200DataRevealedOutputChannelsType0,
+)
 from .get_execution_response_200_data_worker_affinity_type_0 import (
     GetExecutionResponse200DataWorkerAffinityType0,
 )
@@ -1039,6 +1051,9 @@ from .oidc_device_poll_response_200_data_type_3_status import (
 )
 from .oidc_device_start_response_200 import OidcDeviceStartResponse200
 from .oidc_device_start_response_200_data import OidcDeviceStartResponse200Data
+from .output_format import OutputFormat
+from .output_policy import OutputPolicy
+from .output_visibility import OutputVisibility
 from .owner_type import OwnerType
 from .pack_contents import PackContents
 from .pack_dependencies import PackDependencies
@@ -1377,6 +1392,7 @@ from .sign_key_jwt_response_200 import SignKeyJwtResponse200
 from .sign_key_jwt_response_200_data import SignKeyJwtResponse200Data
 from .source_availability import SourceAvailability
 from .source_type import SourceType
+from .stdout_policy import StdoutPolicy
 from .success_response import SuccessResponse
 from .summary_kind import SummaryKind
 from .summary_status import SummaryStatus
@@ -1697,6 +1713,7 @@ __all__ = (
     "ApiResponseExecutionResponseData",
     "ApiResponseExecutionResponseDataConfig",
     "ApiResponseExecutionResponseDataResult",
+    "ApiResponseExecutionResponseDataRevealedOutputChannelsType0",
     "ApiResponseExecutionResponseDataWorkerAffinityType0",
     "ApiResponseExecutionResponseDataWorkerSelectorType0",
     "ApiResponseExecutionResponseDataWorkerTolerationsType0Item",
@@ -1891,6 +1908,7 @@ __all__ = (
     "CancelExecutionResponse200Data",
     "CancelExecutionResponse200DataConfig",
     "CancelExecutionResponse200DataResult",
+    "CancelExecutionResponse200DataRevealedOutputChannelsType0",
     "CancelExecutionResponse200DataWorkerAffinityType0",
     "CancelExecutionResponse200DataWorkerSelectorType0",
     "CancelExecutionResponse200DataWorkerTolerationsType0Item",
@@ -2090,6 +2108,7 @@ __all__ = (
     "ExecutionResponse",
     "ExecutionResponseConfig",
     "ExecutionResponseResult",
+    "ExecutionResponseRevealedOutputChannelsType0",
     "ExecutionResponseWorkerAffinityType0",
     "ExecutionResponseWorkerSelectorType0",
     "ExecutionResponseWorkerTolerationsType0Item",
@@ -2129,6 +2148,7 @@ __all__ = (
     "GetExecutionResponse200Data",
     "GetExecutionResponse200DataConfig",
     "GetExecutionResponse200DataResult",
+    "GetExecutionResponse200DataRevealedOutputChannelsType0",
     "GetExecutionResponse200DataWorkerAffinityType0",
     "GetExecutionResponse200DataWorkerSelectorType0",
     "GetExecutionResponse200DataWorkerTolerationsType0Item",
@@ -2269,6 +2289,9 @@ __all__ = (
     "OidcDevicePollResponse200DataType3Status",
     "OidcDeviceStartResponse200",
     "OidcDeviceStartResponse200Data",
+    "OutputFormat",
+    "OutputPolicy",
+    "OutputVisibility",
     "OwnerType",
     "PackContents",
     "PackDependencies",
@@ -2489,6 +2512,7 @@ __all__ = (
     "SignKeyJwtResponse200Data",
     "SourceAvailability",
     "SourceType",
+    "StdoutPolicy",
     "SuccessResponse",
     "SummaryKind",
     "SummaryStatus",

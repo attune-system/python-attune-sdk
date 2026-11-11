@@ -7,6 +7,7 @@ from attrs import define as _attrs_define
 from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
+from ..models.output_format import OutputFormat
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from ..models.create_action_request_worker_selector import (
         CreateActionRequestWorkerSelector,
     )
+    from ..models.output_policy import OutputPolicy
     from ..models.worker_affinity import WorkerAffinity
     from ..models.worker_toleration import WorkerToleration
 
@@ -59,6 +61,9 @@ class CreateActionRequest:
         log_retention_policy (None | RetentionPolicyType | Unset):
         out_schema (CreateActionRequestOutSchemaType0 | None | Unset): Output schema (flat format) defining expected
             outputs with inline required/secret
+        output_format (OutputFormat | Unset): Format for action output parsing
+        output_policy (OutputPolicy | Unset): Optional authoring choices. Resolve against the stored output contract
+            once.
         param_schema (CreateActionRequestParamSchemaType0 | None | Unset): Parameter schema (StackStorm-style) defining
             expected inputs with inline required/secret
         reference_allowed_pack_refs (list[str] | Unset): Pack refs allowed to reference this action when visibility is
@@ -94,6 +99,8 @@ class CreateActionRequest:
     log_retention_limit: int | None | Unset = UNSET
     log_retention_policy: None | RetentionPolicyType | Unset = UNSET
     out_schema: CreateActionRequestOutSchemaType0 | None | Unset = UNSET
+    output_format: OutputFormat | Unset = UNSET
+    output_policy: OutputPolicy | Unset = UNSET
     param_schema: CreateActionRequestParamSchemaType0 | None | Unset = UNSET
     reference_allowed_pack_refs: list[str] | Unset = UNSET
     reference_visibility: ActionReferenceVisibility | None | Unset = (
@@ -183,6 +190,14 @@ class CreateActionRequest:
             out_schema = self.out_schema.to_dict()
         else:
             out_schema = self.out_schema
+
+        output_format: str | Unset = UNSET
+        if not isinstance(self.output_format, Unset):
+            output_format = self.output_format.value
+
+        output_policy: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.output_policy, Unset):
+            output_policy = self.output_policy.to_dict()
 
         param_schema: dict[str, Any] | None | Unset
         if isinstance(self.param_schema, Unset):
@@ -277,6 +292,10 @@ class CreateActionRequest:
             field_dict["log_retention_policy"] = log_retention_policy
         if out_schema is not UNSET:
             field_dict["out_schema"] = out_schema
+        if output_format is not UNSET:
+            field_dict["output_format"] = output_format
+        if output_policy is not UNSET:
+            field_dict["output_policy"] = output_policy
         if param_schema is not UNSET:
             field_dict["param_schema"] = param_schema
         if reference_allowed_pack_refs is not UNSET:
@@ -316,6 +335,7 @@ class CreateActionRequest:
         from ..models.create_action_request_worker_selector import (
             CreateActionRequestWorkerSelector,
         )
+        from ..models.output_policy import OutputPolicy
         from ..models.worker_affinity import WorkerAffinity
         from ..models.worker_toleration import WorkerToleration
 
@@ -441,6 +461,20 @@ class CreateActionRequest:
             return cast(CreateActionRequestOutSchemaType0 | None | Unset, data)
 
         out_schema = _parse_out_schema(d.pop("out_schema", UNSET))
+
+        _output_format = d.pop("output_format", UNSET)
+        output_format: OutputFormat | Unset
+        if isinstance(_output_format, Unset):
+            output_format = UNSET
+        else:
+            output_format = OutputFormat(_output_format)
+
+        _output_policy = d.pop("output_policy", UNSET)
+        output_policy: OutputPolicy | Unset
+        if isinstance(_output_policy, Unset):
+            output_policy = UNSET
+        else:
+            output_policy = OutputPolicy.from_dict(_output_policy)
 
         def _parse_param_schema(
             data: object,
@@ -578,6 +612,8 @@ class CreateActionRequest:
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
             out_schema=out_schema,
+            output_format=output_format,
+            output_policy=output_policy,
             param_schema=param_schema,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
             reference_visibility=reference_visibility,

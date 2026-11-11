@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from ..models.create_workflow_request_param_schema import (
         CreateWorkflowRequestParamSchema,
     )
+    from ..models.output_policy import OutputPolicy
 
 
 T = TypeVar("T", bound="CreateWorkflowRequest")
@@ -41,6 +42,8 @@ class CreateWorkflowRequest:
         version (str): Workflow version (semantic versioning recommended) Example: 1.0.0.
         description (None | str | Unset): Workflow description Example: Automated incident response workflow with
             notifications and approvals.
+        output_policy (OutputPolicy | Unset): Optional authoring choices. Resolve against the stored output contract
+            once.
         tags (list[str] | None | Unset): Tags for categorization and search Example: ['incident', 'slack', 'approval'].
     """
 
@@ -52,6 +55,7 @@ class CreateWorkflowRequest:
     ref: str
     version: str
     description: None | str | Unset = UNSET
+    output_policy: OutputPolicy | Unset = UNSET
     tags: list[str] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -75,6 +79,10 @@ class CreateWorkflowRequest:
             description = UNSET
         else:
             description = self.description
+
+        output_policy: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.output_policy, Unset):
+            output_policy = self.output_policy.to_dict()
 
         tags: list[str] | None | Unset
         if isinstance(self.tags, Unset):
@@ -100,6 +108,8 @@ class CreateWorkflowRequest:
         )
         if description is not UNSET:
             field_dict["description"] = description
+        if output_policy is not UNSET:
+            field_dict["output_policy"] = output_policy
         if tags is not UNSET:
             field_dict["tags"] = tags
 
@@ -116,6 +126,7 @@ class CreateWorkflowRequest:
         from ..models.create_workflow_request_param_schema import (
             CreateWorkflowRequestParamSchema,
         )
+        from ..models.output_policy import OutputPolicy
 
         d = dict(src_dict)
         definition = CreateWorkflowRequestDefinition.from_dict(d.pop("definition"))
@@ -140,6 +151,13 @@ class CreateWorkflowRequest:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
+
+        _output_policy = d.pop("output_policy", UNSET)
+        output_policy: OutputPolicy | Unset
+        if isinstance(_output_policy, Unset):
+            output_policy = UNSET
+        else:
+            output_policy = OutputPolicy.from_dict(_output_policy)
 
         def _parse_tags(data: object) -> list[str] | None | Unset:
             if data is None:
@@ -167,6 +185,7 @@ class CreateWorkflowRequest:
             ref=ref,
             version=version,
             description=description,
+            output_policy=output_policy,
             tags=tags,
         )
 

@@ -9,6 +9,7 @@ from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
+from ..models.output_format import OutputFormat
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from ..models.api_response_action_response_data_worker_selector import (
         ApiResponseActionResponseDataWorkerSelector,
     )
+    from ..models.output_policy import OutputPolicy
     from ..models.worker_affinity import WorkerAffinity
     from ..models.worker_toleration import WorkerToleration
 
@@ -46,6 +48,8 @@ class ApiResponseActionResponseData:
         is_adhoc (bool): Whether this is an ad-hoc action (not from pack installation)
         label (str): Human-readable label Example: Post Message to Slack.
         out_schema (ApiResponseActionResponseDataOutSchemaType0 | None): Output schema
+        output_format (OutputFormat): Format for action output parsing
+        output_policy (OutputPolicy): Optional authoring choices. Resolve against the stored output contract once.
         pack (int): Pack ID Example: 1.
         pack_ref (str): Pack reference Example: slack.
         param_schema (ApiResponseActionResponseDataParamSchemaType0 | None): Parameter schema (StackStorm-style with
@@ -87,6 +91,8 @@ class ApiResponseActionResponseData:
     is_adhoc: bool
     label: str
     out_schema: ApiResponseActionResponseDataOutSchemaType0 | None
+    output_format: OutputFormat
+    output_policy: OutputPolicy
     pack: int
     pack_ref: str
     param_schema: ApiResponseActionResponseDataParamSchemaType0 | None
@@ -142,6 +148,10 @@ class ApiResponseActionResponseData:
             out_schema = self.out_schema.to_dict()
         else:
             out_schema = self.out_schema
+
+        output_format = self.output_format.value
+
+        output_policy = self.output_policy.to_dict()
 
         pack = self.pack
 
@@ -272,6 +282,8 @@ class ApiResponseActionResponseData:
                 "is_adhoc": is_adhoc,
                 "label": label,
                 "out_schema": out_schema,
+                "output_format": output_format,
+                "output_policy": output_policy,
                 "pack": pack,
                 "pack_ref": pack_ref,
                 "param_schema": param_schema,
@@ -333,6 +345,7 @@ class ApiResponseActionResponseData:
         from ..models.api_response_action_response_data_worker_selector import (
             ApiResponseActionResponseDataWorkerSelector,
         )
+        from ..models.output_policy import OutputPolicy
         from ..models.worker_affinity import WorkerAffinity
         from ..models.worker_toleration import WorkerToleration
 
@@ -369,6 +382,10 @@ class ApiResponseActionResponseData:
             return cast(ApiResponseActionResponseDataOutSchemaType0 | None, data)
 
         out_schema = _parse_out_schema(d.pop("out_schema"))
+
+        output_format = OutputFormat(d.pop("output_format"))
+
+        output_policy = OutputPolicy.from_dict(d.pop("output_policy"))
 
         pack = d.pop("pack")
 
@@ -593,6 +610,8 @@ class ApiResponseActionResponseData:
             is_adhoc=is_adhoc,
             label=label,
             out_schema=out_schema,
+            output_format=output_format,
+            output_policy=output_policy,
             pack=pack,
             pack_ref=pack_ref,
             param_schema=param_schema,

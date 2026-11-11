@@ -15,6 +15,9 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.execution_response_config import ExecutionResponseConfig
     from ..models.execution_response_result import ExecutionResponseResult
+    from ..models.execution_response_revealed_output_channels_type_0 import (
+        ExecutionResponseRevealedOutputChannelsType0,
+    )
     from ..models.execution_response_worker_affinity_type_0 import (
         ExecutionResponseWorkerAffinityType0,
     )
@@ -54,6 +57,8 @@ class ExecutionResponse:
         parent (int | None | Unset): Parent execution ID (for nested/child executions) Example: 1.
         permission_set_refs (list[str] | Unset): Permission set refs embedded in the execution-scoped API token.
             Example: ['core.agent_reader'].
+        revealed_output_channels (ExecutionResponseRevealedOutputChannelsType0 | None | Unset): Explicitly requested
+            original channel values, separate from public projections.
         schema_binding (Any | None | Unset):
         started_at (datetime.datetime | None | Unset): When the execution actually started running (worker picked it
             up).
@@ -88,6 +93,9 @@ class ExecutionResponse:
     original_execution: int | None | Unset = UNSET
     parent: int | None | Unset = UNSET
     permission_set_refs: list[str] | Unset = UNSET
+    revealed_output_channels: (
+        ExecutionResponseRevealedOutputChannelsType0 | None | Unset
+    ) = UNSET
     schema_binding: Any | None | Unset = UNSET
     started_at: datetime.datetime | None | Unset = UNSET
     timeout_seconds: int | None | Unset = UNSET
@@ -102,6 +110,9 @@ class ExecutionResponse:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.execution_response_revealed_output_channels_type_0 import (
+            ExecutionResponseRevealedOutputChannelsType0,
+        )
         from ..models.execution_response_worker_affinity_type_0 import (
             ExecutionResponseWorkerAffinityType0,
         )
@@ -173,6 +184,16 @@ class ExecutionResponse:
         permission_set_refs: list[str] | Unset = UNSET
         if not isinstance(self.permission_set_refs, Unset):
             permission_set_refs = self.permission_set_refs
+
+        revealed_output_channels: dict[str, Any] | None | Unset
+        if isinstance(self.revealed_output_channels, Unset):
+            revealed_output_channels = UNSET
+        elif isinstance(
+            self.revealed_output_channels, ExecutionResponseRevealedOutputChannelsType0
+        ):
+            revealed_output_channels = self.revealed_output_channels.to_dict()
+        else:
+            revealed_output_channels = self.revealed_output_channels
 
         schema_binding: Any | None | Unset
         if isinstance(self.schema_binding, Unset):
@@ -273,6 +294,8 @@ class ExecutionResponse:
             field_dict["parent"] = parent
         if permission_set_refs is not UNSET:
             field_dict["permission_set_refs"] = permission_set_refs
+        if revealed_output_channels is not UNSET:
+            field_dict["revealed_output_channels"] = revealed_output_channels
         if schema_binding is not UNSET:
             field_dict["schema_binding"] = schema_binding
         if started_at is not UNSET:
@@ -298,6 +321,9 @@ class ExecutionResponse:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.execution_response_config import ExecutionResponseConfig
         from ..models.execution_response_result import ExecutionResponseResult
+        from ..models.execution_response_revealed_output_channels_type_0 import (
+            ExecutionResponseRevealedOutputChannelsType0,
+        )
         from ..models.execution_response_worker_affinity_type_0 import (
             ExecutionResponseWorkerAffinityType0,
         )
@@ -406,6 +432,31 @@ class ExecutionResponse:
         parent = _parse_parent(d.pop("parent", UNSET))
 
         permission_set_refs = cast(list[str], d.pop("permission_set_refs", UNSET))
+
+        def _parse_revealed_output_channels(
+            data: object,
+        ) -> ExecutionResponseRevealedOutputChannelsType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                revealed_output_channels_type_0 = (
+                    ExecutionResponseRevealedOutputChannelsType0.from_dict(data)
+                )
+
+                return revealed_output_channels_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                ExecutionResponseRevealedOutputChannelsType0 | None | Unset, data
+            )
+
+        revealed_output_channels = _parse_revealed_output_channels(
+            d.pop("revealed_output_channels", UNSET)
+        )
 
         def _parse_schema_binding(data: object) -> Any | None | Unset:
             if data is None:
@@ -571,6 +622,7 @@ class ExecutionResponse:
             original_execution=original_execution,
             parent=parent,
             permission_set_refs=permission_set_refs,
+            revealed_output_channels=revealed_output_channels,
             schema_binding=schema_binding,
             started_at=started_at,
             timeout_seconds=timeout_seconds,

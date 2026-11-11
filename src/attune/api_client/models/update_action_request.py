@@ -7,6 +7,7 @@ from attrs import define as _attrs_define
 from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
+from ..models.output_format import OutputFormat
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from ..models.log_retention_limit_patch_type_1 import LogRetentionLimitPatchType1
     from ..models.log_retention_policy_patch_type_0 import LogRetentionPolicyPatchType0
     from ..models.log_retention_policy_patch_type_1 import LogRetentionPolicyPatchType1
+    from ..models.output_policy import OutputPolicy
     from ..models.runtime_version_constraint_patch_type_0 import (
         RuntimeVersionConstraintPatchType0,
     )
@@ -60,6 +62,8 @@ class UpdateActionRequest:
         log_retention_limit (LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset):
         log_retention_policy (LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset):
         out_schema (None | Unset | UpdateActionRequestOutSchemaType0): Output schema
+        output_format (None | OutputFormat | Unset):
+        output_policy (None | OutputPolicy | Unset):
         param_schema (None | Unset | UpdateActionRequestParamSchemaType0): Parameter schema (StackStorm-style with
             inline required/secret)
         reference_allowed_pack_refs (list[str] | None | Unset): Replace the restricted visibility allow-list. Example:
@@ -98,6 +102,8 @@ class UpdateActionRequest:
         LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset
     ) = UNSET
     out_schema: None | Unset | UpdateActionRequestOutSchemaType0 = UNSET
+    output_format: None | OutputFormat | Unset = UNSET
+    output_policy: None | OutputPolicy | Unset = UNSET
     param_schema: None | Unset | UpdateActionRequestParamSchemaType0 = UNSET
     reference_allowed_pack_refs: list[str] | None | Unset = UNSET
     reference_visibility: ActionReferenceVisibility | None | Unset = UNSET
@@ -132,6 +138,7 @@ class UpdateActionRequest:
         from ..models.log_retention_policy_patch_type_1 import (
             LogRetentionPolicyPatchType1,
         )
+        from ..models.output_policy import OutputPolicy
         from ..models.runtime_version_constraint_patch_type_0 import (
             RuntimeVersionConstraintPatchType0,
         )
@@ -244,6 +251,22 @@ class UpdateActionRequest:
             out_schema = self.out_schema.to_dict()
         else:
             out_schema = self.out_schema
+
+        output_format: None | str | Unset
+        if isinstance(self.output_format, Unset):
+            output_format = UNSET
+        elif isinstance(self.output_format, OutputFormat):
+            output_format = self.output_format.value
+        else:
+            output_format = self.output_format
+
+        output_policy: dict[str, Any] | None | Unset
+        if isinstance(self.output_policy, Unset):
+            output_policy = UNSET
+        elif isinstance(self.output_policy, OutputPolicy):
+            output_policy = self.output_policy.to_dict()
+        else:
+            output_policy = self.output_policy
 
         param_schema: dict[str, Any] | None | Unset
         if isinstance(self.param_schema, Unset):
@@ -372,6 +395,10 @@ class UpdateActionRequest:
             field_dict["log_retention_policy"] = log_retention_policy
         if out_schema is not UNSET:
             field_dict["out_schema"] = out_schema
+        if output_format is not UNSET:
+            field_dict["output_format"] = output_format
+        if output_policy is not UNSET:
+            field_dict["output_policy"] = output_policy
         if param_schema is not UNSET:
             field_dict["param_schema"] = param_schema
         if reference_allowed_pack_refs is not UNSET:
@@ -411,6 +438,7 @@ class UpdateActionRequest:
         from ..models.log_retention_policy_patch_type_1 import (
             LogRetentionPolicyPatchType1,
         )
+        from ..models.output_policy import OutputPolicy
         from ..models.runtime_version_constraint_patch_type_0 import (
             RuntimeVersionConstraintPatchType0,
         )
@@ -679,6 +707,40 @@ class UpdateActionRequest:
 
         out_schema = _parse_out_schema(d.pop("out_schema", UNSET))
 
+        def _parse_output_format(data: object) -> None | OutputFormat | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                output_format_type_1 = OutputFormat(data)
+
+                return output_format_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | OutputFormat | Unset, data)
+
+        output_format = _parse_output_format(d.pop("output_format", UNSET))
+
+        def _parse_output_policy(data: object) -> None | OutputPolicy | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                output_policy_type_1 = OutputPolicy.from_dict(data)
+
+                return output_policy_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | OutputPolicy | Unset, data)
+
+        output_policy = _parse_output_policy(d.pop("output_policy", UNSET))
+
         def _parse_param_schema(
             data: object,
         ) -> None | Unset | UpdateActionRequestParamSchemaType0:
@@ -940,6 +1002,8 @@ class UpdateActionRequest:
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
             out_schema=out_schema,
+            output_format=output_format,
+            output_policy=output_policy,
             param_schema=param_schema,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
             reference_visibility=reference_visibility,
