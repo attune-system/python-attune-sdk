@@ -53,8 +53,6 @@ class TriggerResponse:
         retired_at (datetime.datetime | None | Unset):
         sensor (int | None | Unset): Sensor ID (optional — webhook triggers have no sensor) Example: 1.
         sensor_ref (None | str | Unset): Sensor reference (optional) Example: core.timer_sensor.
-        webhook_key (None | str | Unset): Webhook key (only present if webhooks are enabled) Example:
-            wh_k7j2n9p4m8q1r5w3x6z0a2b5c8d1e4f7g9h2.
     """
 
     created: datetime.datetime
@@ -76,7 +74,6 @@ class TriggerResponse:
     retired_at: datetime.datetime | None | Unset = UNSET
     sensor: int | None | Unset = UNSET
     sensor_ref: None | str | Unset = UNSET
-    webhook_key: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -168,12 +165,6 @@ class TriggerResponse:
         else:
             sensor_ref = self.sensor_ref
 
-        webhook_key: None | str | Unset
-        if isinstance(self.webhook_key, Unset):
-            webhook_key = UNSET
-        else:
-            webhook_key = self.webhook_key
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -206,8 +197,6 @@ class TriggerResponse:
             field_dict["sensor"] = sensor
         if sensor_ref is not UNSET:
             field_dict["sensor_ref"] = sensor_ref
-        if webhook_key is not UNSET:
-            field_dict["webhook_key"] = webhook_key
 
         return field_dict
 
@@ -357,15 +346,6 @@ class TriggerResponse:
 
         sensor_ref = _parse_sensor_ref(d.pop("sensor_ref", UNSET))
 
-        def _parse_webhook_key(data: object) -> None | str | Unset:
-            if data is None:
-                return data
-            if isinstance(data, Unset):
-                return data
-            return cast(None | str | Unset, data)
-
-        webhook_key = _parse_webhook_key(d.pop("webhook_key", UNSET))
-
         trigger_response = cls(
             created=created,
             enabled=enabled,
@@ -386,7 +366,6 @@ class TriggerResponse:
             retired_at=retired_at,
             sensor=sensor,
             sensor_ref=sensor_ref,
-            webhook_key=webhook_key,
         )
 
         trigger_response.additional_properties = d

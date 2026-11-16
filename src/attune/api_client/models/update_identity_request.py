@@ -17,9 +17,9 @@ class UpdateIdentityRequest:
     """
     Attributes:
         attributes (Any | None | Unset):
-        display_name (None | str | Unset):
-        frozen (bool | None | Unset):
-        password (None | str | Unset):
+        display_name (None | str | Unset): Profile field; requires identities:update on the target.
+        frozen (bool | None | Unset): Administrative freeze state; requires identities:manage on the target.
+        password (None | str | Unset): Password reset; requires identities:manage on the target.
     """
 
     attributes: Any | None | Unset = UNSET

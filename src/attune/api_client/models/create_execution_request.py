@@ -40,8 +40,9 @@ class CreateExecutionRequest:
             execution.
             Omit to inherit the action default. Example: 10.
         artifact_retention_policy (None | RetentionPolicyType | Unset):
-        env_vars (CreateExecutionRequestEnvVarsType0 | None | Unset): Environment overrides for this execution. ATTUNE_
-            names are reserved for internal use. Example: {'DEBUG': 'true', 'LOG_LEVEL': 'info'}.
+        env_vars (CreateExecutionRequestEnvVarsType0 | None | Unset): Caller environment values; names must be declared
+            in the captured runtime execution_config.permitted_caller_env. Startup, search-path and ATTUNE_ controls are
+            forbidden. Example: {'DEBUG': 'true', 'LOG_LEVEL': 'info'}.
         parameters (CreateExecutionRequestParametersType0 | None | Unset): Execution parameters/configuration
         permission_set_refs (list[str] | None | Unset): Permission set refs to apply to this execution's API token. Omit
             to use
