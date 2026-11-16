@@ -16,6 +16,9 @@ if TYPE_CHECKING:
     from ..models.api_response_execution_response_data_config import (
         ApiResponseExecutionResponseDataConfig,
     )
+    from ..models.api_response_execution_response_data_log_delivery_type_0 import (
+        ApiResponseExecutionResponseDataLogDeliveryType0,
+    )
     from ..models.api_response_execution_response_data_result import (
         ApiResponseExecutionResponseDataResult,
     )
@@ -57,6 +60,8 @@ class ApiResponseExecutionResponseData:
         artifact_retention_policy (None | RetentionPolicyType | Unset):
         enforcement (int | None | Unset): Enforcement ID (rule enforcement that triggered this) Example: 1.
         executor (int | None | Unset): Identity ID that initiated this execution Example: 1.
+        log_delivery (ApiResponseExecutionResponseDataLogDeliveryType0 | None | Unset): Per-stream delivery
+            availability; terminal execution status does not imply Ready logs.
         original_execution (int | None | Unset): ID of the original execution if this execution is a retry. Example: 1.
         parent (int | None | Unset): Parent execution ID (for nested/child executions) Example: 1.
         permission_set_refs (list[str] | Unset): Permission set refs embedded in the execution-scoped API token.
@@ -94,6 +99,9 @@ class ApiResponseExecutionResponseData:
     artifact_retention_policy: None | RetentionPolicyType | Unset = UNSET
     enforcement: int | None | Unset = UNSET
     executor: int | None | Unset = UNSET
+    log_delivery: ApiResponseExecutionResponseDataLogDeliveryType0 | None | Unset = (
+        UNSET
+    )
     original_execution: int | None | Unset = UNSET
     parent: int | None | Unset = UNSET
     permission_set_refs: list[str] | Unset = UNSET
@@ -120,6 +128,9 @@ class ApiResponseExecutionResponseData:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.api_response_execution_response_data_log_delivery_type_0 import (
+            ApiResponseExecutionResponseDataLogDeliveryType0,
+        )
         from ..models.api_response_execution_response_data_revealed_output_channels_type_0 import (
             ApiResponseExecutionResponseDataRevealedOutputChannelsType0,
         )
@@ -178,6 +189,16 @@ class ApiResponseExecutionResponseData:
             executor = UNSET
         else:
             executor = self.executor
+
+        log_delivery: dict[str, Any] | None | Unset
+        if isinstance(self.log_delivery, Unset):
+            log_delivery = UNSET
+        elif isinstance(
+            self.log_delivery, ApiResponseExecutionResponseDataLogDeliveryType0
+        ):
+            log_delivery = self.log_delivery.to_dict()
+        else:
+            log_delivery = self.log_delivery
 
         original_execution: int | None | Unset
         if isinstance(self.original_execution, Unset):
@@ -305,6 +326,8 @@ class ApiResponseExecutionResponseData:
             field_dict["enforcement"] = enforcement
         if executor is not UNSET:
             field_dict["executor"] = executor
+        if log_delivery is not UNSET:
+            field_dict["log_delivery"] = log_delivery
         if original_execution is not UNSET:
             field_dict["original_execution"] = original_execution
         if parent is not UNSET:
@@ -338,6 +361,9 @@ class ApiResponseExecutionResponseData:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.api_response_execution_response_data_config import (
             ApiResponseExecutionResponseDataConfig,
+        )
+        from ..models.api_response_execution_response_data_log_delivery_type_0 import (
+            ApiResponseExecutionResponseDataLogDeliveryType0,
         )
         from ..models.api_response_execution_response_data_result import (
             ApiResponseExecutionResponseDataResult,
@@ -431,6 +457,29 @@ class ApiResponseExecutionResponseData:
             return cast(int | None | Unset, data)
 
         executor = _parse_executor(d.pop("executor", UNSET))
+
+        def _parse_log_delivery(
+            data: object,
+        ) -> ApiResponseExecutionResponseDataLogDeliveryType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                log_delivery_type_0 = (
+                    ApiResponseExecutionResponseDataLogDeliveryType0.from_dict(data)
+                )
+
+                return log_delivery_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                ApiResponseExecutionResponseDataLogDeliveryType0 | None | Unset, data
+            )
+
+        log_delivery = _parse_log_delivery(d.pop("log_delivery", UNSET))
 
         def _parse_original_execution(data: object) -> int | None | Unset:
             if data is None:
@@ -654,6 +703,7 @@ class ApiResponseExecutionResponseData:
             artifact_retention_policy=artifact_retention_policy,
             enforcement=enforcement,
             executor=executor,
+            log_delivery=log_delivery,
             original_execution=original_execution,
             parent=parent,
             permission_set_refs=permission_set_refs,

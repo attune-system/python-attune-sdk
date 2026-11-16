@@ -130,6 +130,9 @@ from .api_response_execution_response_data import ApiResponseExecutionResponseDa
 from .api_response_execution_response_data_config import (
     ApiResponseExecutionResponseDataConfig,
 )
+from .api_response_execution_response_data_log_delivery_type_0 import (
+    ApiResponseExecutionResponseDataLogDeliveryType0,
+)
 from .api_response_execution_response_data_result import (
     ApiResponseExecutionResponseDataResult,
 )
@@ -323,6 +326,12 @@ from .api_response_vec_workflow_task_wait_response import (
 from .api_response_vec_workflow_task_wait_response_data_item import (
     ApiResponseVecWorkflowTaskWaitResponseDataItem,
 )
+from .api_response_webhook_management_response import (
+    ApiResponseWebhookManagementResponse,
+)
+from .api_response_webhook_management_response_data import (
+    ApiResponseWebhookManagementResponseData,
+)
 from .api_response_webhook_receiver_response import ApiResponseWebhookReceiverResponse
 from .api_response_webhook_receiver_response_data import (
     ApiResponseWebhookReceiverResponseData,
@@ -466,6 +475,9 @@ from .cancel_execution_response_200 import CancelExecutionResponse200
 from .cancel_execution_response_200_data import CancelExecutionResponse200Data
 from .cancel_execution_response_200_data_config import (
     CancelExecutionResponse200DataConfig,
+)
+from .cancel_execution_response_200_data_log_delivery_type_0 import (
+    CancelExecutionResponse200DataLogDeliveryType0,
 )
 from .cancel_execution_response_200_data_result import (
     CancelExecutionResponse200DataResult,
@@ -777,6 +789,7 @@ from .execution_options_authority_source import ExecutionOptionsAuthoritySource
 from .execution_reschedule_response import ExecutionRescheduleResponse
 from .execution_response import ExecutionResponse
 from .execution_response_config import ExecutionResponseConfig
+from .execution_response_log_delivery_type_0 import ExecutionResponseLogDeliveryType0
 from .execution_response_result import ExecutionResponseResult
 from .execution_response_revealed_output_channels_type_0 import (
     ExecutionResponseRevealedOutputChannelsType0,
@@ -841,6 +854,9 @@ from .get_execution_options_response_200_data import GetExecutionOptionsResponse
 from .get_execution_response_200 import GetExecutionResponse200
 from .get_execution_response_200_data import GetExecutionResponse200Data
 from .get_execution_response_200_data_config import GetExecutionResponse200DataConfig
+from .get_execution_response_200_data_log_delivery_type_0 import (
+    GetExecutionResponse200DataLogDeliveryType0,
+)
 from .get_execution_response_200_data_result import GetExecutionResponse200DataResult
 from .get_execution_response_200_data_revealed_output_channels_type_0 import (
     GetExecutionResponse200DataRevealedOutputChannelsType0,
@@ -1001,6 +1017,8 @@ from .list_workflow_task_waits_response_200 import ListWorkflowTaskWaitsResponse
 from .list_workflow_task_waits_response_200_data_item import (
     ListWorkflowTaskWaitsResponse200DataItem,
 )
+from .log_availability import LogAvailability
+from .log_availability_state import LogAvailabilityState
 from .log_retention_limit_patch_type_0 import LogRetentionLimitPatchType0
 from .log_retention_limit_patch_type_0_op import LogRetentionLimitPatchType0Op
 from .log_retention_limit_patch_type_1 import LogRetentionLimitPatchType1
@@ -1009,6 +1027,7 @@ from .log_retention_policy_patch_type_0 import LogRetentionPolicyPatchType0
 from .log_retention_policy_patch_type_0_op import LogRetentionPolicyPatchType0Op
 from .log_retention_policy_patch_type_1 import LogRetentionPolicyPatchType1
 from .log_retention_policy_patch_type_1_op import LogRetentionPolicyPatchType1Op
+from .login_exchange_request import LoginExchangeRequest
 from .login_request import LoginRequest
 from .login_response_200 import LoginResponse200
 from .login_response_200_data import LoginResponse200Data
@@ -1600,6 +1619,7 @@ from .validate_pack_workflows_response_200_data_errors import (
     ValidatePackWorkflowsResponse200DataErrors,
 )
 from .validation_results import ValidationResults
+from .webhook_management_response import WebhookManagementResponse
 from .webhook_receiver_request import WebhookReceiverRequest
 from .webhook_receiver_response import WebhookReceiverResponse
 from .work_queue_batch_mode import WorkQueueBatchMode
@@ -1712,6 +1732,7 @@ __all__ = (
     "ApiResponseExecutionResponse",
     "ApiResponseExecutionResponseData",
     "ApiResponseExecutionResponseDataConfig",
+    "ApiResponseExecutionResponseDataLogDeliveryType0",
     "ApiResponseExecutionResponseDataResult",
     "ApiResponseExecutionResponseDataRevealedOutputChannelsType0",
     "ApiResponseExecutionResponseDataWorkerAffinityType0",
@@ -1803,6 +1824,8 @@ __all__ = (
     "ApiResponseVecWorkflowCacheIterationResponseDataItem",
     "ApiResponseVecWorkflowTaskWaitResponse",
     "ApiResponseVecWorkflowTaskWaitResponseDataItem",
+    "ApiResponseWebhookManagementResponse",
+    "ApiResponseWebhookManagementResponseData",
     "ApiResponseWebhookReceiverResponse",
     "ApiResponseWebhookReceiverResponseData",
     "ApiResponseWorkQueueItemResponse",
@@ -1907,6 +1930,7 @@ __all__ = (
     "CancelExecutionResponse200",
     "CancelExecutionResponse200Data",
     "CancelExecutionResponse200DataConfig",
+    "CancelExecutionResponse200DataLogDeliveryType0",
     "CancelExecutionResponse200DataResult",
     "CancelExecutionResponse200DataRevealedOutputChannelsType0",
     "CancelExecutionResponse200DataWorkerAffinityType0",
@@ -2107,6 +2131,7 @@ __all__ = (
     "ExecutionRescheduleResponse",
     "ExecutionResponse",
     "ExecutionResponseConfig",
+    "ExecutionResponseLogDeliveryType0",
     "ExecutionResponseResult",
     "ExecutionResponseRevealedOutputChannelsType0",
     "ExecutionResponseWorkerAffinityType0",
@@ -2147,6 +2172,7 @@ __all__ = (
     "GetExecutionResponse200",
     "GetExecutionResponse200Data",
     "GetExecutionResponse200DataConfig",
+    "GetExecutionResponse200DataLogDeliveryType0",
     "GetExecutionResponse200DataResult",
     "GetExecutionResponse200DataRevealedOutputChannelsType0",
     "GetExecutionResponse200DataWorkerAffinityType0",
@@ -2255,6 +2281,8 @@ __all__ = (
     "ListWorkflowCacheIterationsResponse200DataItem",
     "ListWorkflowTaskWaitsResponse200",
     "ListWorkflowTaskWaitsResponse200DataItem",
+    "LogAvailability",
+    "LogAvailabilityState",
     "LogRetentionLimitPatchType0",
     "LogRetentionLimitPatchType0Op",
     "LogRetentionLimitPatchType1",
@@ -2263,6 +2291,7 @@ __all__ = (
     "LogRetentionPolicyPatchType0Op",
     "LogRetentionPolicyPatchType1",
     "LogRetentionPolicyPatchType1Op",
+    "LoginExchangeRequest",
     "LoginRequest",
     "LoginResponse200",
     "LoginResponse200Data",
@@ -2646,6 +2675,7 @@ __all__ = (
     "ValidatePackWorkflowsResponse200Data",
     "ValidatePackWorkflowsResponse200DataErrors",
     "ValidationResults",
+    "WebhookManagementResponse",
     "WebhookReceiverRequest",
     "WebhookReceiverResponse",
     "WorkQueueBatchMode",
