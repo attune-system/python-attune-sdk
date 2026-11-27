@@ -10,6 +10,8 @@ from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.output_format import OutputFormat
+from ..models.parameter_delivery import ParameterDelivery
+from ..models.parameter_format import ParameterFormat
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
@@ -22,6 +24,13 @@ if TYPE_CHECKING:
         ActionResponseRequiredWorkerRuntimes,
     )
     from ..models.action_response_worker_selector import ActionResponseWorkerSelector
+    from ..models.argument_preview import ArgumentPreview
+    from ..models.launch_spec_type_0 import LaunchSpecType0
+    from ..models.launch_spec_type_1 import LaunchSpecType1
+    from ..models.launch_spec_type_2 import LaunchSpecType2
+    from ..models.launch_spec_type_3 import LaunchSpecType3
+    from ..models.launch_spec_type_4 import LaunchSpecType4
+    from ..models.launch_spec_type_5 import LaunchSpecType5
     from ..models.output_policy import OutputPolicy
     from ..models.worker_affinity import WorkerAffinity
     from ..models.worker_toleration import WorkerToleration
@@ -39,7 +48,6 @@ class ActionResponse:
             False.
         created (datetime.datetime): Creation timestamp Example: 2024-01-13T10:30:00Z.
         enabled (bool): Whether this action is enabled Example: True.
-        entrypoint (str): Entry point Example: /actions/slack/post_message.py.
         id (int): Action ID Example: 1.
         is_adhoc (bool): Whether this is an ad-hoc action (not from pack installation)
         label (str): Human-readable label Example: Post Message to Slack.
@@ -50,15 +58,22 @@ class ActionResponse:
         pack_ref (str): Pack reference Example: slack.
         param_schema (ActionResponseParamSchemaType0 | None): Parameter schema (StackStorm-style with inline
             required/secret)
+        parameter_delivery (ParameterDelivery): How parameters should be delivered to an action
+        parameter_format (ParameterFormat): Format for parameter serialization
         ref (str): Unique reference identifier Example: slack.post_message.
         reference_visibility (ActionReferenceVisibility):
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
+        argument_preview (list[ArgumentPreview] | None | Unset): Definition-only ordering preview; never contains
+            execution inputs.
         artifact_retention_limit (int | None | Unset): Per-action retention limit override for non-log artifacts created
             by executions. Example: 10.
         artifact_retention_policy (None | RetentionPolicyType | Unset):
         default_execution_permission_set_refs (list[str] | Unset): Default permission set refs used when executions do
             not explicitly override token permissions. Example: ['core.agent_reader'].
         description (None | str | Unset): Action description Example: Posts a message to a Slack channel.
+        entrypoint (None | str | Unset): Entry point Example: /actions/slack/post_message.py.
+        launch (LaunchSpecType0 | LaunchSpecType1 | LaunchSpecType2 | LaunchSpecType3 | LaunchSpecType4 |
+            LaunchSpecType5 | None | Unset):
         log_retention_limit (int | None | Unset): Per-action retention limit override for stdout/stderr execution log
             artifacts. Example: 4.
         log_retention_policy (None | RetentionPolicyType | Unset):
@@ -82,7 +97,6 @@ class ActionResponse:
 
     created: datetime.datetime
     enabled: bool
-    entrypoint: str
     id: int
     is_adhoc: bool
     label: str
@@ -92,14 +106,28 @@ class ActionResponse:
     pack: int
     pack_ref: str
     param_schema: ActionResponseParamSchemaType0 | None
+    parameter_delivery: ParameterDelivery
+    parameter_format: ParameterFormat
     ref: str
     reference_visibility: ActionReferenceVisibility
     updated: datetime.datetime
     accesses_mcp: bool = False
+    argument_preview: list[ArgumentPreview] | None | Unset = UNSET
     artifact_retention_limit: int | None | Unset = UNSET
     artifact_retention_policy: None | RetentionPolicyType | Unset = UNSET
     default_execution_permission_set_refs: list[str] | Unset = UNSET
     description: None | str | Unset = UNSET
+    entrypoint: None | str | Unset = UNSET
+    launch: (
+        LaunchSpecType0
+        | LaunchSpecType1
+        | LaunchSpecType2
+        | LaunchSpecType3
+        | LaunchSpecType4
+        | LaunchSpecType5
+        | None
+        | Unset
+    ) = UNSET
     log_retention_limit: int | None | Unset = UNSET
     log_retention_policy: None | RetentionPolicyType | Unset = UNSET
     reference_allowed_pack_refs: list[str] | Unset = UNSET
@@ -122,14 +150,18 @@ class ActionResponse:
         from ..models.action_response_param_schema_type_0 import (
             ActionResponseParamSchemaType0,
         )
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
 
         accesses_mcp = self.accesses_mcp
 
         created = self.created.isoformat()
 
         enabled = self.enabled
-
-        entrypoint = self.entrypoint
 
         id = self.id
 
@@ -157,11 +189,29 @@ class ActionResponse:
         else:
             param_schema = self.param_schema
 
+        parameter_delivery = self.parameter_delivery.value
+
+        parameter_format = self.parameter_format.value
+
         ref = self.ref
 
         reference_visibility = self.reference_visibility.value
 
         updated = self.updated.isoformat()
+
+        argument_preview: list[dict[str, Any]] | None | Unset
+        if isinstance(self.argument_preview, Unset):
+            argument_preview = UNSET
+        elif isinstance(self.argument_preview, list):
+            argument_preview = []
+            for argument_preview_type_0_item_data in self.argument_preview:
+                argument_preview_type_0_item = (
+                    argument_preview_type_0_item_data.to_dict()
+                )
+                argument_preview.append(argument_preview_type_0_item)
+
+        else:
+            argument_preview = self.argument_preview
 
         artifact_retention_limit: int | None | Unset
         if isinstance(self.artifact_retention_limit, Unset):
@@ -188,6 +238,27 @@ class ActionResponse:
             description = UNSET
         else:
             description = self.description
+
+        entrypoint: None | str | Unset
+        if isinstance(self.entrypoint, Unset):
+            entrypoint = UNSET
+        else:
+            entrypoint = self.entrypoint
+
+        launch: dict[str, Any] | None | Unset
+        if isinstance(self.launch, Unset):
+            launch = UNSET
+        elif (
+            isinstance(self.launch, LaunchSpecType0)
+            or isinstance(self.launch, LaunchSpecType1)
+            or isinstance(self.launch, LaunchSpecType2)
+            or isinstance(self.launch, LaunchSpecType3)
+            or isinstance(self.launch, LaunchSpecType4)
+            or isinstance(self.launch, LaunchSpecType5)
+        ):
+            launch = self.launch.to_dict()
+        else:
+            launch = self.launch
 
         log_retention_limit: int | None | Unset
         if isinstance(self.log_retention_limit, Unset):
@@ -271,7 +342,6 @@ class ActionResponse:
                 "accesses_mcp": accesses_mcp,
                 "created": created,
                 "enabled": enabled,
-                "entrypoint": entrypoint,
                 "id": id,
                 "is_adhoc": is_adhoc,
                 "label": label,
@@ -281,11 +351,15 @@ class ActionResponse:
                 "pack": pack,
                 "pack_ref": pack_ref,
                 "param_schema": param_schema,
+                "parameter_delivery": parameter_delivery,
+                "parameter_format": parameter_format,
                 "ref": ref,
                 "reference_visibility": reference_visibility,
                 "updated": updated,
             }
         )
+        if argument_preview is not UNSET:
+            field_dict["argument_preview"] = argument_preview
         if artifact_retention_limit is not UNSET:
             field_dict["artifact_retention_limit"] = artifact_retention_limit
         if artifact_retention_policy is not UNSET:
@@ -296,6 +370,10 @@ class ActionResponse:
             )
         if description is not UNSET:
             field_dict["description"] = description
+        if entrypoint is not UNSET:
+            field_dict["entrypoint"] = entrypoint
+        if launch is not UNSET:
+            field_dict["launch"] = launch
         if log_retention_limit is not UNSET:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
@@ -339,6 +417,13 @@ class ActionResponse:
         from ..models.action_response_worker_selector import (
             ActionResponseWorkerSelector,
         )
+        from ..models.argument_preview import ArgumentPreview
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
         from ..models.output_policy import OutputPolicy
         from ..models.worker_affinity import WorkerAffinity
         from ..models.worker_toleration import WorkerToleration
@@ -349,8 +434,6 @@ class ActionResponse:
         created = datetime.datetime.fromisoformat(d.pop("created"))
 
         enabled = d.pop("enabled")
-
-        entrypoint = d.pop("entrypoint")
 
         id = d.pop("id")
 
@@ -396,11 +479,41 @@ class ActionResponse:
 
         param_schema = _parse_param_schema(d.pop("param_schema"))
 
+        parameter_delivery = ParameterDelivery(d.pop("parameter_delivery"))
+
+        parameter_format = ParameterFormat(d.pop("parameter_format"))
+
         ref = d.pop("ref")
 
         reference_visibility = ActionReferenceVisibility(d.pop("reference_visibility"))
 
         updated = datetime.datetime.fromisoformat(d.pop("updated"))
+
+        def _parse_argument_preview(
+            data: object,
+        ) -> list[ArgumentPreview] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                argument_preview_type_0 = []
+                _argument_preview_type_0 = data
+                for argument_preview_type_0_item_data in _argument_preview_type_0:
+                    argument_preview_type_0_item = ArgumentPreview.from_dict(
+                        argument_preview_type_0_item_data
+                    )
+
+                    argument_preview_type_0.append(argument_preview_type_0_item)
+
+                return argument_preview_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[ArgumentPreview] | None | Unset, data)
+
+        argument_preview = _parse_argument_preview(d.pop("argument_preview", UNSET))
 
         def _parse_artifact_retention_limit(data: object) -> int | None | Unset:
             if data is None:
@@ -446,6 +559,93 @@ class ActionResponse:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
+
+        def _parse_entrypoint(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        entrypoint = _parse_entrypoint(d.pop("entrypoint", UNSET))
+
+        def _parse_launch(
+            data: object,
+        ) -> (
+            LaunchSpecType0
+            | LaunchSpecType1
+            | LaunchSpecType2
+            | LaunchSpecType3
+            | LaunchSpecType4
+            | LaunchSpecType5
+            | None
+            | Unset
+        ):
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_0 = LaunchSpecType0.from_dict(data)
+
+                return componentsschemas_launch_spec_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_1 = LaunchSpecType1.from_dict(data)
+
+                return componentsschemas_launch_spec_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_2 = LaunchSpecType2.from_dict(data)
+
+                return componentsschemas_launch_spec_type_2
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_3 = LaunchSpecType3.from_dict(data)
+
+                return componentsschemas_launch_spec_type_3
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_4 = LaunchSpecType4.from_dict(data)
+
+                return componentsschemas_launch_spec_type_4
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_5 = LaunchSpecType5.from_dict(data)
+
+                return componentsschemas_launch_spec_type_5
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                LaunchSpecType0
+                | LaunchSpecType1
+                | LaunchSpecType2
+                | LaunchSpecType3
+                | LaunchSpecType4
+                | LaunchSpecType5
+                | None
+                | Unset,
+                data,
+            )
+
+        launch = _parse_launch(d.pop("launch", UNSET))
 
         def _parse_log_retention_limit(data: object) -> int | None | Unset:
             if data is None:
@@ -585,7 +785,6 @@ class ActionResponse:
             accesses_mcp=accesses_mcp,
             created=created,
             enabled=enabled,
-            entrypoint=entrypoint,
             id=id,
             is_adhoc=is_adhoc,
             label=label,
@@ -595,13 +794,18 @@ class ActionResponse:
             pack=pack,
             pack_ref=pack_ref,
             param_schema=param_schema,
+            parameter_delivery=parameter_delivery,
+            parameter_format=parameter_format,
             ref=ref,
             reference_visibility=reference_visibility,
             updated=updated,
+            argument_preview=argument_preview,
             artifact_retention_limit=artifact_retention_limit,
             artifact_retention_policy=artifact_retention_policy,
             default_execution_permission_set_refs=default_execution_permission_set_refs,
             description=description,
+            entrypoint=entrypoint,
+            launch=launch,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
