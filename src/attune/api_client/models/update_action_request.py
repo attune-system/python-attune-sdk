@@ -8,9 +8,17 @@ from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
 from ..models.output_format import OutputFormat
+from ..models.parameter_delivery import ParameterDelivery
+from ..models.parameter_format import ParameterFormat
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.launch_spec_type_0 import LaunchSpecType0
+    from ..models.launch_spec_type_1 import LaunchSpecType1
+    from ..models.launch_spec_type_2 import LaunchSpecType2
+    from ..models.launch_spec_type_3 import LaunchSpecType3
+    from ..models.launch_spec_type_4 import LaunchSpecType4
+    from ..models.launch_spec_type_5 import LaunchSpecType5
     from ..models.log_retention_limit_patch_type_0 import LogRetentionLimitPatchType0
     from ..models.log_retention_limit_patch_type_1 import LogRetentionLimitPatchType1
     from ..models.log_retention_policy_patch_type_0 import LogRetentionPolicyPatchType0
@@ -59,6 +67,8 @@ class UpdateActionRequest:
         enabled (bool | None | Unset): Whether this action is enabled. Example: True.
         entrypoint (None | str | Unset): Entry point for action execution Example: /actions/slack/post_message_v2.py.
         label (None | str | Unset): Human-readable label Example: Post Message to Slack (Updated).
+        launch (LaunchSpecType0 | LaunchSpecType1 | LaunchSpecType2 | LaunchSpecType3 | LaunchSpecType4 |
+            LaunchSpecType5 | None | Unset):
         log_retention_limit (LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset):
         log_retention_policy (LogRetentionPolicyPatchType0 | LogRetentionPolicyPatchType1 | None | Unset):
         out_schema (None | Unset | UpdateActionRequestOutSchemaType0): Output schema
@@ -66,6 +76,8 @@ class UpdateActionRequest:
         output_policy (None | OutputPolicy | Unset):
         param_schema (None | Unset | UpdateActionRequestParamSchemaType0): Parameter schema (StackStorm-style with
             inline required/secret)
+        parameter_delivery (None | ParameterDelivery | Unset):
+        parameter_format (None | ParameterFormat | Unset):
         reference_allowed_pack_refs (list[str] | None | Unset): Replace the restricted visibility allow-list. Example:
             ['incident_response', 'deployments'].
         reference_visibility (ActionReferenceVisibility | None | Unset):
@@ -95,6 +107,16 @@ class UpdateActionRequest:
     enabled: bool | None | Unset = UNSET
     entrypoint: None | str | Unset = UNSET
     label: None | str | Unset = UNSET
+    launch: (
+        LaunchSpecType0
+        | LaunchSpecType1
+        | LaunchSpecType2
+        | LaunchSpecType3
+        | LaunchSpecType4
+        | LaunchSpecType5
+        | None
+        | Unset
+    ) = UNSET
     log_retention_limit: (
         LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset
     ) = UNSET
@@ -105,6 +127,8 @@ class UpdateActionRequest:
     output_format: None | OutputFormat | Unset = UNSET
     output_policy: None | OutputPolicy | Unset = UNSET
     param_schema: None | Unset | UpdateActionRequestParamSchemaType0 = UNSET
+    parameter_delivery: None | ParameterDelivery | Unset = UNSET
+    parameter_format: None | ParameterFormat | Unset = UNSET
     reference_allowed_pack_refs: list[str] | None | Unset = UNSET
     reference_visibility: ActionReferenceVisibility | None | Unset = UNSET
     required_worker_runtimes: (
@@ -126,6 +150,12 @@ class UpdateActionRequest:
     worker_tolerations: list[WorkerToleration] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
         from ..models.log_retention_limit_patch_type_0 import (
             LogRetentionLimitPatchType0,
         )
@@ -224,6 +254,21 @@ class UpdateActionRequest:
         else:
             label = self.label
 
+        launch: dict[str, Any] | None | Unset
+        if isinstance(self.launch, Unset):
+            launch = UNSET
+        elif (
+            isinstance(self.launch, LaunchSpecType0)
+            or isinstance(self.launch, LaunchSpecType1)
+            or isinstance(self.launch, LaunchSpecType2)
+            or isinstance(self.launch, LaunchSpecType3)
+            or isinstance(self.launch, LaunchSpecType4)
+            or isinstance(self.launch, LaunchSpecType5)
+        ):
+            launch = self.launch.to_dict()
+        else:
+            launch = self.launch
+
         log_retention_limit: dict[str, Any] | None | Unset
         if isinstance(self.log_retention_limit, Unset):
             log_retention_limit = UNSET
@@ -275,6 +320,22 @@ class UpdateActionRequest:
             param_schema = self.param_schema.to_dict()
         else:
             param_schema = self.param_schema
+
+        parameter_delivery: None | str | Unset
+        if isinstance(self.parameter_delivery, Unset):
+            parameter_delivery = UNSET
+        elif isinstance(self.parameter_delivery, ParameterDelivery):
+            parameter_delivery = self.parameter_delivery.value
+        else:
+            parameter_delivery = self.parameter_delivery
+
+        parameter_format: None | str | Unset
+        if isinstance(self.parameter_format, Unset):
+            parameter_format = UNSET
+        elif isinstance(self.parameter_format, ParameterFormat):
+            parameter_format = self.parameter_format.value
+        else:
+            parameter_format = self.parameter_format
 
         reference_allowed_pack_refs: list[str] | None | Unset
         if isinstance(self.reference_allowed_pack_refs, Unset):
@@ -389,6 +450,8 @@ class UpdateActionRequest:
             field_dict["entrypoint"] = entrypoint
         if label is not UNSET:
             field_dict["label"] = label
+        if launch is not UNSET:
+            field_dict["launch"] = launch
         if log_retention_limit is not UNSET:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
@@ -401,6 +464,10 @@ class UpdateActionRequest:
             field_dict["output_policy"] = output_policy
         if param_schema is not UNSET:
             field_dict["param_schema"] = param_schema
+        if parameter_delivery is not UNSET:
+            field_dict["parameter_delivery"] = parameter_delivery
+        if parameter_format is not UNSET:
+            field_dict["parameter_format"] = parameter_format
         if reference_allowed_pack_refs is not UNSET:
             field_dict["reference_allowed_pack_refs"] = reference_allowed_pack_refs
         if reference_visibility is not UNSET:
@@ -426,6 +493,12 @@ class UpdateActionRequest:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
         from ..models.log_retention_limit_patch_type_0 import (
             LogRetentionLimitPatchType0,
         )
@@ -610,6 +683,84 @@ class UpdateActionRequest:
 
         label = _parse_label(d.pop("label", UNSET))
 
+        def _parse_launch(
+            data: object,
+        ) -> (
+            LaunchSpecType0
+            | LaunchSpecType1
+            | LaunchSpecType2
+            | LaunchSpecType3
+            | LaunchSpecType4
+            | LaunchSpecType5
+            | None
+            | Unset
+        ):
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_0 = LaunchSpecType0.from_dict(data)
+
+                return componentsschemas_launch_spec_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_1 = LaunchSpecType1.from_dict(data)
+
+                return componentsschemas_launch_spec_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_2 = LaunchSpecType2.from_dict(data)
+
+                return componentsschemas_launch_spec_type_2
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_3 = LaunchSpecType3.from_dict(data)
+
+                return componentsschemas_launch_spec_type_3
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_4 = LaunchSpecType4.from_dict(data)
+
+                return componentsschemas_launch_spec_type_4
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_5 = LaunchSpecType5.from_dict(data)
+
+                return componentsschemas_launch_spec_type_5
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                LaunchSpecType0
+                | LaunchSpecType1
+                | LaunchSpecType2
+                | LaunchSpecType3
+                | LaunchSpecType4
+                | LaunchSpecType5
+                | None
+                | Unset,
+                data,
+            )
+
+        launch = _parse_launch(d.pop("launch", UNSET))
+
         def _parse_log_retention_limit(
             data: object,
         ) -> LogRetentionLimitPatchType0 | LogRetentionLimitPatchType1 | None | Unset:
@@ -761,6 +912,42 @@ class UpdateActionRequest:
             return cast(None | Unset | UpdateActionRequestParamSchemaType0, data)
 
         param_schema = _parse_param_schema(d.pop("param_schema", UNSET))
+
+        def _parse_parameter_delivery(data: object) -> None | ParameterDelivery | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                parameter_delivery_type_1 = ParameterDelivery(data)
+
+                return parameter_delivery_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ParameterDelivery | Unset, data)
+
+        parameter_delivery = _parse_parameter_delivery(
+            d.pop("parameter_delivery", UNSET)
+        )
+
+        def _parse_parameter_format(data: object) -> None | ParameterFormat | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                parameter_format_type_1 = ParameterFormat(data)
+
+                return parameter_format_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ParameterFormat | Unset, data)
+
+        parameter_format = _parse_parameter_format(d.pop("parameter_format", UNSET))
 
         def _parse_reference_allowed_pack_refs(
             data: object,
@@ -999,12 +1186,15 @@ class UpdateActionRequest:
             enabled=enabled,
             entrypoint=entrypoint,
             label=label,
+            launch=launch,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
             out_schema=out_schema,
             output_format=output_format,
             output_policy=output_policy,
             param_schema=param_schema,
+            parameter_delivery=parameter_delivery,
+            parameter_format=parameter_format,
             reference_allowed_pack_refs=reference_allowed_pack_refs,
             reference_visibility=reference_visibility,
             required_worker_runtimes=required_worker_runtimes,

@@ -21,7 +21,7 @@ class AuthSettingsResponse200:
     """Standard API response wrapper
 
     Attributes:
-        data (AuthSettingsResponse200Data): Public authentication settings for the login page.
+        data (AuthSettingsResponse200Data): Public authentication and branding settings for the installation.
         message (None | str | Unset): Optional message
     """
 

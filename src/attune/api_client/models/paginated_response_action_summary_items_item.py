@@ -9,10 +9,18 @@ from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..models.action_reference_visibility import ActionReferenceVisibility
+from ..models.parameter_delivery import ParameterDelivery
+from ..models.parameter_format import ParameterFormat
 from ..models.retention_policy_type import RetentionPolicyType
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.launch_spec_type_0 import LaunchSpecType0
+    from ..models.launch_spec_type_1 import LaunchSpecType1
+    from ..models.launch_spec_type_2 import LaunchSpecType2
+    from ..models.launch_spec_type_3 import LaunchSpecType3
+    from ..models.launch_spec_type_4 import LaunchSpecType4
+    from ..models.launch_spec_type_5 import LaunchSpecType5
     from ..models.paginated_response_action_summary_items_item_required_worker_runtimes import (
         PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes,
     )
@@ -35,10 +43,11 @@ class PaginatedResponseActionSummaryItemsItem:
             False.
         created (datetime.datetime): Creation timestamp Example: 2024-01-13T10:30:00Z.
         enabled (bool): Whether this action is enabled Example: True.
-        entrypoint (str): Entry point Example: /actions/slack/post_message.py.
         id (int): Action ID Example: 1.
         label (str): Human-readable label Example: Post Message to Slack.
         pack_ref (str): Pack reference Example: slack.
+        parameter_delivery (ParameterDelivery): How parameters should be delivered to an action
+        parameter_format (ParameterFormat): Format for parameter serialization
         ref (str): Unique reference identifier Example: slack.post_message.
         reference_visibility (ActionReferenceVisibility):
         updated (datetime.datetime): Last update timestamp Example: 2024-01-13T10:30:00Z.
@@ -48,6 +57,9 @@ class PaginatedResponseActionSummaryItemsItem:
         default_execution_permission_set_refs (list[str] | Unset): Default permission set refs used when executions do
             not explicitly override token permissions. Example: ['core.agent_reader'].
         description (None | str | Unset): Action description Example: Posts a message to a Slack channel.
+        entrypoint (None | str | Unset): Entry point Example: /actions/slack/post_message.py.
+        launch (LaunchSpecType0 | LaunchSpecType1 | LaunchSpecType2 | LaunchSpecType3 | LaunchSpecType4 |
+            LaunchSpecType5 | None | Unset):
         log_retention_limit (int | None | Unset): Per-action retention limit override for stdout/stderr execution log
             artifacts. Example: 4.
         log_retention_policy (None | RetentionPolicyType | Unset):
@@ -71,10 +83,11 @@ class PaginatedResponseActionSummaryItemsItem:
 
     created: datetime.datetime
     enabled: bool
-    entrypoint: str
     id: int
     label: str
     pack_ref: str
+    parameter_delivery: ParameterDelivery
+    parameter_format: ParameterFormat
     ref: str
     reference_visibility: ActionReferenceVisibility
     updated: datetime.datetime
@@ -83,6 +96,17 @@ class PaginatedResponseActionSummaryItemsItem:
     artifact_retention_policy: None | RetentionPolicyType | Unset = UNSET
     default_execution_permission_set_refs: list[str] | Unset = UNSET
     description: None | str | Unset = UNSET
+    entrypoint: None | str | Unset = UNSET
+    launch: (
+        LaunchSpecType0
+        | LaunchSpecType1
+        | LaunchSpecType2
+        | LaunchSpecType3
+        | LaunchSpecType4
+        | LaunchSpecType5
+        | None
+        | Unset
+    ) = UNSET
     log_retention_limit: int | None | Unset = UNSET
     log_retention_policy: None | RetentionPolicyType | Unset = UNSET
     reference_allowed_pack_refs: list[str] | Unset = UNSET
@@ -103,19 +127,28 @@ class PaginatedResponseActionSummaryItemsItem:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
+
         accesses_mcp = self.accesses_mcp
 
         created = self.created.isoformat()
 
         enabled = self.enabled
 
-        entrypoint = self.entrypoint
-
         id = self.id
 
         label = self.label
 
         pack_ref = self.pack_ref
+
+        parameter_delivery = self.parameter_delivery.value
+
+        parameter_format = self.parameter_format.value
 
         ref = self.ref
 
@@ -148,6 +181,27 @@ class PaginatedResponseActionSummaryItemsItem:
             description = UNSET
         else:
             description = self.description
+
+        entrypoint: None | str | Unset
+        if isinstance(self.entrypoint, Unset):
+            entrypoint = UNSET
+        else:
+            entrypoint = self.entrypoint
+
+        launch: dict[str, Any] | None | Unset
+        if isinstance(self.launch, Unset):
+            launch = UNSET
+        elif (
+            isinstance(self.launch, LaunchSpecType0)
+            or isinstance(self.launch, LaunchSpecType1)
+            or isinstance(self.launch, LaunchSpecType2)
+            or isinstance(self.launch, LaunchSpecType3)
+            or isinstance(self.launch, LaunchSpecType4)
+            or isinstance(self.launch, LaunchSpecType5)
+        ):
+            launch = self.launch.to_dict()
+        else:
+            launch = self.launch
 
         log_retention_limit: int | None | Unset
         if isinstance(self.log_retention_limit, Unset):
@@ -231,10 +285,11 @@ class PaginatedResponseActionSummaryItemsItem:
                 "accesses_mcp": accesses_mcp,
                 "created": created,
                 "enabled": enabled,
-                "entrypoint": entrypoint,
                 "id": id,
                 "label": label,
                 "pack_ref": pack_ref,
+                "parameter_delivery": parameter_delivery,
+                "parameter_format": parameter_format,
                 "ref": ref,
                 "reference_visibility": reference_visibility,
                 "updated": updated,
@@ -250,6 +305,10 @@ class PaginatedResponseActionSummaryItemsItem:
             )
         if description is not UNSET:
             field_dict["description"] = description
+        if entrypoint is not UNSET:
+            field_dict["entrypoint"] = entrypoint
+        if launch is not UNSET:
+            field_dict["launch"] = launch
         if log_retention_limit is not UNSET:
             field_dict["log_retention_limit"] = log_retention_limit
         if log_retention_policy is not UNSET:
@@ -281,6 +340,12 @@ class PaginatedResponseActionSummaryItemsItem:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.launch_spec_type_0 import LaunchSpecType0
+        from ..models.launch_spec_type_1 import LaunchSpecType1
+        from ..models.launch_spec_type_2 import LaunchSpecType2
+        from ..models.launch_spec_type_3 import LaunchSpecType3
+        from ..models.launch_spec_type_4 import LaunchSpecType4
+        from ..models.launch_spec_type_5 import LaunchSpecType5
         from ..models.paginated_response_action_summary_items_item_required_worker_runtimes import (
             PaginatedResponseActionSummaryItemsItemRequiredWorkerRuntimes,
         )
@@ -297,13 +362,15 @@ class PaginatedResponseActionSummaryItemsItem:
 
         enabled = d.pop("enabled")
 
-        entrypoint = d.pop("entrypoint")
-
         id = d.pop("id")
 
         label = d.pop("label")
 
         pack_ref = d.pop("pack_ref")
+
+        parameter_delivery = ParameterDelivery(d.pop("parameter_delivery"))
+
+        parameter_format = ParameterFormat(d.pop("parameter_format"))
 
         ref = d.pop("ref")
 
@@ -355,6 +422,93 @@ class PaginatedResponseActionSummaryItemsItem:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
+
+        def _parse_entrypoint(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        entrypoint = _parse_entrypoint(d.pop("entrypoint", UNSET))
+
+        def _parse_launch(
+            data: object,
+        ) -> (
+            LaunchSpecType0
+            | LaunchSpecType1
+            | LaunchSpecType2
+            | LaunchSpecType3
+            | LaunchSpecType4
+            | LaunchSpecType5
+            | None
+            | Unset
+        ):
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_0 = LaunchSpecType0.from_dict(data)
+
+                return componentsschemas_launch_spec_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_1 = LaunchSpecType1.from_dict(data)
+
+                return componentsschemas_launch_spec_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_2 = LaunchSpecType2.from_dict(data)
+
+                return componentsschemas_launch_spec_type_2
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_3 = LaunchSpecType3.from_dict(data)
+
+                return componentsschemas_launch_spec_type_3
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_4 = LaunchSpecType4.from_dict(data)
+
+                return componentsschemas_launch_spec_type_4
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_launch_spec_type_5 = LaunchSpecType5.from_dict(data)
+
+                return componentsschemas_launch_spec_type_5
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                LaunchSpecType0
+                | LaunchSpecType1
+                | LaunchSpecType2
+                | LaunchSpecType3
+                | LaunchSpecType4
+                | LaunchSpecType5
+                | None
+                | Unset,
+                data,
+            )
+
+        launch = _parse_launch(d.pop("launch", UNSET))
 
         def _parse_log_retention_limit(data: object) -> int | None | Unset:
             if data is None:
@@ -502,10 +656,11 @@ class PaginatedResponseActionSummaryItemsItem:
             accesses_mcp=accesses_mcp,
             created=created,
             enabled=enabled,
-            entrypoint=entrypoint,
             id=id,
             label=label,
             pack_ref=pack_ref,
+            parameter_delivery=parameter_delivery,
+            parameter_format=parameter_format,
             ref=ref,
             reference_visibility=reference_visibility,
             updated=updated,
@@ -513,6 +668,8 @@ class PaginatedResponseActionSummaryItemsItem:
             artifact_retention_policy=artifact_retention_policy,
             default_execution_permission_set_refs=default_execution_permission_set_refs,
             description=description,
+            entrypoint=entrypoint,
+            launch=launch,
             log_retention_limit=log_retention_limit,
             log_retention_policy=log_retention_policy,
             reference_allowed_pack_refs=reference_allowed_pack_refs,

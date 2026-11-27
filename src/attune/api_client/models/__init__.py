@@ -390,6 +390,7 @@ from .approval_purpose_type_0 import ApprovalPurposeType0
 from .approval_purpose_type_0_kind import ApprovalPurposeType0Kind
 from .approval_purpose_type_1 import ApprovalPurposeType1
 from .approval_purpose_type_1_kind import ApprovalPurposeType1Kind
+from .argument_preview import ArgumentPreview
 from .artifact_body_state import ArtifactBodyState
 from .artifact_classification import ArtifactClassification
 from .artifact_cursor_page_artifact_summary import ArtifactCursorPageArtifactSummary
@@ -433,6 +434,7 @@ from .authored_grant_constraints_attributes_type_0 import (
     AuthoredGrantConstraintsAttributesType0,
 )
 from .authorization_basis import AuthorizationBasis
+from .branding_config import BrandingConfig
 from .browse_indexed_packs_response_200 import BrowseIndexedPacksResponse200
 from .browse_indexed_packs_response_200_data_item import (
     BrowseIndexedPacksResponse200DataItem,
@@ -501,6 +503,14 @@ from .change_password_request import ChangePasswordRequest
 from .change_password_response_200 import ChangePasswordResponse200
 from .change_password_response_200_data import ChangePasswordResponse200Data
 from .checksum_subject import ChecksumSubject
+from .classpath_entry_type_0 import ClasspathEntryType0
+from .classpath_entry_type_1 import ClasspathEntryType1
+from .cli_binding_type_0 import CliBindingType0
+from .cli_binding_type_0_kind import CliBindingType0Kind
+from .cli_binding_type_1 import CliBindingType1
+from .cli_binding_type_1_kind import CliBindingType1Kind
+from .cli_binding_type_2 import CliBindingType2
+from .cli_binding_type_2_kind import CliBindingType2Kind
 from .clone_dashboard_request import CloneDashboardRequest
 from .component_counts import ComponentCounts
 from .component_summary import ComponentSummary
@@ -759,6 +769,7 @@ from .effective_permission_response import EffectivePermissionResponse
 from .effective_permission_response_constraints_type_0 import (
     EffectivePermissionResponseConstraintsType0,
 )
+from .encoding import Encoding
 from .enforcement_condition import EnforcementCondition
 from .enforcement_response import EnforcementResponse
 from .enforcement_response_conditions import EnforcementResponseConditions
@@ -980,6 +991,7 @@ from .install_source_type_1 import InstallSourceType1
 from .install_source_type_1_type import InstallSourceType1Type
 from .integration_token_response import IntegrationTokenResponse
 from .internal_create_sensor_token_request import InternalCreateSensorTokenRequest
+from .intrinsic_handler import IntrinsicHandler
 from .invocation_binding_type_0 import InvocationBindingType0
 from .invocation_binding_type_0_kind import InvocationBindingType0Kind
 from .invocation_binding_type_1 import InvocationBindingType1
@@ -992,6 +1004,18 @@ from .issue_runtime_approval_request import IssueRuntimeApprovalRequest
 from .key_response import KeyResponse
 from .key_summary import KeySummary
 from .label_expression_operator import LabelExpressionOperator
+from .launch_spec_type_0 import LaunchSpecType0
+from .launch_spec_type_0_type import LaunchSpecType0Type
+from .launch_spec_type_1 import LaunchSpecType1
+from .launch_spec_type_1_type import LaunchSpecType1Type
+from .launch_spec_type_2 import LaunchSpecType2
+from .launch_spec_type_2_type import LaunchSpecType2Type
+from .launch_spec_type_3 import LaunchSpecType3
+from .launch_spec_type_3_type import LaunchSpecType3Type
+from .launch_spec_type_4 import LaunchSpecType4
+from .launch_spec_type_4_type import LaunchSpecType4Type
+from .launch_spec_type_5 import LaunchSpecType5
+from .launch_spec_type_5_type import LaunchSpecType5Type
 from .ldap_login_request import LdapLoginRequest
 from .ldap_login_response_200 import LdapLoginResponse200
 from .ldap_login_response_200_data import LdapLoginResponse200Data
@@ -1017,6 +1041,7 @@ from .list_workflow_task_waits_response_200 import ListWorkflowTaskWaitsResponse
 from .list_workflow_task_waits_response_200_data_item import (
     ListWorkflowTaskWaitsResponse200DataItem,
 )
+from .literal_argument import LiteralArgument
 from .log_availability import LogAvailability
 from .log_availability_state import LogAvailabilityState
 from .log_retention_limit_patch_type_0 import LogRetentionLimitPatchType0
@@ -1035,6 +1060,7 @@ from .maintenance_job import MaintenanceJob
 from .maintenance_schedule_status import MaintenanceScheduleStatus
 from .managed_table import ManagedTable
 from .management_origin_kind import ManagementOriginKind
+from .missing_policy import MissingPolicy
 from .native_maintenance_config import NativeMaintenanceConfig
 from .native_maintenance_status import NativeMaintenanceStatus
 from .node_js_environment import NodeJsEnvironment
@@ -1070,6 +1096,7 @@ from .oidc_device_poll_response_200_data_type_3_status import (
 )
 from .oidc_device_start_response_200 import OidcDeviceStartResponse200
 from .oidc_device_start_response_200_data import OidcDeviceStartResponse200Data
+from .option_style import OptionStyle
 from .output_format import OutputFormat
 from .output_policy import OutputPolicy
 from .output_visibility import OutputVisibility
@@ -1264,6 +1291,8 @@ from .paginated_response_workflow_summary_items_item import (
     PaginatedResponseWorkflowSummaryItemsItem,
 )
 from .pagination_meta import PaginationMeta
+from .parameter_delivery import ParameterDelivery
+from .parameter_format import ParameterFormat
 from .partition_status import PartitionStatus
 from .permission_assignment_response import PermissionAssignmentResponse
 from .permission_binding_response import PermissionBindingResponse
@@ -1858,6 +1887,7 @@ __all__ = (
     "ApprovalPurposeType0Kind",
     "ApprovalPurposeType1",
     "ApprovalPurposeType1Kind",
+    "ArgumentPreview",
     "ArtifactBodyState",
     "ArtifactClassification",
     "ArtifactCursorPageArtifactSummary",
@@ -1891,6 +1921,7 @@ __all__ = (
     "AuthoredGrantConstraints",
     "AuthoredGrantConstraintsAttributesType0",
     "AuthorizationBasis",
+    "BrandingConfig",
     "BrowseIndexedPacksResponse200",
     "BrowseIndexedPacksResponse200DataItem",
     "BuildInfo",
@@ -1941,6 +1972,14 @@ __all__ = (
     "ChangePasswordResponse200",
     "ChangePasswordResponse200Data",
     "ChecksumSubject",
+    "ClasspathEntryType0",
+    "ClasspathEntryType1",
+    "CliBindingType0",
+    "CliBindingType0Kind",
+    "CliBindingType1",
+    "CliBindingType1Kind",
+    "CliBindingType2",
+    "CliBindingType2Kind",
     "CloneDashboardRequest",
     "ComponentCounts",
     "ComponentSummary",
@@ -2107,6 +2146,7 @@ __all__ = (
     "DownloadedPack",
     "EffectivePermissionResponse",
     "EffectivePermissionResponseConstraintsType0",
+    "Encoding",
     "EnforcementCondition",
     "EnforcementResponse",
     "EnforcementResponseConditions",
@@ -2256,6 +2296,7 @@ __all__ = (
     "InstallSourceType1Type",
     "IntegrationTokenResponse",
     "InternalCreateSensorTokenRequest",
+    "IntrinsicHandler",
     "InvocationBindingType0",
     "InvocationBindingType0Kind",
     "InvocationBindingType1",
@@ -2268,6 +2309,18 @@ __all__ = (
     "KeyResponse",
     "KeySummary",
     "LabelExpressionOperator",
+    "LaunchSpecType0",
+    "LaunchSpecType0Type",
+    "LaunchSpecType1",
+    "LaunchSpecType1Type",
+    "LaunchSpecType2",
+    "LaunchSpecType2Type",
+    "LaunchSpecType3",
+    "LaunchSpecType3Type",
+    "LaunchSpecType4",
+    "LaunchSpecType4Type",
+    "LaunchSpecType5",
+    "LaunchSpecType5Type",
     "LdapLoginRequest",
     "LdapLoginResponse200",
     "LdapLoginResponse200Data",
@@ -2281,6 +2334,7 @@ __all__ = (
     "ListWorkflowCacheIterationsResponse200DataItem",
     "ListWorkflowTaskWaitsResponse200",
     "ListWorkflowTaskWaitsResponse200DataItem",
+    "LiteralArgument",
     "LogAvailability",
     "LogAvailabilityState",
     "LogRetentionLimitPatchType0",
@@ -2299,6 +2353,7 @@ __all__ = (
     "MaintenanceScheduleStatus",
     "ManagedTable",
     "ManagementOriginKind",
+    "MissingPolicy",
     "NativeMaintenanceConfig",
     "NativeMaintenanceStatus",
     "NodeJsEnvironment",
@@ -2318,6 +2373,7 @@ __all__ = (
     "OidcDevicePollResponse200DataType3Status",
     "OidcDeviceStartResponse200",
     "OidcDeviceStartResponse200Data",
+    "OptionStyle",
     "OutputFormat",
     "OutputPolicy",
     "OutputVisibility",
@@ -2418,6 +2474,8 @@ __all__ = (
     "PaginatedResponseWorkflowSummary",
     "PaginatedResponseWorkflowSummaryItemsItem",
     "PaginationMeta",
+    "ParameterDelivery",
+    "ParameterFormat",
     "PartitionStatus",
     "PermissionAssignmentResponse",
     "PermissionBindingResponse",

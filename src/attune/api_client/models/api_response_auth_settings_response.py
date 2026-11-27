@@ -23,7 +23,7 @@ class ApiResponseAuthSettingsResponse:
     """Standard API response wrapper
 
     Attributes:
-        data (ApiResponseAuthSettingsResponseData): Public authentication settings for the login page.
+        data (ApiResponseAuthSettingsResponseData): Public authentication and branding settings for the installation.
         message (None | str | Unset): Optional message
     """
 
